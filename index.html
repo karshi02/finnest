@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FitTrack Pro - เวทเทรนนิ่ง & คาร์ดิโอ</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#b71c1c" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="FitTrack" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="icon" href="icon-192.png" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #e53935;
+      --primary-dark: #b71c1c;
+      --secondary: #1565c0;
+      --bg: #0d0d0d;
+      --surface: #1a1a1a;
+      --surface2: #242424;
+      --border: #333;
+      --text: #f0f0f0;
+      --text-muted: #888;
+      --green: #43a047;
+      --orange: #fb8c00;
+      --purple: #8e24aa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    header {
+      background: linear-gradient(135deg, #b71c1c, #1565c0);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px #0008;
+    }
+    .logo { font-size: 1.4rem; font-weight: 800; letter-spacing: 1px; }
+    .logo span { color: #ffca28; }
+    nav { display: flex; gap: 6px; overflow-x: auto; }
+    nav button {
+      background: transparent;
+      border: 1px solid transparent;
+      color: #ffffffcc;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      transition: all .2s;
+    }
+    nav button:hover, nav button.active {
+      background: #ffffff22;
+      border-color: #ffffff44;
+      color: #fff;
+    }
+
+    /* ── LAYOUT ── */
+    main { padding: 24px; max-width: 1200px; margin: 0 auto; }
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title .icon { font-size: 1.2rem; }
+
+    /* ── GRID ── */
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    @media(max-width: 768px) {
+      .grid2, .grid3, .grid4 { grid-template-columns: 1fr; }
+      nav button { padding: 6px 10px; font-size: 0.78rem; }
+      header { gap: 12px; padding: 0 12px; }
+      .logo { font-size: 1.1rem; white-space: nowrap; }
+    }
+
+    /* ── STAT BOXES ── */
+    .stat-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+    .stat-box .val { font-size: 2rem; font-weight: 800; }
+    .stat-box .lbl { font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* ── FORM ── */
+    .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 12px; }
+    label { font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 4px; }
+    input, select, textarea {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color .2s;
+    }
+    input:focus, select:focus { border-color: var(--primary); }
+    textarea { resize: vertical; min-height: 70px; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.9rem;
+      transition: all .2s;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+    .btn-secondary { background: var(--secondary); color: #fff; }
+    .btn-secondary:hover { background: #0d47a1; }
+    .btn-green { background: var(--green); color: #fff; }
+    .btn-orange { background: var(--orange); color: #fff; }
+    .btn-sm { padding: 6px 12px; font-size: 0.8rem; border-radius: 6px; }
+    .btn-danger { background: #c62828; color: #fff; }
+
+    /* ── BADGE ── */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+    .badge-red { background: #c6282822; color: #ef5350; border: 1px solid #c62828; }
+    .badge-blue { background: #1565c022; color: #42a5f5; border: 1px solid #1565c0; }
+    .badge-green { background: #2e7d3222; color: #66bb6a; border: 1px solid #2e7d32; }
+    .badge-orange { background: #fb8c0022; color: #ffa726; border: 1px solid #fb8c00; }
+
+    /* ── TABLES ── */
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th { background: var(--surface2); padding: 10px 12px; text-align: left; color: var(--text-muted); font-weight: 600; }
+    td { padding: 10px 12px; border-top: 1px solid var(--border); }
+    tr:hover td { background: #ffffff08; }
+
+    /* ── PROGRESS BAR ── */
+    .progress-wrap { background: var(--surface2); border-radius: 100px; height: 8px; margin-top: 6px; }
+    .progress-fill { height: 8px; border-radius: 100px; transition: width .4s ease; }
+
+    /* ── EXERCISE CARD ── */
+    .ex-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .ex-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .ex-name { font-weight: 700; margin-bottom: 4px; }
+    .ex-meta { font-size: 0.78rem; color: var(--text-muted); }
+
+    /* ── TIMER ── */
+    .timer-display {
+      font-size: 4rem;
+      font-weight: 900;
+      text-align: center;
+      letter-spacing: 4px;
+      color: var(--primary);
+      font-variant-numeric: tabular-nums;
+    }
+    .timer-label { text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 12px; }
+
+    /* ── SET LOG ── */
+    .set-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface2);
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin-bottom: 6px;
+    }
+    .set-num { width: 28px; height: 28px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; flex-shrink: 0; }
+    .set-info { flex: 1; font-size: 0.9rem; }
+
+    /* ── HEART ZONE ── */
+    .zone-bar { display: flex; height: 20px; border-radius: 8px; overflow: hidden; margin: 8px 0; }
+    .zone-bar div { transition: flex .4s; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: #000a;
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      width: 90%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 20px; }
+    .modal-close { float: right; background: none; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer; }
+
+    /* ── TABS ── */
+    .tabs { display: flex; gap: 4px; background: var(--surface2); border-radius: 10px; padding: 4px; margin-bottom: 20px; }
+    .tab-btn { flex: 1; padding: 8px; border: none; border-radius: 7px; cursor: pointer; background: transparent; color: var(--text-muted); font-weight: 600; font-size: 0.85rem; transition: all .2s; }
+    .tab-btn.active { background: var(--primary); color: #fff; }
+
+    /* ── MISC ── */
+    .flex-between { display: flex; align-items: center; justify-content: space-between; }
+    .flex-gap { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .text-muted { color: var(--text-muted); font-size: 0.85rem; }
+    .mt8 { margin-top: 8px; }
+    .mt16 { margin-top: 16px; }
+    .empty-state { text-align: center; padding: 40px; color: var(--text-muted); }
+
+    /* ── MUSCLE MAP ── */
+    .muscle-btn {
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.82rem;
+      transition: all .2s;
+    }
+    .muscle-btn:hover, .muscle-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Fit<span>Track</span> Pro</div>
+  <nav>
+    <button class="active" onclick="showPage('dashboard')">📊 ภาพรวม</button>
+    <button onclick="showPage('weight')">🏋️ เวทเทรนนิ่ง</button>
+    <button onclick="showPage('cardio')">🏃 คาร์ดิโอ</button>
+    <button onclick="showPage('plan')">📋 แผนออกกำลังกาย</button>
+    <button onclick="showPage('calc')">🧮 คำนวณ</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ════════════════════════════════════════════
+     PAGE: DASHBOARD
+═════════════════════════════════════════════ -->
+<div id="page-dashboard" class="page active">
+  <div class="flex-between" style="margin-bottom:20px">
+    <div>
+      <h1 style="font-size:1.6rem">สวัสดี, นักกีฬา! 💪</h1>
+      <p class="text-muted" id="today-date"></p>
+    </div>
+    <button class="btn btn-primary" onclick="openLogModal()">+ บันทึกออกกำลังกาย</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid4" style="margin-bottom:20px">
+    <div class="stat-box">
+      <div class="val" style="color:var(--primary)" id="stat-sessions">0</div>
+      <div class="lbl">🏋️ เวทเทรนนิ่ง (ครั้ง)</div>
+    </div>
+    <div class="stat-box">
+      <div class="val" style="color:var(--secondary)" id="stat-volume">0</div>
+      <div class="lbl">📦 Volume รวม (kg)</div>
+    </div>
+    <div class="stat-box">
+      <div class="val" style="color:var(--green)" id="stat-cardio">0</div>
+      <div class="lbl">🏃 นาทีคาร์ดิโอ</div>
+    </div>
+    <div class="stat-box">
+      <div class="val" style="color:var(--orange)" id="stat-calories">0</div>
+      <div class="lbl">🔥 แคลอรี่เผา</div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <!-- Weekly Progress -->
+    <div class="card">
+      <div class="card-title"><span class="icon">📈</span> ความก้าวหน้าสัปดาห์นี้</div>
+      <canvas id="chartWeekly" height="200"></canvas>
+    </div>
+    <!-- Muscle Groups -->
+    <div class="card">
+      <div class="card-title"><span class="icon">💪</span> กลุ่มกล้ามเนื้อที่ฝึก</div>
+      <canvas id="chartMuscle" height="200"></canvas>
+    </div>
+  </div>
+
+  <!-- Recent Log -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> บันทึกล่าสุด</div>
+    <div id="recent-log">
+      <div class="empty-state">ยังไม่มีบันทึก — กด "+ บันทึกออกกำลังกาย" เพื่อเริ่ม</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE: WEIGHT TRAINING
+═════════════════════════════════════════════ -->
+<div id="page-weight" class="page">
+  <h1 style="font-size:1.5rem;margin-bottom:20px">🏋️ เวทเทรนนิ่ง</h1>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showWeightTab('library')">คลังท่า</button>
+    <button class="tab-btn" onclick="showWeightTab('log')">บันทึก Workout</button>
+    <button class="tab-btn" onclick="showWeightTab('history')">ประวัติ</button>
+  </div>
+
+  <!-- TAB: LIBRARY -->
+  <div id="wtab-library">
+    <div class="flex-gap" style="margin-bottom:16px">
+      <button class="muscle-btn active" onclick="filterMuscle('all',this)">ทั้งหมด</button>
+      <button class="muscle-btn" onclick="filterMuscle('chest',this)">หน้าอก</button>
+      <button class="muscle-btn" onclick="filterMuscle('back',this)">หลัง</button>
+      <button class="muscle-btn" onclick="filterMuscle('shoulder',this)">ไหล่</button>
+      <button class="muscle-btn" onclick="filterMuscle('bicep',this)">ไบเซ็ป</button>
+      <button class="muscle-btn" onclick="filterMuscle('tricep',this)">ไตรเซ็ป</button>
+      <button class="muscle-btn" onclick="filterMuscle('leg',this)">ขา</button>
+      <button class="muscle-btn" onclick="filterMuscle('core',this)">คอร์</button>
+    </div>
+    <div class="grid3" id="exercise-library"></div>
+  </div>
+
+  <!-- TAB: LOG -->
+  <div id="wtab-log" style="display:none">
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title"><span class="icon">➕</span> เพิ่ม Set</div>
+        <div class="form-row">
+          <div>
+            <label>ท่าออกกำลังกาย</label>
+            <select id="log-exercise">
+              <option value="">-- เลือกท่า --</option>
+            </select>
+          </div>
+          <div>
+            <label>น้ำหนัก (kg)</label>
+            <input type="number" id="log-weight" placeholder="60" min="0" step="0.5" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label>จำนวน Reps</label>
+            <input type="number" id="log-reps" placeholder="12" min="1" />
+          </div>
+          <div>
+            <label>จำนวน Sets</label>
+            <input type="number" id="log-sets" placeholder="3" min="1" max="20" />
+          </div>
+          <div>
+            <label>RIR (เหลือ)</label>
+            <input type="number" id="log-rir" placeholder="2" min="0" max="10" />
+          </div>
+        </div>
+        <div style="margin-bottom:12px">
+          <label>บันทึก</label>
+          <textarea id="log-note" placeholder="รู้สึกอย่างไรบ้าง..."></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="addWeightSet()">บันทึก Set</button>
+      </div>
+
+      <!-- Rest Timer -->
+      <div class="card">
+        <div class="card-title"><span class="icon">⏱️</span> นาฬิกาพัก</div>
+        <div class="timer-label" id="timer-label">กดเริ่มเมื่อพัก</div>
+        <div class="timer-display" id="timer-display">02:00</div>
+        <div class="flex-gap" style="justify-content:center;margin-top:16px">
+          <button class="btn btn-secondary btn-sm" onclick="setTimer(60)">1 นาที</button>
+          <button class="btn btn-secondary btn-sm" onclick="setTimer(90)">90 วิ</button>
+          <button class="btn btn-primary btn-sm" onclick="setTimer(120)">2 นาที</button>
+          <button class="btn btn-orange btn-sm" onclick="setTimer(180)">3 นาที</button>
+        </div>
+        <div class="flex-gap" style="justify-content:center;margin-top:12px">
+          <button class="btn btn-green" onclick="startTimer()" id="btn-start">▶ เริ่ม</button>
+          <button class="btn btn-danger" onclick="resetTimer()">↺ รีเซ็ต</button>
+        </div>
+        <div style="margin-top:16px">
+          <div class="progress-wrap">
+            <div class="progress-fill" id="timer-progress" style="width:100%;background:var(--green)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Today's Log -->
+    <div class="card">
+      <div class="card-title flex-between">
+        <span><span class="icon">📝</span> บันทึกวันนี้</span>
+        <button class="btn btn-sm btn-primary" onclick="saveSession()">💾 บันทึก Session</button>
+      </div>
+      <div id="today-sets">
+        <div class="empty-state">ยังไม่มี set — เพิ่มข้างบน</div>
+      </div>
+      <div id="today-volume" class="text-muted mt8" style="text-align:right;font-size:0.85rem"></div>
+    </div>
+  </div>
+
+  <!-- TAB: HISTORY -->
+  <div id="wtab-history" style="display:none">
+    <div class="card">
+      <div class="card-title"><span class="icon">📜</span> ประวัติ Workout</div>
+      <div id="weight-history">
+        <div class="empty-state">ยังไม่มีประวัติ</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE: CARDIO
+═════════════════════════════════════════════ -->
+<div id="page-cardio" class="page">
+  <h1 style="font-size:1.5rem;margin-bottom:20px">🏃 คาร์ดิโอ</h1>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showCardioTab('log')">บันทึก</button>
+    <button class="tab-btn" onclick="showCardioTab('stopwatch')">จับเวลา</button>
+    <button class="tab-btn" onclick="showCardioTab('zones')">โซนหัวใจ</button>
+    <button class="tab-btn" onclick="showCardioTab('history')">ประวัติ</button>
+  </div>
+
+  <!-- TAB: LOG CARDIO -->
+  <div id="ctab-log">
+    <div class="card">
+      <div class="card-title"><span class="icon">➕</span> บันทึกคาร์ดิโอ</div>
+      <div class="form-row">
+        <div>
+          <label>ประเภท</label>
+          <select id="cardio-type">
+            <option value="วิ่ง">🏃 วิ่ง</option>
+            <option value="จักรยาน">🚴 จักรยาน</option>
+            <option value="ว่ายน้ำ">🏊 ว่ายน้ำ</option>
+            <option value="เดินเร็ว">🚶 เดินเร็ว</option>
+            <option value="เชือกกระโดด">🪢 เชือกกระโดด</option>
+            <option value="Elliptical">⚙️ Elliptical</option>
+            <option value="Rowing">🚣 Rowing</option>
+            <option value="HIIT">⚡ HIIT</option>
+            <option value="แบดมินตัน">🏸 แบดมินตัน</option>
+            <option value="ฟุตบอล">⚽ ฟุตบอล</option>
+          </select>
+        </div>
+        <div>
+          <label>ระยะเวลา (นาที)</label>
+          <input type="number" id="cardio-duration" placeholder="30" min="1" />
+        </div>
+        <div>
+          <label>ระยะทาง (km)</label>
+          <input type="number" id="cardio-distance" placeholder="5.0" step="0.1" min="0" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label>HR เฉลี่ย (bpm)</label>
+          <input type="number" id="cardio-hr" placeholder="140" min="40" max="220" />
+        </div>
+        <div>
+          <label>แคลอรี่ (kcal)</label>
+          <input type="number" id="cardio-kcal" placeholder="300" min="0" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label>ระดับความเข้มข้น</label>
+          <select id="cardio-intensity">
+            <option value="เบา">🟢 เบา (Zone 1-2)</option>
+            <option value="ปานกลาง" selected>🟡 ปานกลาง (Zone 3)</option>
+            <option value="หนัก">🟠 หนัก (Zone 4)</option>
+            <option value="สูงสุด">🔴 สูงสุด (Zone 5)</option>
+          </select>
+        </div>
+        <div>
+          <label>วันที่</label>
+          <input type="date" id="cardio-date" />
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <label>บันทึก</label>
+        <textarea id="cardio-note" placeholder="เส้นทาง, สภาพแวดล้อม..."></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="logCardio()">💾 บันทึก</button>
+    </div>
+
+    <!-- Pace Calculator -->
+    <div class="card">
+      <div class="card-title"><span class="icon">⚡</span> คำนวณ Pace</div>
+      <div class="form-row">
+        <div>
+          <label>ระยะทาง (km)</label>
+          <input type="number" id="pace-dist" placeholder="5" oninput="calcPace()" />
+        </div>
+        <div>
+          <label>เวลา (นาที)</label>
+          <input type="number" id="pace-min" placeholder="25" oninput="calcPace()" />
+        </div>
+        <div>
+          <label>Pace (นาที/km)</label>
+          <input type="text" id="pace-result" readonly style="background:#0a0a0a;font-weight:700;color:var(--primary)" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: STOPWATCH -->
+  <div id="ctab-stopwatch" style="display:none">
+    <div class="card" style="text-align:center">
+      <div class="card-title" style="justify-content:center"><span class="icon">⏱️</span> Stopwatch คาร์ดิโอ</div>
+      <div style="font-size: 4.5rem;font-weight:900;letter-spacing:6px;color:var(--secondary);font-variant-numeric:tabular-nums;margin:20px 0" id="sw-display">00:00:00</div>
+      <div class="flex-gap" style="justify-content:center;gap:16px">
+        <button class="btn btn-green" style="min-width:100px" onclick="swStart()" id="sw-btn-start">▶ เริ่ม</button>
+        <button class="btn btn-orange" onclick="swLap()">📍 Lap</button>
+        <button class="btn btn-danger" onclick="swReset()">↺ รีเซ็ต</button>
+      </div>
+      <div id="sw-laps" style="margin-top:20px;text-align:left;max-height:200px;overflow-y:auto"></div>
+    </div>
+  </div>
+
+  <!-- TAB: HEART ZONES -->
+  <div id="ctab-zones" style="display:none">
+    <div class="card">
+      <div class="card-title"><span class="icon">❤️</span> โซนอัตราการเต้นหัวใจ</div>
+      <div class="form-row">
+        <div>
+          <label>อายุ</label>
+          <input type="number" id="zone-age" placeholder="25" min="10" max="90" oninput="calcZones()" />
+        </div>
+        <div>
+          <label>HR พัก (bpm)</label>
+          <input type="number" id="zone-rhr" placeholder="65" min="30" max="100" oninput="calcZones()" />
+        </div>
+      </div>
+      <div id="zone-results" style="display:none">
+        <div class="zone-bar" id="zone-bar"></div>
+        <div id="zone-table" class="mt16"></div>
+      </div>
+      <div id="zone-placeholder" class="text-muted" style="padding:20px 0">กรอกอายุและ HR พักเพื่อดูโซน</div>
+    </div>
+  </div>
+
+  <!-- TAB: CARDIO HISTORY -->
+  <div id="ctab-history" style="display:none">
+    <div class="card">
+      <div class="card-title"><span class="icon">📜</span> ประวัติคาร์ดิโอ</div>
+      <div id="cardio-history"><div class="empty-state">ยังไม่มีประวัติ</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">📊</span> กราฟระยะเวลา</div>
+      <canvas id="chartCardio" height="200"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE: PLAN
+═════════════════════════════════════════════ -->
+<div id="page-plan" class="page">
+  <h1 style="font-size:1.5rem;margin-bottom:20px">📋 แผนออกกำลังกาย</h1>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🗓️</span> ตารางรายสัปดาห์</div>
+    <div id="weekly-plan" style="display:grid;gap:10px"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> แผนโปรแกรมยอดนิยม</div>
+    <div class="grid2" id="programs-list"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE: CALCULATOR
+═════════════════════════════════════════════ -->
+<div id="page-calc" class="page">
+  <h1 style="font-size:1.5rem;margin-bottom:20px">🧮 เครื่องคำนวณ</h1>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showCalcTab('bmr')">BMR/TDEE</button>
+    <button class="tab-btn" onclick="showCalcTab('bmi')">BMI</button>
+    <button class="tab-btn" onclick="showCalcTab('macro')">มาโคร</button>
+    <button class="tab-btn" onclick="showCalcTab('1rm')">1RM</button>
+  </div>
+
+  <!-- BMR -->
+  <div id="calctab-bmr">
+    <div class="card">
+      <div class="card-title"><span class="icon">🔥</span> คำนวณ BMR & TDEE</div>
+      <div class="form-row">
+        <div>
+          <label>เพศ</label>
+          <select id="bmr-gender">
+            <option value="male">ชาย</option>
+            <option value="female">หญิง</option>
+          </select>
+        </div>
+        <div>
+          <label>อายุ</label>
+          <input type="number" id="bmr-age" placeholder="25" min="10" max="100" />
+        </div>
+        <div>
+          <label>น้ำหนัก (kg)</label>
+          <input type="number" id="bmr-weight" placeholder="70" min="30" max="300" step="0.1" />
+        </div>
+        <div>
+          <label>ส่วนสูง (cm)</label>
+          <input type="number" id="bmr-height" placeholder="175" min="100" max="250" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label>ระดับกิจกรรม</label>
+          <select id="bmr-activity">
+            <option value="1.2">นั่งทำงาน ไม่ค่อยออกกำลังกาย (x1.2)</option>
+            <option value="1.375">ออกกำลังกายเบา 1-3 วัน/สัปดาห์ (x1.375)</option>
+            <option value="1.55" selected>ออกกำลังกายปานกลาง 3-5 วัน/สัปดาห์ (x1.55)</option>
+            <option value="1.725">ออกกำลังกายหนัก 6-7 วัน/สัปดาห์ (x1.725)</option>
+            <option value="1.9">นักกีฬา ออกกำลังกายหนักมาก (x1.9)</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="calcBMR()">คำนวณ</button>
+      <div id="bmr-result" class="mt16"></div>
+    </div>
+  </div>
+
+  <!-- BMI -->
+  <div id="calctab-bmi" style="display:none">
+    <div class="card">
+      <div class="card-title"><span class="icon">⚖️</span> คำนวณ BMI</div>
+      <div class="form-row">
+        <div>
+          <label>น้ำหนัก (kg)</label>
+          <input type="number" id="bmi-weight" placeholder="70" min="30" max="300" step="0.1" />
+        </div>
+        <div>
+          <label>ส่วนสูง (cm)</label>
+          <input type="number" id="bmi-height" placeholder="175" min="100" max="250" />
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="calcBMI()">คำนวณ</button>
+      <div id="bmi-result" class="mt16"></div>
+    </div>
+  </div>
+
+  <!-- MACRO -->
+  <div id="calctab-macro" style="display:none">
+    <div class="card">
+      <div class="card-title"><span class="icon">🥗</span> คำนวณมาโครนิวเทรียนต์</div>
+      <div class="form-row">
+        <div>
+          <label>เป้าหมายแคลอรี่ (kcal)</label>
+          <input type="number" id="macro-kcal" placeholder="2200" min="1000" max="6000" />
+        </div>
+        <div>
+          <label>เป้าหมาย</label>
+          <select id="macro-goal">
+            <option value="cut">ลดไขมัน (Cut)</option>
+            <option value="maintain" selected>รักษา (Maintain)</option>
+            <option value="bulk">เพิ่มกล้ามเนื้อ (Bulk)</option>
+          </select>
+        </div>
+        <div>
+          <label>น้ำหนักตัว (kg)</label>
+          <input type="number" id="macro-weight" placeholder="70" min="30" step="0.1" />
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="calcMacro()">คำนวณ</button>
+      <div id="macro-result" class="mt16"></div>
+    </div>
+  </div>
+
+  <!-- 1RM -->
+  <div id="calctab-1rm" style="display:none">
+    <div class="card">
+      <div class="card-title"><span class="icon">🏆</span> คำนวณ 1RM (One Rep Max)</div>
+      <div class="form-row">
+        <div>
+          <label>น้ำหนักที่ยก (kg)</label>
+          <input type="number" id="orm-weight" placeholder="80" min="1" step="0.5" />
+        </div>
+        <div>
+          <label>จำนวน Reps</label>
+          <input type="number" id="orm-reps" placeholder="8" min="1" max="30" />
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="calc1RM()">คำนวณ</button>
+      <div id="orm-result" class="mt16"></div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- ════════════════════════════════════════════
+     MODAL: QUICK LOG
+═════════════════════════════════════════════ -->
+<div class="modal-overlay" id="log-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeLogModal()">✕</button>
+    <div class="modal-title">📝 บันทึกออกกำลังกายด่วน</div>
+    <div class="form-row">
+      <div>
+        <label>ประเภท</label>
+        <select id="modal-type">
+          <option value="weight">🏋️ เวทเทรนนิ่ง</option>
+          <option value="cardio">🏃 คาร์ดิโอ</option>
+          <option value="both">🔀 ทั้งสองอย่าง</option>
+        </select>
+      </div>
+      <div>
+        <label>วันที่</label>
+        <input type="date" id="modal-date" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>ระยะเวลา (นาที)</label>
+        <input type="number" id="modal-duration" placeholder="60" min="1" />
+      </div>
+      <div>
+        <label>แคลอรี่เผา (kcal)</label>
+        <input type="number" id="modal-cals" placeholder="400" min="0" />
+      </div>
+    </div>
+    <div>
+      <label>บันทึก</label>
+      <textarea id="modal-note" placeholder="วันนี้ฝึกอะไรบ้าง..."></textarea>
+    </div>
+    <div class="flex-gap" style="margin-top:16px;justify-content:flex-end">
+      <button class="btn btn-secondary" onclick="closeLogModal()">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveQuickLog()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════
+// DATA
+// ════════════════════════════════════════════
+const EXERCISES = [
+  { id:'bench',     name:'Bench Press',         muscle:'chest',    equip:'บาร์เบล',  desc:'กล้ามเนื้อหน้าอก ไหล่หน้า ไตรเซ็ป' },
+  { id:'incline',   name:'Incline DB Press',    muscle:'chest',    equip:'ดัมเบล',   desc:'หน้าอกบน เน้นพัฒนายอดอก' },
+  { id:'pec',       name:'Pec Fly',             muscle:'chest',    equip:'เครื่อง', desc:'ยืดกล้ามเนื้อหน้าอกให้กว้าง' },
+  { id:'pushup',    name:'Push-up',             muscle:'chest',    equip:'น้ำหนักตัว',desc:'ไม่ต้องอุปกรณ์ เหมาะสำหรับทุกระดับ' },
+  { id:'dips',      name:'Dips',                muscle:'chest',    equip:'บาร์',      desc:'หน้าอกล่าง ไตรเซ็ป' },
+  { id:'pullup',    name:'Pull-up',             muscle:'back',     equip:'บาร์',      desc:'หลังกว้าง ไบเซ็ป แขนท่อนบน' },
+  { id:'row',       name:'Barbell Row',         muscle:'back',     equip:'บาร์เบล',  desc:'หลังกลาง สะบัก' },
+  { id:'latpull',   name:'Lat Pulldown',        muscle:'back',     equip:'เครื่อง', desc:'หลังกว้าง เหมาะสำหรับมือใหม่' },
+  { id:'deadlift',  name:'Deadlift',            muscle:'back',     equip:'บาร์เบล',  desc:'ท่าเทพ ฝึกทั้งตัว หลัง ขา สะโพก' },
+  { id:'shrug',     name:'Barbell Shrug',       muscle:'back',     equip:'บาร์เบล',  desc:'กล้ามเนื้อคอและบ่า' },
+  { id:'ohp',       name:'Overhead Press',      muscle:'shoulder', equip:'บาร์เบล',  desc:'ไหล่ทั้ง 3 หัว ไตรเซ็ป' },
+  { id:'lateral',   name:'Lateral Raise',       muscle:'shoulder', equip:'ดัมเบล',   desc:'ไหล่ด้านข้าง ทำให้ไหล่กว้าง' },
+  { id:'front',     name:'Front Raise',         muscle:'shoulder', equip:'ดัมเบล',   desc:'ไหล่หน้า' },
+  { id:'facepull',  name:'Face Pull',           muscle:'shoulder', equip:'เชือก',    desc:'ไหล่หลัง rotator cuff ป้องกันบาดเจ็บ' },
+  { id:'curl',      name:'Barbell Curl',        muscle:'bicep',    equip:'บาร์เบล',  desc:'ไบเซ็ป ท่าหลัก เพิ่มมวลได้ดี' },
+  { id:'hammercurl',name:'Hammer Curl',         muscle:'bicep',    equip:'ดัมเบล',   desc:'ไบเซ็ปและกล้ามเนื้อปลายแขน' },
+  { id:'preacher',  name:'Preacher Curl',       muscle:'bicep',    equip:'เครื่อง', desc:'ไบเซ็ปหัวล่าง ยืดได้ดี' },
+  { id:'pushdown',  name:'Tricep Pushdown',     muscle:'tricep',   equip:'เชือก',    desc:'ไตรเซ็ป 3 หัว ท่าหลัก' },
+  { id:'skullcrush',name:'Skull Crusher',       muscle:'tricep',   equip:'บาร์เบล',  desc:'ไตรเซ็ปหัวยาว เพิ่มขนาดได้ดี' },
+  { id:'dipbench',  name:'Bench Dips',          muscle:'tricep',   equip:'ม้านั่ง',  desc:'ไตรเซ็ป ไม่ต้องอุปกรณ์มาก' },
+  { id:'squat',     name:'Back Squat',          muscle:'leg',      equip:'บาร์เบล',  desc:'ราชาท่าออกกำลังกาย ต้นขา สะโพก' },
+  { id:'legpress',  name:'Leg Press',           muscle:'leg',      equip:'เครื่อง', desc:'ต้นขาหน้า-หลัง เหมาะมือใหม่' },
+  { id:'rdl',       name:'Romanian Deadlift',   muscle:'leg',      equip:'บาร์เบล',  desc:'ต้นขาหลัง สะโพก' },
+  { id:'legcurl',   name:'Leg Curl',            muscle:'leg',      equip:'เครื่อง', desc:'ต้นขาหลัง hamstring' },
+  { id:'calf',      name:'Calf Raise',          muscle:'leg',      equip:'เครื่อง', desc:'น่องทั้งหน้าและหลัง' },
+  { id:'lunge',     name:'Lunge',               muscle:'leg',      equip:'ดัมเบล',   desc:'ต้นขา สะโพก การทรงตัว' },
+  { id:'crunch',    name:'Crunch',              muscle:'core',     equip:'น้ำหนักตัว',desc:'กล้ามเนื้อหน้าท้องบน' },
+  { id:'plank',     name:'Plank',               muscle:'core',     equip:'น้ำหนักตัว',desc:'คอร์ทั้งหมด เสริมความมั่นคง' },
+  { id:'legrise',   name:'Leg Raise',           muscle:'core',     equip:'บาร์',      desc:'หน้าท้องล่าง hip flexor' },
+  { id:'cable',     name:'Cable Crunch',        muscle:'core',     equip:'เชือก',    desc:'เพิ่มน้ำหนักให้คอร์ได้' },
+];
+
+const MUSCLE_COLORS = { chest:'#e53935', back:'#1565c0', shoulder:'#6a1fb5', bicep:'#00838f', tricep:'#2e7d32', leg:'#e65100', core:'#f9a825' };
+const MUSCLE_TH = { chest:'หน้าอก', back:'หลัง', shoulder:'ไหล่', bicep:'ไบเซ็ป', tricep:'ไตรเซ็ป', leg:'ขา', core:'คอร์' };
+
+let state = JSON.parse(localStorage.getItem('fittrack') || '{}');
+if (!state.sessions) state.sessions = [];
+if (!state.cardioLog) state.cardioLog = [];
+if (!state.todaySets) state.todaySets = [];
+
+function save() { localStorage.setItem('fittrack', JSON.stringify(state)); }
+
+// วันที่ตามเวลาท้องถิ่น (toISOString ใช้ UTC ทำให้ช่วง 00:00-07:00 ได้วันเมื่อวาน)
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+function esc(t) {
+  return String(t).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+
+// ════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  const btns = document.querySelectorAll('nav button');
+  const map = { dashboard:0, weight:1, cardio:2, plan:3, calc:4 };
+  btns[map[id]].classList.add('active');
+  if (id === 'dashboard') renderDashboard();
+  if (id === 'weight') renderWeight();
+  if (id === 'cardio') renderCardio();
+  if (id === 'plan') renderPlan();
+}
+
+// ════════════════════════════════════════════
+// DASHBOARD
+// ════════════════════════════════════════════
+let chartWeekly, chartMuscle, chartCardio;
+
+function renderDashboard() {
+  const today = new Date();
+  document.getElementById('today-date').textContent = today.toLocaleDateString('th-TH', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+  const totalSessions = state.sessions.length;
+  const totalVolume = state.sessions.reduce((s, sess) => s + (sess.volume || 0), 0);
+  const totalCardioMin = state.cardioLog.reduce((s, c) => s + (c.duration || 0), 0);
+  const totalCals = state.sessions.reduce((s, sess) => s + (sess.cals || 0), 0) + state.cardioLog.reduce((s, c) => s + (c.kcal || 0), 0);
+
+  document.getElementById('stat-sessions').textContent = totalSessions;
+  document.getElementById('stat-volume').textContent = totalVolume.toLocaleString();
+  document.getElementById('stat-cardio').textContent = totalCardioMin;
+  document.getElementById('stat-calories').textContent = totalCals.toLocaleString();
+
+  renderRecentLog();
+  renderWeeklyChart();
+  renderMuscleChart();
+}
+
+function renderRecentLog() {
+  const el = document.getElementById('recent-log');
+  const all = [
+    ...state.sessions.map(s => ({ ...s, kind: 'weight' })),
+    ...state.cardioLog.map(c => ({ ...c, kind: 'cardio' }))
+  ].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 8);
+
+  if (!all.length) { el.innerHTML = '<div class="empty-state">ยังไม่มีบันทึก</div>'; return; }
+
+  el.innerHTML = `<table>
+    <thead><tr><th>วันที่</th><th>ประเภท</th><th>รายละเอียด</th><th>แคลอรี่</th></tr></thead>
+    <tbody>${all.map(item => `
+      <tr>
+        <td>${new Date(item.date).toLocaleDateString('th-TH')}</td>
+        <td>${item.kind === 'weight' ? '🏋️ เวทเทรนนิ่ง' : '🏃 คาร์ดิโอ'}</td>
+        <td>${item.kind === 'weight' ? `Volume: ${(item.volume||0).toLocaleString()} kg` : `${item.type} ${item.duration} นาที${item.distance ? ' · ' + item.distance + ' km' : ''}`}</td>
+        <td><span class="badge badge-orange">${item.kcal || item.cals || 0} kcal</span></td>
+      </tr>`).join('')}
+    </tbody></table>`;
+}
+
+function renderWeeklyChart() {
+  const days = ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'];
+  const weekData = Array(7).fill(0);
+  const cardioData = Array(7).fill(0);
+  const now = new Date();
+
+  state.sessions.forEach(s => {
+    const d = new Date(s.date);
+    const diff = Math.floor((now - d) / 86400000);
+    if (diff < 7) weekData[(d.getDay())] += (s.volume || 0) / 1000;
+  });
+  state.cardioLog.forEach(c => {
+    const d = new Date(c.date);
+    const diff = Math.floor((now - d) / 86400000);
+    if (diff < 7) cardioData[(d.getDay())] += (c.duration || 0);
+  });
+
+  const ctx = document.getElementById('chartWeekly').getContext('2d');
+  if (chartWeekly) chartWeekly.destroy();
+  chartWeekly = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: days,
+      datasets: [
+        { label: 'Volume (ton)', data: weekData, backgroundColor: '#e5393599', borderColor: '#e53935', borderWidth: 1, borderRadius: 6 },
+        { label: 'คาร์ดิโอ (นาที)', data: cardioData, backgroundColor: '#1565c099', borderColor: '#1565c0', borderWidth: 1, borderRadius: 6, yAxisID: 'y2' },
+      ]
+    },
+    options: { responsive:true, plugins:{legend:{labels:{color:'#ccc'}}}, scales:{ x:{ticks:{color:'#aaa'},grid:{color:'#333'}}, y:{ticks:{color:'#aaa'},grid:{color:'#333'}}, y2:{position:'right',ticks:{color:'#aaa'},grid:{display:false}} } }
+  });
+}
+
+function renderMuscleChart() {
+  const counts = {};
+  state.sessions.forEach(s => { (s.muscles || []).forEach(m => { counts[m] = (counts[m] || 0) + 1; }); });
+  const labels = Object.keys(counts).map(k => MUSCLE_TH[k] || k);
+  const data = Object.values(counts);
+  const colors = Object.keys(counts).map(k => MUSCLE_COLORS[k] || '#888');
+
+  const ctx = document.getElementById('chartMuscle').getContext('2d');
+  if (chartMuscle) chartMuscle.destroy();
+  if (!data.length) {
+    ctx.clearRect(0, 0, 400, 200);
+    ctx.fillStyle = '#666';
+    ctx.textAlign = 'center';
+    ctx.fillText('ยังไม่มีข้อมูล', 200, 100);
+    return;
+  }
+  chartMuscle = new Chart(ctx, {
+    type: 'doughnut',
+    data: { labels, datasets: [{ data, backgroundColor: colors, borderColor: '#1a1a1a', borderWidth: 2 }] },
+    options: { responsive:true, plugins:{ legend:{ position:'right', labels:{ color:'#ccc', padding:10 } } } }
+  });
+}
+
+// ════════════════════════════════════════════
+// WEIGHT TRAINING
+// ════════════════════════════════════════════
+let currentMuscleFilter = 'all';
+
+function renderWeight() {
+  renderExerciseLibrary();
+  renderSetLog();
+  renderWeightHistory();
+  populateExerciseSelect();
+}
+
+function filterMuscle(muscle, btn) {
+  currentMuscleFilter = muscle;
+  document.querySelectorAll('.muscle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderExerciseLibrary();
+}
+
+function renderExerciseLibrary() {
+  const list = currentMuscleFilter === 'all' ? EXERCISES : EXERCISES.filter(e => e.muscle === currentMuscleFilter);
+  document.getElementById('exercise-library').innerHTML = list.map(e => `
+    <div class="ex-card" onclick="selectExercise('${e.id}')">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div class="ex-name">${e.name}</div>
+        <span class="badge" style="background:${MUSCLE_COLORS[e.muscle]}22;color:${MUSCLE_COLORS[e.muscle]};border:1px solid ${MUSCLE_COLORS[e.muscle]}">${MUSCLE_TH[e.muscle]}</span>
+      </div>
+      <div class="ex-meta">${e.equip} · ${e.desc}</div>
+    </div>`).join('');
+}
+
+function selectExercise(id) {
+  const ex = EXERCISES.find(e => e.id === id);
+  if (!ex) return;
+  document.getElementById('log-exercise').value = ex.id;
+  showWeightTab('log');
+}
+
+function populateExerciseSelect() {
+  const sel = document.getElementById('log-exercise');
+  sel.innerHTML = '<option value="">-- เลือกท่า --</option>' + EXERCISES.map(e => `<option value="${e.id}">${e.name} (${MUSCLE_TH[e.muscle]})</option>`).join('');
+}
+
+function addWeightSet() {
+  const exId = document.getElementById('log-exercise').value;
+  const w = parseFloat(document.getElementById('log-weight').value) || 0;
+  const reps = parseInt(document.getElementById('log-reps').value) || 0;
+  const sets = parseInt(document.getElementById('log-sets').value) || 1;
+  const rir = parseInt(document.getElementById('log-rir').value);
+  const note = document.getElementById('log-note').value;
+
+  if (!exId || !reps) { alert('กรุณาเลือกท่าและกรอก Reps'); return; }
+  const ex = EXERCISES.find(e => e.id === exId);
+
+  for (let i = 0; i < sets; i++) {
+    state.todaySets.push({ exId, exName: ex.name, muscle: ex.muscle, weight: w, reps, rir: isNaN(rir) ? null : rir, note, ts: Date.now() });
+  }
+  save();
+  renderSetLog();
+  document.getElementById('log-weight').value = '';
+  document.getElementById('log-reps').value = '';
+  document.getElementById('log-sets').value = '';
+  document.getElementById('log-note').value = '';
+}
+
+function renderSetLog() {
+  const el = document.getElementById('today-sets');
+  const volEl = document.getElementById('today-volume');
+  if (!state.todaySets.length) { el.innerHTML = '<div class="empty-state">ยังไม่มี set — เพิ่มข้างบน</div>'; volEl.textContent = ''; return; }
+
+  const vol = state.todaySets.reduce((s, st) => s + st.weight * st.reps, 0);
+  volEl.textContent = `Volume รวม: ${vol.toLocaleString()} kg`;
+
+  el.innerHTML = state.todaySets.map((s, i) => `
+    <div class="set-row">
+      <div class="set-num">${i + 1}</div>
+      <div class="set-info">
+        <strong>${s.exName}</strong>
+        <span class="text-muted" style="margin-left:8px">${s.weight} kg × ${s.reps} reps${s.rir !== null ? ` · RIR ${s.rir}` : ''}</span>
+        ${s.note ? `<div class="text-muted" style="font-size:.78rem">${esc(s.note)}</div>` : ''}
+      </div>
+      <span class="badge" style="background:${MUSCLE_COLORS[s.muscle]}22;color:${MUSCLE_COLORS[s.muscle]};border:1px solid ${MUSCLE_COLORS[s.muscle]}">${MUSCLE_TH[s.muscle]}</span>
+      <button class="btn btn-danger btn-sm" onclick="removeSet(${i})">✕</button>
+    </div>`).join('');
+}
+
+function removeSet(i) {
+  state.todaySets.splice(i, 1);
+  save();
+  renderSetLog();
+}
+
+function saveSession() {
+  if (!state.todaySets.length) { alert('ไม่มี set'); return; }
+  const vol = state.todaySets.reduce((s, st) => s + st.weight * st.reps, 0);
+  const muscles = [...new Set(state.todaySets.map(s => s.muscle))];
+  state.sessions.push({ date: new Date().toISOString(), sets: [...state.todaySets], volume: vol, muscles, cals: 0 });
+  state.todaySets = [];
+  save();
+  renderSetLog();
+  renderWeightHistory();
+  alert('บันทึก Session สำเร็จ! 🎉');
+}
+
+function renderWeightHistory() {
+  const el = document.getElementById('weight-history');
+  if (!state.sessions.length) { el.innerHTML = '<div class="empty-state">ยังไม่มีประวัติ</div>'; return; }
+  el.innerHTML = [...state.sessions].reverse().map(s => `
+    <div style="border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px">
+      <div class="flex-between">
+        <div>
+          <strong>${new Date(s.date).toLocaleDateString('th-TH', {day:'numeric',month:'long',year:'numeric'})}</strong>
+          <span class="text-muted" style="margin-left:8px">${s.sets.length} sets · Volume ${s.volume.toLocaleString()} kg</span>
+        </div>
+        <div class="flex-gap">
+          ${(s.muscles || []).map(m => `<span class="badge" style="background:${MUSCLE_COLORS[m]}22;color:${MUSCLE_COLORS[m]};border:1px solid ${MUSCLE_COLORS[m]}">${MUSCLE_TH[m]}</span>`).join('')}
+        </div>
+      </div>
+      ${s.note ? `<div class="text-muted" style="margin-top:6px">${esc(s.note)}</div>` : ''}
+    </div>`).join('');
+}
+
+function showWeightTab(tab) {
+  ['library','log','history'].forEach(t => { document.getElementById('wtab-' + t).style.display = t === tab ? '' : 'none'; });
+  document.querySelectorAll('#page-weight .tab-btn').forEach((b, i) => b.classList.toggle('active', ['library','log','history'][i] === tab));
+}
+
+// ════════════════════════════════════════════
+// REST TIMER
+// ════════════════════════════════════════════
+let timerSecs = 120, timerMax = 120, timerInterval = null, timerRunning = false, timerEndTs = 0;
+
+function setTimer(s) { resetTimer(); timerSecs = s; timerMax = s; updateTimerDisplay(); }
+function updateTimerDisplay() {
+  const m = Math.floor(timerSecs / 60).toString().padStart(2, '0');
+  const s = (timerSecs % 60).toString().padStart(2, '0');
+  document.getElementById('timer-display').textContent = `${m}:${s}`;
+  const pct = timerMax > 0 ? (timerSecs / timerMax) * 100 : 100;
+  const fill = document.getElementById('timer-progress');
+  fill.style.width = pct + '%';
+  fill.style.background = pct > 50 ? 'var(--green)' : pct > 20 ? 'var(--orange)' : 'var(--primary)';
+}
+function tickTimer() {
+  timerSecs = Math.max(0, Math.ceil((timerEndTs - Date.now()) / 1000));
+  updateTimerDisplay();
+  if (timerSecs <= 0) {
+    clearInterval(timerInterval); timerRunning = false;
+    document.getElementById('btn-start').textContent = '▶ เริ่ม';
+    document.getElementById('timer-label').textContent = 'หมดเวลาพัก! 💪';
+    notifyTimerDone();
+  }
+}
+function startTimer() {
+  const btn = document.getElementById('btn-start');
+  if (timerRunning) {
+    tickTimer();
+    clearInterval(timerInterval); timerRunning = false; btn.textContent = '▶ เริ่ม';
+    return;
+  }
+  if (timerSecs <= 0) timerSecs = timerMax;
+  requestNotifyPermission();
+  timerRunning = true;
+  timerEndTs = Date.now() + timerSecs * 1000;
+  btn.textContent = '⏸ หยุด';
+  document.getElementById('timer-label').textContent = 'กำลังพัก...';
+  timerInterval = setInterval(tickTimer, 250);
+}
+function resetTimer() {
+  clearInterval(timerInterval); timerRunning = false;
+  timerSecs = timerMax;
+  document.getElementById('btn-start').textContent = '▶ เริ่ม';
+  document.getElementById('timer-label').textContent = 'กดเริ่มเมื่อพัก';
+  updateTimerDisplay();
+}
+
+// ── แจ้งเตือนเมื่อหมดเวลาพัก ──
+function requestNotifyPermission() {
+  if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
+}
+function beep() {
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AC();
+    [0, 0.25, 0.5].forEach(t => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.frequency.value = 880; o.connect(g); g.connect(ctx.destination);
+      g.gain.setValueAtTime(0.3, ctx.currentTime + t);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.2);
+      o.start(ctx.currentTime + t); o.stop(ctx.currentTime + t + 0.2);
+    });
+  } catch (e) {}
+}
+function notifyTimerDone() {
+  beep();
+  if (navigator.vibrate) navigator.vibrate([300, 150, 300, 150, 300]);
+  if ('Notification' in window && Notification.permission === 'granted') {
+    const opts = { body: 'ถึงเวลาเซ็ตต่อไปแล้ว', icon: 'icon-192.png', tag: 'rest-timer', vibrate: [300, 150, 300] };
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(reg => reg.showNotification('หมดเวลาพัก! 💪', opts)).catch(() => {});
+    } else {
+      new Notification('หมดเวลาพัก! 💪', opts);
+    }
+  }
+}
+
+// ════════════════════════════════════════════
+// CARDIO
+// ════════════════════════════════════════════
+function renderCardio() {
+  document.getElementById('cardio-date').value = todayStr();
+  renderCardioHistory();
+}
+
+function logCardio() {
+  const type = document.getElementById('cardio-type').value;
+  const duration = parseInt(document.getElementById('cardio-duration').value) || 0;
+  const distance = parseFloat(document.getElementById('cardio-distance').value) || 0;
+  const hr = parseInt(document.getElementById('cardio-hr').value) || 0;
+  const kcal = parseInt(document.getElementById('cardio-kcal').value) || 0;
+  const intensity = document.getElementById('cardio-intensity').value;
+  const date = document.getElementById('cardio-date').value || todayStr();
+  const note = document.getElementById('cardio-note').value;
+  if (!duration) { alert('กรุณากรอกระยะเวลา'); return; }
+  state.cardioLog.push({ type, duration, distance, hr, kcal, intensity, date, note });
+  save();
+  ['cardio-duration','cardio-distance','cardio-hr','cardio-kcal','cardio-note'].forEach(id => { document.getElementById(id).value = ''; });
+  renderCardioHistory();
+  alert('บันทึกสำเร็จ! 🏃');
+}
+
+function renderCardioHistory() {
+  const el = document.getElementById('cardio-history');
+  if (!state.cardioLog.length) { el.innerHTML = '<div class="empty-state">ยังไม่มีประวัติ</div>'; return; }
+  el.innerHTML = `<table>
+    <thead><tr><th>วันที่</th><th>ประเภท</th><th>เวลา</th><th>ระยะ</th><th>HR</th><th>kcal</th><th>ระดับ</th></tr></thead>
+    <tbody>${[...state.cardioLog].reverse().map(c => `
+      <tr>
+        <td>${new Date(c.date).toLocaleDateString('th-TH')}</td>
+        <td>${c.type}${c.note ? `<div class="text-muted" style="font-size:.75rem">${esc(c.note)}</div>` : ''}</td>
+        <td>${c.duration} นาที</td>
+        <td>${c.distance || '-'} km</td>
+        <td>${c.hr || '-'} bpm</td>
+        <td><span class="badge badge-orange">${c.kcal || 0}</span></td>
+        <td><span class="badge ${c.intensity==='เบา'?'badge-green':c.intensity==='หนัก'?'badge-red':'badge-blue'}">${c.intensity}</span></td>
+      </tr>`).join('')}
+    </tbody></table>`;
+
+  renderCardioChart();
+}
+
+function renderCardioChart() {
+  const last10 = [...state.cardioLog].slice(-10);
+  const ctx = document.getElementById('chartCardio').getContext('2d');
+  if (chartCardio) chartCardio.destroy();
+  chartCardio = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: last10.map(c => new Date(c.date).toLocaleDateString('th-TH', {day:'numeric',month:'short'})),
+      datasets: [
+        { label: 'ระยะเวลา (นาที)', data: last10.map(c => c.duration), borderColor: '#1565c0', backgroundColor: '#1565c022', tension: 0.3, fill: true },
+        { label: 'แคลอรี่', data: last10.map(c => c.kcal || 0), borderColor: '#e53935', backgroundColor: '#e5393522', tension: 0.3, fill: true, yAxisID: 'y2' },
+      ]
+    },
+    options: { responsive:true, plugins:{legend:{labels:{color:'#ccc'}}}, scales:{ x:{ticks:{color:'#aaa'},grid:{color:'#333'}}, y:{ticks:{color:'#aaa'},grid:{color:'#333'}}, y2:{position:'right',ticks:{color:'#aaa'},grid:{display:false}} } }
+  });
+}
+
+function calcPace() {
+  const dist = parseFloat(document.getElementById('pace-dist').value);
+  const min = parseFloat(document.getElementById('pace-min').value);
+  if (!dist || !min) { document.getElementById('pace-result').value = ''; return; }
+  const totalSec = Math.round((min / dist) * 60);
+  const paceMin = Math.floor(totalSec / 60);
+  const paceSec = totalSec % 60;
+  document.getElementById('pace-result').value = `${paceMin}:${paceSec.toString().padStart(2,'0')} /km`;
+}
+
+// Stopwatch (อิงเวลาจริง ไม่คลาดเมื่อแท็บอยู่เบื้องหลัง)
+let swElapsed = 0, swStartTs = 0, swInterval = null, swRunning = false, lapCount = 0, lastLap = 0;
+function swNow() { return Math.floor((swElapsed + (swRunning ? Date.now() - swStartTs : 0)) / 1000); }
+function fmtHMS(t) {
+  const h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), s = t % 60;
+  return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+}
+function swStart() {
+  const btn = document.getElementById('sw-btn-start');
+  if (swRunning) { swElapsed += Date.now() - swStartTs; clearInterval(swInterval); swRunning = false; btn.textContent = '▶ ต่อ'; return; }
+  swRunning = true;
+  swStartTs = Date.now();
+  btn.textContent = '⏸ หยุด';
+  swInterval = setInterval(updateSWDisplay, 250);
+}
+function swLap() {
+  const now = swNow();
+  if (!now) return;
+  lapCount++;
+  const lapTime = now - lastLap;
+  lastLap = now;
+  document.getElementById('sw-laps').innerHTML = `<div class="set-row"><div class="set-num">${lapCount}</div><div class="set-info">Lap ${lapCount}</div><strong>${fmtHMS(lapTime)}</strong></div>` + document.getElementById('sw-laps').innerHTML;
+}
+function swReset() { clearInterval(swInterval); swRunning = false; swElapsed = 0; lapCount = 0; lastLap = 0; updateSWDisplay(); document.getElementById('sw-btn-start').textContent = '▶ เริ่ม'; document.getElementById('sw-laps').innerHTML = ''; }
+function updateSWDisplay() { document.getElementById('sw-display').textContent = fmtHMS(swNow()); }
+
+// Heart Rate Zones (Karvonen)
+function calcZones() {
+  const age = parseInt(document.getElementById('zone-age').value);
+  const rhr = parseInt(document.getElementById('zone-rhr').value);
+  const mhr = 220 - age;
+  if (!age || !rhr || rhr >= mhr) {
+    document.getElementById('zone-results').style.display = 'none';
+    document.getElementById('zone-placeholder').style.display = '';
+    return;
+  }
+  const hrr = mhr - rhr;
+  const zones = [
+    { name:'Zone 1', label:'เบามาก', color:'#64b5f6', min: Math.round(hrr * 0.50 + rhr), max: Math.round(hrr * 0.60 + rhr), desc:'ฟื้นฟู, เผาไขมัน' },
+    { name:'Zone 2', label:'เบา',    color:'#81c784', min: Math.round(hrr * 0.60 + rhr), max: Math.round(hrr * 0.70 + rhr), desc:'Aerobic base, เผาไขมัน' },
+    { name:'Zone 3', label:'ปานกลาง',color:'#fff176', min: Math.round(hrr * 0.70 + rhr), max: Math.round(hrr * 0.80 + rhr), desc:'Aerobic, ความอดทน' },
+    { name:'Zone 4', label:'หนัก',   color:'#ffb74d', min: Math.round(hrr * 0.80 + rhr), max: Math.round(hrr * 0.90 + rhr), desc:'Lactate threshold' },
+    { name:'Zone 5', label:'สูงสุด', color:'#ef5350', min: Math.round(hrr * 0.90 + rhr), max: mhr, desc:'VO2 max, HIIT' },
+  ];
+
+  document.getElementById('zone-placeholder').style.display = 'none';
+  document.getElementById('zone-results').style.display = '';
+  document.getElementById('zone-bar').innerHTML = zones.map(z => `<div style="flex:1;background:${z.color}" title="${z.name}"></div>`).join('');
+  document.getElementById('zone-table').innerHTML = `
+    <div style="font-size:.8rem;color:var(--text-muted);margin-bottom:6px">HR สูงสุด: <strong style="color:var(--primary)">${mhr} bpm</strong></div>
+    <table>
+      <thead><tr><th>โซน</th><th>ระดับ</th><th>HR (bpm)</th><th>ประโยชน์</th></tr></thead>
+      <tbody>${zones.map(z => `
+        <tr>
+          <td><span style="color:${z.color};font-weight:700">${z.name}</span></td>
+          <td>${z.label}</td>
+          <td>${z.min} – ${z.max}</td>
+          <td class="text-muted">${z.desc}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function showCardioTab(tab) {
+  ['log','stopwatch','zones','history'].forEach(t => { document.getElementById('ctab-' + t).style.display = t === tab ? '' : 'none'; });
+  document.querySelectorAll('#page-cardio .tab-btn').forEach((b, i) => b.classList.toggle('active', ['log','stopwatch','zones','history'][i] === tab));
+}
+
+// ════════════════════════════════════════════
+// PLAN
+// ════════════════════════════════════════════
+const WEEKLY_PLAN_DATA = [
+  { day:'จันทร์',  focus:'หน้าอก + ไตรเซ็ป',   type:'weight', exercises:['Bench Press 4×8', 'Incline DB Press 3×10', 'Pec Fly 3×12', 'Tricep Pushdown 4×12', 'Skull Crusher 3×10'], color:MUSCLE_COLORS.chest },
+  { day:'อังคาร', focus:'วิ่ง LISS 45 นาที',    type:'cardio', exercises:['วอร์มอัพ 5 นาที', 'วิ่ง Zone 2 (60-70% MHR) 35 นาที', 'คูลดาวน์ 5 นาที'], color:'#1565c0' },
+  { day:'พุธ',    focus:'หลัง + ไบเซ็ป',        type:'weight', exercises:['Deadlift 4×5', 'Barbell Row 4×8', 'Lat Pulldown 3×12', 'Barbell Curl 4×10', 'Hammer Curl 3×12'], color:MUSCLE_COLORS.back },
+  { day:'พฤหัส', focus:'พัก / Mobility',         type:'rest',   exercises:['Foam rolling', 'Stretching 20 นาที', 'เดินเบา 20 นาที'], color:'#555' },
+  { day:'ศุกร์',  focus:'ไหล่ + คอร์',           type:'weight', exercises:['Overhead Press 4×8', 'Lateral Raise 4×15', 'Face Pull 3×20', 'Plank 3×60s', 'Cable Crunch 3×15'], color:MUSCLE_COLORS.shoulder },
+  { day:'เสาร์', focus:'ขา + สะโพก',             type:'weight', exercises:['Back Squat 4×6', 'Romanian Deadlift 3×10', 'Leg Press 3×12', 'Leg Curl 3×12', 'Calf Raise 4×15'], color:MUSCLE_COLORS.leg },
+  { day:'อาทิตย์',focus:'HIIT คาร์ดิโอ 30 นาที',type:'cardio', exercises:['วอร์มอัพ 5 นาที', '20s sprint / 40s พัก × 10 รอบ', 'คูลดาวน์ 10 นาที'], color:'#c62828' },
+];
+
+const PROGRAMS = [
+  { name:'PPL (Push Pull Legs)', level:'กลาง', days:6, desc:'แบ่งฝึกตาม push/pull/leg สัปดาห์ละ 6 วัน เหมาะสำหรับผู้ที่ต้องการเพิ่มมวลกล้ามเนื้อ', badge:'badge-blue' },
+  { name:'5×5 StrongLifts',      level:'เริ่มต้น', days:3, desc:'ฝึก 3 วัน/สัปดาห์ เน้นท่าหลัก 5 ท่า เพิ่มน้ำหนักทุกครั้ง เหมาะมือใหม่', badge:'badge-green' },
+  { name:'PHUL',                  level:'กลาง', days:4, desc:'Power Hypertrophy Upper Lower 4 วัน/สัปดาห์ ผสมพลัง+ขนาด', badge:'badge-blue' },
+  { name:'Full Body 3×/Week',    level:'เริ่มต้น', days:3, desc:'ฝึกทั้งตัว 3 วัน/สัปดาห์ เหมาะมือใหม่หรือคนเวลาน้อย', badge:'badge-green' },
+  { name:'Arnold Split',          level:'สูง', days:6, desc:'แบ่ง chest+back / shoulder+arms / legs 6 วัน/สัปดาห์ Volume สูงมาก', badge:'badge-red' },
+  { name:'HIIT + Weights Hybrid', level:'กลาง', days:5, desc:'ผสมเวทเทรนนิ่งกับ HIIT คาร์ดิโอ เพิ่มกล้ามเนื้อ+เผาไขมัน', badge:'badge-orange' },
+];
+
+function renderPlan() {
+  const typeIcon = { weight:'🏋️', cardio:'🏃', rest:'😴' };
+  document.getElementById('weekly-plan').innerHTML = WEEKLY_PLAN_DATA.map(d => `
+    <div style="display:grid;grid-template-columns:100px 1fr;gap:12px;align-items:start;padding:12px;border:1px solid var(--border);border-radius:10px;border-left:4px solid ${d.color}">
+      <div>
+        <div style="font-weight:800;font-size:1rem">${typeIcon[d.type]} ${d.day}</div>
+        <div class="text-muted" style="font-size:0.78rem;margin-top:2px">${d.focus}</div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">${d.exercises.map(e => `<span class="badge badge-blue">${e}</span>`).join('')}</div>
+    </div>`).join('');
+
+  document.getElementById('programs-list').innerHTML = PROGRAMS.map(p => `
+    <div class="card" style="margin-bottom:0;border-color:var(--border)">
+      <div class="flex-between" style="margin-bottom:8px">
+        <div style="font-weight:700">${p.name}</div>
+        <span class="badge ${p.badge}">${p.level}</span>
+      </div>
+      <div class="text-muted" style="font-size:0.83rem;margin-bottom:8px">${p.desc}</div>
+      <div class="flex-gap">
+        <span class="badge badge-green">${p.days} วัน/สัปดาห์</span>
+      </div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════════
+// CALCULATORS
+// ════════════════════════════════════════════
+function showCalcTab(tab) {
+  ['bmr','bmi','macro','1rm'].forEach(t => { document.getElementById('calctab-' + t).style.display = t === tab ? '' : 'none'; });
+  document.querySelectorAll('#page-calc .tab-btn').forEach((b, i) => b.classList.toggle('active', ['bmr','bmi','macro','1rm'][i] === tab));
+}
+
+function calcBMR() {
+  const gender = document.getElementById('bmr-gender').value;
+  const age = parseInt(document.getElementById('bmr-age').value);
+  const w = parseFloat(document.getElementById('bmr-weight').value);
+  const h = parseFloat(document.getElementById('bmr-height').value);
+  const act = parseFloat(document.getElementById('bmr-activity').value);
+  if (!age || !w || !h) { alert('กรุณากรอกข้อมูลให้ครบ'); return; }
+
+  const bmr = gender === 'male' ? 88.362 + 13.397 * w + 4.799 * h - 5.677 * age : 447.593 + 9.247 * w + 3.098 * h - 4.330 * age;
+  const tdee = bmr * act;
+
+  document.getElementById('bmr-result').innerHTML = `
+    <div class="grid3">
+      <div class="stat-box"><div class="val" style="color:var(--primary)">${Math.round(bmr)}</div><div class="lbl">BMR (kcal/วัน)</div></div>
+      <div class="stat-box"><div class="val" style="color:var(--secondary)">${Math.round(tdee)}</div><div class="lbl">TDEE (kcal/วัน)</div></div>
+      <div class="stat-box"><div class="val" style="color:var(--green)">${Math.round(tdee * 0.85)}</div><div class="lbl">Cut (-15%)</div></div>
+    </div>
+    <div class="grid3 mt8">
+      <div class="stat-box"><div class="val" style="color:var(--orange)">${Math.round(tdee * 1.1)}</div><div class="lbl">Bulk (+10%)</div></div>
+      <div class="stat-box"><div class="val" style="color:var(--purple)">${Math.round(tdee * 0.75)}</div><div class="lbl">Aggressive Cut (-25%)</div></div>
+      <div class="stat-box"><div class="val" style="color:#00838f">${Math.round(tdee)}</div><div class="lbl">Maintain</div></div>
+    </div>`;
+}
+
+function calcBMI() {
+  const w = parseFloat(document.getElementById('bmi-weight').value);
+  const h = parseFloat(document.getElementById('bmi-height').value) / 100;
+  if (!w || !h) { alert('กรุณากรอกข้อมูล'); return; }
+  const bmi = w / (h * h);
+  let cat, col;
+  if (bmi < 18.5) { cat = 'น้ำหนักน้อย'; col = '#42a5f5'; }
+  else if (bmi < 23) { cat = 'ปกติ (สมส่วน)'; col = '#66bb6a'; }
+  else if (bmi < 25) { cat = 'ท้วม'; col = '#ffca28'; }
+  else if (bmi < 30) { cat = 'อ้วน ระดับ 1'; col = '#ffa726'; }
+  else { cat = 'อ้วน ระดับ 2+'; col = '#ef5350'; }
+
+  const ideal_low = (18.5 * h * h).toFixed(1);
+  const ideal_hi  = (22.9 * h * h).toFixed(1);
+
+  document.getElementById('bmi-result').innerHTML = `
+    <div class="stat-box" style="max-width:300px">
+      <div class="val" style="color:${col};font-size:3rem">${bmi.toFixed(1)}</div>
+      <div class="lbl">${cat}</div>
+    </div>
+    <div class="text-muted mt8">น้ำหนักในเกณฑ์ปกติสำหรับคุณ: <strong style="color:var(--green)">${ideal_low} – ${ideal_hi} kg</strong></div>`;
+}
+
+function calcMacro() {
+  const kcal = parseInt(document.getElementById('macro-kcal').value);
+  const goal = document.getElementById('macro-goal').value;
+  const bw = parseFloat(document.getElementById('macro-weight').value) || 70;
+  if (!kcal) { alert('กรุณากรอกแคลอรี่'); return; }
+
+  let protein, fat, carb;
+  if (goal === 'cut') { protein = bw * 2.4; fat = kcal * 0.25 / 9; carb = (kcal - protein * 4 - fat * 9) / 4; }
+  else if (goal === 'bulk') { protein = bw * 2.0; fat = kcal * 0.30 / 9; carb = (kcal - protein * 4 - fat * 9) / 4; }
+  else { protein = bw * 2.2; fat = kcal * 0.27 / 9; carb = (kcal - protein * 4 - fat * 9) / 4; }
+  carb = Math.max(0, Math.round(carb)); protein = Math.round(protein); fat = Math.round(fat);
+
+  document.getElementById('macro-result').innerHTML = `
+    <div class="grid3">
+      <div class="stat-box"><div class="val" style="color:var(--primary)">${protein}g</div><div class="lbl">🥩 โปรตีน (${protein * 4} kcal)</div><div class="progress-wrap mt8"><div class="progress-fill" style="width:${Math.min(100,(protein*4/kcal*100).toFixed(0))}%;background:var(--primary)"></div></div></div>
+      <div class="stat-box"><div class="val" style="color:var(--secondary)">${carb}g</div><div class="lbl">🍚 คาร์บ (${carb * 4} kcal)</div><div class="progress-wrap mt8"><div class="progress-fill" style="width:${Math.min(100,(carb*4/kcal*100).toFixed(0))}%;background:var(--secondary)"></div></div></div>
+      <div class="stat-box"><div class="val" style="color:var(--orange)">${fat}g</div><div class="lbl">🧈 ไขมัน (${fat * 9} kcal)</div><div class="progress-wrap mt8"><div class="progress-fill" style="width:${Math.min(100,(fat*9/kcal*100).toFixed(0))}%;background:var(--orange)"></div></div></div>
+    </div>
+    <div class="text-muted mt8" style="font-size:.82rem">* มื้อ 4 มื้อ/วัน: โปรตีน ~${Math.round(protein/4)}g · คาร์บ ~${Math.round(carb/4)}g · ไขมัน ~${Math.round(fat/4)}g ต่อมื้อ</div>`;
+}
+
+function calc1RM() {
+  const w = parseFloat(document.getElementById('orm-weight').value);
+  const r = parseInt(document.getElementById('orm-reps').value);
+  if (!w || !r) { alert('กรุณากรอกข้อมูล'); return; }
+
+  const epley = w * (1 + r / 30);
+  const brzycki = w * 36 / (37 - r);
+  const avg = (epley + brzycki) / 2;
+
+  const pcts = [100, 95, 90, 85, 80, 75, 70, 65, 60];
+  document.getElementById('orm-result').innerHTML = `
+    <div class="grid3" style="margin-bottom:16px">
+      <div class="stat-box"><div class="val" style="color:var(--primary)">${avg.toFixed(1)}kg</div><div class="lbl">1RM เฉลี่ย</div></div>
+      <div class="stat-box"><div class="val" style="color:var(--secondary)">${epley.toFixed(1)}kg</div><div class="lbl">สูตร Epley</div></div>
+      <div class="stat-box"><div class="val" style="color:var(--green)">${brzycki.toFixed(1)}kg</div><div class="lbl">สูตร Brzycki</div></div>
+    </div>
+    <table>
+      <thead><tr><th>%1RM</th><th>น้ำหนัก (kg)</th><th>Reps โดยประมาณ</th></tr></thead>
+      <tbody>${pcts.map(p => {
+        const repsMap = {100:1,95:2,90:4,85:6,80:8,75:10,70:12,65:15,60:18};
+        return `<tr><td><span class="badge badge-blue">${p}%</span></td><td><strong>${(avg * p / 100).toFixed(1)} kg</strong></td><td class="text-muted">${repsMap[p]} reps</td></tr>`;
+      }).join('')}</tbody>
+    </table>`;
+}
+
+// ════════════════════════════════════════════
+// QUICK LOG MODAL
+// ════════════════════════════════════════════
+function openLogModal() {
+  document.getElementById('modal-date').value = todayStr();
+  document.getElementById('log-modal').classList.add('open');
+}
+function closeLogModal() { document.getElementById('log-modal').classList.remove('open'); }
+function saveQuickLog() {
+  const type = document.getElementById('modal-type').value;
+  const date = document.getElementById('modal-date').value || todayStr();
+  const dur = parseInt(document.getElementById('modal-duration').value) || 0;
+  const cals = parseInt(document.getElementById('modal-cals').value) || 0;
+  const note = document.getElementById('modal-note').value;
+  if (!dur) { alert('กรุณากรอกระยะเวลา'); return; }
+  if (type === 'cardio' || type === 'both') {
+    state.cardioLog.push({ type:'ออกกำลังกาย', duration:dur, kcal:cals, date, note, intensity:'ปานกลาง' });
+  }
+  if (type === 'weight' || type === 'both') {
+    state.sessions.push({ date, sets:[], volume:0, muscles:[], cals: type === 'both' ? 0 : cals, note });
+  }
+  save();
+  closeLogModal();
+  renderDashboard();
+}
+
+// ════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  renderDashboard();
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+});
+</script>
+</body>
+</html>
