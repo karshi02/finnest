@@ -12,7 +12,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="icon" href="icon-192.png" />
   <link rel="apple-touch-icon" href="icon-192.png" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="vendor/chart.umd.min.js"></script>
   <style>
     :root {
       --primary: #e53935;
@@ -96,7 +96,11 @@
     .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
     .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    /* ให้ช่อง grid หดได้ (canvas ของกราฟดันความกว้างจนล้นจอมือถือ) */
+    .grid2 > *, .grid3 > *, .grid4 > * { min-width: 0; }
     @media(max-width: 768px) {
+      main { padding: 16px; }
+      .modal { padding: 20px 16px; width: calc(100% - 24px); }
       .grid2, .grid3, .grid4 { grid-template-columns: 1fr; }
       nav button { padding: 6px 10px; font-size: 0.78rem; }
       header { gap: 12px; padding: 0 12px; }
@@ -164,6 +168,7 @@
     .badge-orange { background: #fb8c0022; color: #ffa726; border: 1px solid #fb8c00; }
 
     /* ── TABLES ── */
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
     th { background: var(--surface2); padding: 10px 12px; text-align: left; color: var(--text-muted); font-weight: 600; }
     td { padding: 10px 12px; border-top: 1px solid var(--border); }
@@ -262,6 +267,29 @@
       transition: all .2s;
     }
     .muscle-btn:hover, .muscle-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+      background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+      padding: 12px 20px; border-radius: 10px; z-index: 300; max-width: calc(100% - 32px);
+      opacity: 0; pointer-events: none; transition: opacity .2s;
+    }
+    .toast.show { opacity: 1; }
+    /* ── LIVE HEART RATE ── */
+    .hr-bpm { font-size: 4rem; font-weight: 900; color: var(--primary); font-variant-numeric: tabular-nums; line-height: 1; }
+    .hr-unit { font-size: 1rem; color: var(--text-muted); margin-left: 6px; font-weight: 600; }
+    .hr-beat { animation: hrbeat .35s ease; }
+    @keyframes hrbeat { 50% { transform: scale(1.08); } }
+
+    /* ── EXERCISE VIDEO ── */
+    .modal-wide { max-width: 760px; }
+    .video-wrap { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 12px; overflow: hidden; margin: 12px 0; }
+    .video-wrap iframe, .video-wrap > div { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .video-msg { display: flex; align-items: center; justify-content: center; text-align: center; padding: 16px; color: var(--text-muted); font-size: 0.9rem; }
+    .video-unmute { position: absolute; left: 12px; bottom: 12px; z-index: 2; }
+    .ex-card:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+    .warn-box { background: #fb8c0022; border: 1px solid var(--orange); color: #ffa726; border-radius: 8px; padding: 8px 12px; margin-bottom: 10px; font-size: 0.85rem; }
   </style>
 </head>
 <body>
@@ -269,7 +297,7 @@
 <header>
   <div class="logo">Fit<span>Track</span> Pro</div>
   <nav>
-    <button class="active" onclick="showPage('dashboard')">📊 ภาพรวม</button>
+    <button class="active" aria-current="page" onclick="showPage('dashboard')">📊 ภาพรวม</button>
     <button onclick="showPage('weight')">🏋️ เวทเทรนนิ่ง</button>
     <button onclick="showPage('cardio')">🏃 คาร์ดิโอ</button>
     <button onclick="showPage('plan')">📋 แผนออกกำลังกาย</button>
@@ -288,7 +316,12 @@
       <h1 style="font-size:1.6rem">สวัสดี, นักกีฬา! 💪</h1>
       <p class="text-muted" id="today-date"></p>
     </div>
-    <button class="btn btn-primary" onclick="openLogModal()">+ บันทึกออกกำลังกาย</button>
+    <div class="flex-gap">
+      <button class="btn btn-secondary btn-sm" onclick="exportData()">⬇ Export</button>
+      <button class="btn btn-secondary btn-sm" onclick="document.getElementById('import-file').click()">⬆ Import</button>
+      <input type="file" id="import-file" accept="application/json,.json" style="display:none" onchange="importData(this.files[0]); this.value=''" />
+      <button class="btn btn-primary" onclick="openLogModal()">+ บันทึกออกกำลังกาย</button>
+    </div>
   </div>
 
   <!-- Stats -->
@@ -314,13 +347,14 @@
   <div class="grid2">
     <!-- Weekly Progress -->
     <div class="card">
-      <div class="card-title"><span class="icon">📈</span> ความก้าวหน้าสัปดาห์นี้</div>
+      <div class="card-title"><span class="icon">📈</span> 7 วันล่าสุด</div>
       <canvas id="chartWeekly" height="200"></canvas>
     </div>
     <!-- Muscle Groups -->
     <div class="card">
       <div class="card-title"><span class="icon">💪</span> กลุ่มกล้ามเนื้อที่ฝึก</div>
       <canvas id="chartMuscle" height="200"></canvas>
+      <div class="empty-state" id="muscle-empty" style="display:none">ยังไม่มีข้อมูล</div>
     </div>
   </div>
 
@@ -367,32 +401,32 @@
         <div class="card-title"><span class="icon">➕</span> เพิ่ม Set</div>
         <div class="form-row">
           <div>
-            <label>ท่าออกกำลังกาย</label>
+            <label for="log-exercise">ท่าออกกำลังกาย</label>
             <select id="log-exercise">
               <option value="">-- เลือกท่า --</option>
             </select>
           </div>
           <div>
-            <label>น้ำหนัก (kg)</label>
+            <label for="log-weight">น้ำหนัก (kg)</label>
             <input type="number" id="log-weight" placeholder="60" min="0" step="0.5" />
           </div>
         </div>
         <div class="form-row">
           <div>
-            <label>จำนวน Reps</label>
+            <label for="log-reps">จำนวน Reps</label>
             <input type="number" id="log-reps" placeholder="12" min="1" />
           </div>
           <div>
-            <label>จำนวน Sets</label>
+            <label for="log-sets">จำนวน Sets</label>
             <input type="number" id="log-sets" placeholder="3" min="1" max="20" />
           </div>
           <div>
-            <label>RIR (เหลือ)</label>
+            <label for="log-rir">RIR (เหลือ)</label>
             <input type="number" id="log-rir" placeholder="2" min="0" max="10" />
           </div>
         </div>
         <div style="margin-bottom:12px">
-          <label>บันทึก</label>
+          <label for="log-note">บันทึก</label>
           <textarea id="log-note" placeholder="รู้สึกอย่างไรบ้าง..."></textarea>
         </div>
         <button class="btn btn-primary" onclick="addWeightSet()">บันทึก Set</button>
@@ -427,6 +461,7 @@
         <span><span class="icon">📝</span> บันทึกวันนี้</span>
         <button class="btn btn-sm btn-primary" onclick="saveSession()">💾 บันทึก Session</button>
       </div>
+      <div id="today-warn"></div>
       <div id="today-sets">
         <div class="empty-state">ยังไม่มี set — เพิ่มข้างบน</div>
       </div>
@@ -464,7 +499,7 @@
       <div class="card-title"><span class="icon">➕</span> บันทึกคาร์ดิโอ</div>
       <div class="form-row">
         <div>
-          <label>ประเภท</label>
+          <label for="cardio-type">ประเภท</label>
           <select id="cardio-type">
             <option value="วิ่ง">🏃 วิ่ง</option>
             <option value="จักรยาน">🚴 จักรยาน</option>
@@ -479,27 +514,27 @@
           </select>
         </div>
         <div>
-          <label>ระยะเวลา (นาที)</label>
+          <label for="cardio-duration">ระยะเวลา (นาที)</label>
           <input type="number" id="cardio-duration" placeholder="30" min="1" />
         </div>
         <div>
-          <label>ระยะทาง (km)</label>
+          <label for="cardio-distance">ระยะทาง (km)</label>
           <input type="number" id="cardio-distance" placeholder="5.0" step="0.1" min="0" />
         </div>
       </div>
       <div class="form-row">
         <div>
-          <label>HR เฉลี่ย (bpm)</label>
+          <label for="cardio-hr">HR เฉลี่ย (bpm)</label>
           <input type="number" id="cardio-hr" placeholder="140" min="40" max="220" />
         </div>
         <div>
-          <label>แคลอรี่ (kcal)</label>
+          <label for="cardio-kcal">แคลอรี่ (kcal)</label>
           <input type="number" id="cardio-kcal" placeholder="300" min="0" />
         </div>
       </div>
       <div class="form-row">
         <div>
-          <label>ระดับความเข้มข้น</label>
+          <label for="cardio-intensity">ระดับความเข้มข้น</label>
           <select id="cardio-intensity">
             <option value="เบา">🟢 เบา (Zone 1-2)</option>
             <option value="ปานกลาง" selected>🟡 ปานกลาง (Zone 3)</option>
@@ -508,12 +543,12 @@
           </select>
         </div>
         <div>
-          <label>วันที่</label>
+          <label for="cardio-date">วันที่</label>
           <input type="date" id="cardio-date" />
         </div>
       </div>
       <div style="margin-bottom:12px">
-        <label>บันทึก</label>
+        <label for="cardio-note">บันทึก</label>
         <textarea id="cardio-note" placeholder="เส้นทาง, สภาพแวดล้อม..."></textarea>
       </div>
       <button class="btn btn-primary" onclick="logCardio()">💾 บันทึก</button>
@@ -524,15 +559,15 @@
       <div class="card-title"><span class="icon">⚡</span> คำนวณ Pace</div>
       <div class="form-row">
         <div>
-          <label>ระยะทาง (km)</label>
+          <label for="pace-dist">ระยะทาง (km)</label>
           <input type="number" id="pace-dist" placeholder="5" oninput="calcPace()" />
         </div>
         <div>
-          <label>เวลา (นาที)</label>
+          <label for="pace-min">เวลา (นาที)</label>
           <input type="number" id="pace-min" placeholder="25" oninput="calcPace()" />
         </div>
         <div>
-          <label>Pace (นาที/km)</label>
+          <label for="pace-result">Pace (นาที/km)</label>
           <input type="text" id="pace-result" readonly style="background:#0a0a0a;font-weight:700;color:var(--primary)" />
         </div>
       </div>
@@ -543,13 +578,42 @@
   <div id="ctab-stopwatch" style="display:none">
     <div class="card" style="text-align:center">
       <div class="card-title" style="justify-content:center"><span class="icon">⏱️</span> Stopwatch คาร์ดิโอ</div>
-      <div style="font-size: 4.5rem;font-weight:900;letter-spacing:6px;color:var(--secondary);font-variant-numeric:tabular-nums;margin:20px 0" id="sw-display">00:00:00</div>
+      <div style="font-size:clamp(2.6rem, 14vw, 4.5rem);font-weight:900;letter-spacing:clamp(1px, 1vw, 6px);color:var(--secondary);font-variant-numeric:tabular-nums;margin:20px 0;white-space:nowrap" id="sw-display">00:00:00</div>
       <div class="flex-gap" style="justify-content:center;gap:16px">
         <button class="btn btn-green" style="min-width:100px" onclick="swStart()" id="sw-btn-start">▶ เริ่ม</button>
         <button class="btn btn-orange" onclick="swLap()">📍 Lap</button>
         <button class="btn btn-danger" onclick="swReset()">↺ รีเซ็ต</button>
       </div>
+      <div class="flex-gap" style="justify-content:center;margin-top:12px">
+        <button class="btn btn-primary btn-sm" onclick="swSaveAsCardio()">💾 บันทึกเป็นคาร์ดิโอ</button>
+      </div>
       <div id="sw-laps" style="margin-top:20px;text-align:left;max-height:200px;overflow-y:auto"></div>
+    </div>
+
+    <!-- Live heart rate (Web Bluetooth) -->
+    <div class="card" id="hr-card">
+      <div class="card-title flex-between" style="gap:10px;flex-wrap:wrap">
+        <span><span class="icon">⌚</span> หัวใจสดจากนาฬิกา</span>
+        <button class="btn btn-secondary btn-sm" id="hr-connect-btn" onclick="toggleHrDevice()">เชื่อมต่อ</button>
+      </div>
+      <div id="hr-status" class="text-muted" role="status">เชื่อมต่อนาฬิกาหรือสายคาดอกที่ส่ง HR ผ่าน Bluetooth ได้</div>
+      <div id="hr-live" style="display:none;text-align:center;margin-top:12px">
+        <div class="hr-bpm"><span id="hr-bpm">--</span><span class="hr-unit">bpm</span></div>
+        <div id="hr-zone" class="mt8"></div>
+        <div class="mt16" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
+          <div class="stat-box"><div class="val" style="font-size:1.4rem" id="hr-avg">--</div><div class="lbl">เฉลี่ย (ช่วงจับเวลา)</div></div>
+          <div class="stat-box"><div class="val" style="font-size:1.4rem" id="hr-max">--</div><div class="lbl">สูงสุด (ช่วงจับเวลา)</div></div>
+          <div class="stat-box"><div class="val" style="font-size:1.4rem" id="hr-count">0</div><div class="lbl">ค่าที่วัดได้</div></div>
+        </div>
+      </div>
+      <details class="mt16 text-muted" style="font-size:.82rem">
+        <summary style="cursor:pointer">ใช้กับนาฬิกาอะไรได้บ้าง?</summary>
+        <div class="mt8" style="line-height:1.6">
+          ใช้ได้กับ Chrome บน Android หรือคอมพิวเตอร์ (iPhone ไม่รองรับ) และอุปกรณ์ต้อง “ส่งสัญญาณ HR” แบบมาตรฐาน Bluetooth เช่น
+          Garmin (เปิด “Broadcast Heart Rate”), Polar, Coros, Amazfit บางรุ่น (เปิด “Heart rate sharing”) และสายคาดอกวัดชีพจรทั่วไป
+          · Galaxy Watch, Pixel Watch และ Apple Watch ไม่ส่งสัญญาณแบบนี้เอง ต้องลงแอปเสริมบนนาฬิกา
+        </div>
+      </details>
     </div>
   </div>
 
@@ -559,11 +623,11 @@
       <div class="card-title"><span class="icon">❤️</span> โซนอัตราการเต้นหัวใจ</div>
       <div class="form-row">
         <div>
-          <label>อายุ</label>
+          <label for="zone-age">อายุ</label>
           <input type="number" id="zone-age" placeholder="25" min="10" max="90" oninput="calcZones()" />
         </div>
         <div>
-          <label>HR พัก (bpm)</label>
+          <label for="zone-rhr">HR พัก (bpm)</label>
           <input type="number" id="zone-rhr" placeholder="65" min="30" max="100" oninput="calcZones()" />
         </div>
       </div>
@@ -623,28 +687,28 @@
       <div class="card-title"><span class="icon">🔥</span> คำนวณ BMR & TDEE</div>
       <div class="form-row">
         <div>
-          <label>เพศ</label>
+          <label for="bmr-gender">เพศ</label>
           <select id="bmr-gender">
             <option value="male">ชาย</option>
             <option value="female">หญิง</option>
           </select>
         </div>
         <div>
-          <label>อายุ</label>
+          <label for="bmr-age">อายุ</label>
           <input type="number" id="bmr-age" placeholder="25" min="10" max="100" />
         </div>
         <div>
-          <label>น้ำหนัก (kg)</label>
+          <label for="bmr-weight">น้ำหนัก (kg)</label>
           <input type="number" id="bmr-weight" placeholder="70" min="30" max="300" step="0.1" />
         </div>
         <div>
-          <label>ส่วนสูง (cm)</label>
+          <label for="bmr-height">ส่วนสูง (cm)</label>
           <input type="number" id="bmr-height" placeholder="175" min="100" max="250" />
         </div>
       </div>
       <div class="form-row">
         <div>
-          <label>ระดับกิจกรรม</label>
+          <label for="bmr-activity">ระดับกิจกรรม</label>
           <select id="bmr-activity">
             <option value="1.2">นั่งทำงาน ไม่ค่อยออกกำลังกาย (x1.2)</option>
             <option value="1.375">ออกกำลังกายเบา 1-3 วัน/สัปดาห์ (x1.375)</option>
@@ -665,11 +729,11 @@
       <div class="card-title"><span class="icon">⚖️</span> คำนวณ BMI</div>
       <div class="form-row">
         <div>
-          <label>น้ำหนัก (kg)</label>
+          <label for="bmi-weight">น้ำหนัก (kg)</label>
           <input type="number" id="bmi-weight" placeholder="70" min="30" max="300" step="0.1" />
         </div>
         <div>
-          <label>ส่วนสูง (cm)</label>
+          <label for="bmi-height">ส่วนสูง (cm)</label>
           <input type="number" id="bmi-height" placeholder="175" min="100" max="250" />
         </div>
       </div>
@@ -684,11 +748,11 @@
       <div class="card-title"><span class="icon">🥗</span> คำนวณมาโครนิวเทรียนต์</div>
       <div class="form-row">
         <div>
-          <label>เป้าหมายแคลอรี่ (kcal)</label>
+          <label for="macro-kcal">เป้าหมายแคลอรี่ (kcal)</label>
           <input type="number" id="macro-kcal" placeholder="2200" min="1000" max="6000" />
         </div>
         <div>
-          <label>เป้าหมาย</label>
+          <label for="macro-goal">เป้าหมาย</label>
           <select id="macro-goal">
             <option value="cut">ลดไขมัน (Cut)</option>
             <option value="maintain" selected>รักษา (Maintain)</option>
@@ -696,7 +760,7 @@
           </select>
         </div>
         <div>
-          <label>น้ำหนักตัว (kg)</label>
+          <label for="macro-weight">น้ำหนักตัว (kg)</label>
           <input type="number" id="macro-weight" placeholder="70" min="30" step="0.1" />
         </div>
       </div>
@@ -711,11 +775,11 @@
       <div class="card-title"><span class="icon">🏆</span> คำนวณ 1RM (One Rep Max)</div>
       <div class="form-row">
         <div>
-          <label>น้ำหนักที่ยก (kg)</label>
+          <label for="orm-weight">น้ำหนักที่ยก (kg)</label>
           <input type="number" id="orm-weight" placeholder="80" min="1" step="0.5" />
         </div>
         <div>
-          <label>จำนวน Reps</label>
+          <label for="orm-reps">จำนวน Reps</label>
           <input type="number" id="orm-reps" placeholder="8" min="1" max="30" />
         </div>
       </div>
@@ -731,12 +795,12 @@
      MODAL: QUICK LOG
 ═════════════════════════════════════════════ -->
 <div class="modal-overlay" id="log-modal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeLogModal()">✕</button>
-    <div class="modal-title">📝 บันทึกออกกำลังกายด่วน</div>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="modal-close" aria-label="ปิด" onclick="closeLogModal()">✕</button>
+    <div class="modal-title" id="modal-title">📝 บันทึกออกกำลังกายด่วน</div>
     <div class="form-row">
       <div>
-        <label>ประเภท</label>
+        <label for="modal-type">ประเภท</label>
         <select id="modal-type">
           <option value="weight">🏋️ เวทเทรนนิ่ง</option>
           <option value="cardio">🏃 คาร์ดิโอ</option>
@@ -744,22 +808,22 @@
         </select>
       </div>
       <div>
-        <label>วันที่</label>
+        <label for="modal-date">วันที่</label>
         <input type="date" id="modal-date" />
       </div>
     </div>
     <div class="form-row">
       <div>
-        <label>ระยะเวลา (นาที)</label>
+        <label for="modal-duration">ระยะเวลา (นาที)</label>
         <input type="number" id="modal-duration" placeholder="60" min="1" />
       </div>
       <div>
-        <label>แคลอรี่เผา (kcal)</label>
+        <label for="modal-cals">แคลอรี่เผา (kcal)</label>
         <input type="number" id="modal-cals" placeholder="400" min="0" />
       </div>
     </div>
     <div>
-      <label>บันทึก</label>
+      <label for="modal-note">บันทึก</label>
       <textarea id="modal-note" placeholder="วันนี้ฝึกอะไรบ้าง..."></textarea>
     </div>
     <div class="flex-gap" style="margin-top:16px;justify-content:flex-end">
@@ -769,60 +833,211 @@
   </div>
 </div>
 
+<!-- ════════════════════════════════════════════
+     MODAL: EXERCISE VIDEO
+═════════════════════════════════════════════ -->
+<div class="modal-overlay" id="ex-modal">
+  <div class="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="ex-modal-title">
+    <button class="modal-close" aria-label="ปิด" onclick="closeExerciseModal()">✕</button>
+    <div class="modal-title" id="ex-modal-title" style="margin-bottom:8px"></div>
+    <div class="flex-gap" id="ex-modal-meta"></div>
+    <div class="video-wrap" id="ex-video">
+      <div id="ex-player"></div>
+      <button class="btn btn-secondary btn-sm video-unmute" id="ex-unmute" style="display:none" onclick="unmuteExerciseVideo()">🔊 เปิดเสียง</button>
+    </div>
+    <div class="flex-between" style="gap:10px;flex-wrap:wrap">
+      <a id="ex-yt-link" class="text-muted" target="_blank" rel="noopener">เปิดใน YouTube ↗</a>
+      <button class="btn btn-primary" id="ex-use-btn">+ บันทึกท่านี้</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ════════════════════════════════════════════
 // DATA
 // ════════════════════════════════════════════
 const EXERCISES = [
-  { id:'bench',     name:'Bench Press',         muscle:'chest',    equip:'บาร์เบล',  desc:'กล้ามเนื้อหน้าอก ไหล่หน้า ไตรเซ็ป' },
-  { id:'incline',   name:'Incline DB Press',    muscle:'chest',    equip:'ดัมเบล',   desc:'หน้าอกบน เน้นพัฒนายอดอก' },
-  { id:'pec',       name:'Pec Fly',             muscle:'chest',    equip:'เครื่อง', desc:'ยืดกล้ามเนื้อหน้าอกให้กว้าง' },
-  { id:'pushup',    name:'Push-up',             muscle:'chest',    equip:'น้ำหนักตัว',desc:'ไม่ต้องอุปกรณ์ เหมาะสำหรับทุกระดับ' },
-  { id:'dips',      name:'Dips',                muscle:'chest',    equip:'บาร์',      desc:'หน้าอกล่าง ไตรเซ็ป' },
-  { id:'pullup',    name:'Pull-up',             muscle:'back',     equip:'บาร์',      desc:'หลังกว้าง ไบเซ็ป แขนท่อนบน' },
-  { id:'row',       name:'Barbell Row',         muscle:'back',     equip:'บาร์เบล',  desc:'หลังกลาง สะบัก' },
-  { id:'latpull',   name:'Lat Pulldown',        muscle:'back',     equip:'เครื่อง', desc:'หลังกว้าง เหมาะสำหรับมือใหม่' },
-  { id:'deadlift',  name:'Deadlift',            muscle:'back',     equip:'บาร์เบล',  desc:'ท่าเทพ ฝึกทั้งตัว หลัง ขา สะโพก' },
-  { id:'shrug',     name:'Barbell Shrug',       muscle:'back',     equip:'บาร์เบล',  desc:'กล้ามเนื้อคอและบ่า' },
-  { id:'ohp',       name:'Overhead Press',      muscle:'shoulder', equip:'บาร์เบล',  desc:'ไหล่ทั้ง 3 หัว ไตรเซ็ป' },
-  { id:'lateral',   name:'Lateral Raise',       muscle:'shoulder', equip:'ดัมเบล',   desc:'ไหล่ด้านข้าง ทำให้ไหล่กว้าง' },
-  { id:'front',     name:'Front Raise',         muscle:'shoulder', equip:'ดัมเบล',   desc:'ไหล่หน้า' },
-  { id:'facepull',  name:'Face Pull',           muscle:'shoulder', equip:'เชือก',    desc:'ไหล่หลัง rotator cuff ป้องกันบาดเจ็บ' },
-  { id:'curl',      name:'Barbell Curl',        muscle:'bicep',    equip:'บาร์เบล',  desc:'ไบเซ็ป ท่าหลัก เพิ่มมวลได้ดี' },
-  { id:'hammercurl',name:'Hammer Curl',         muscle:'bicep',    equip:'ดัมเบล',   desc:'ไบเซ็ปและกล้ามเนื้อปลายแขน' },
-  { id:'preacher',  name:'Preacher Curl',       muscle:'bicep',    equip:'เครื่อง', desc:'ไบเซ็ปหัวล่าง ยืดได้ดี' },
-  { id:'pushdown',  name:'Tricep Pushdown',     muscle:'tricep',   equip:'เชือก',    desc:'ไตรเซ็ป 3 หัว ท่าหลัก' },
-  { id:'skullcrush',name:'Skull Crusher',       muscle:'tricep',   equip:'บาร์เบล',  desc:'ไตรเซ็ปหัวยาว เพิ่มขนาดได้ดี' },
-  { id:'dipbench',  name:'Bench Dips',          muscle:'tricep',   equip:'ม้านั่ง',  desc:'ไตรเซ็ป ไม่ต้องอุปกรณ์มาก' },
-  { id:'squat',     name:'Back Squat',          muscle:'leg',      equip:'บาร์เบล',  desc:'ราชาท่าออกกำลังกาย ต้นขา สะโพก' },
-  { id:'legpress',  name:'Leg Press',           muscle:'leg',      equip:'เครื่อง', desc:'ต้นขาหน้า-หลัง เหมาะมือใหม่' },
-  { id:'rdl',       name:'Romanian Deadlift',   muscle:'leg',      equip:'บาร์เบล',  desc:'ต้นขาหลัง สะโพก' },
-  { id:'legcurl',   name:'Leg Curl',            muscle:'leg',      equip:'เครื่อง', desc:'ต้นขาหลัง hamstring' },
-  { id:'calf',      name:'Calf Raise',          muscle:'leg',      equip:'เครื่อง', desc:'น่องทั้งหน้าและหลัง' },
-  { id:'lunge',     name:'Lunge',               muscle:'leg',      equip:'ดัมเบล',   desc:'ต้นขา สะโพก การทรงตัว' },
-  { id:'crunch',    name:'Crunch',              muscle:'core',     equip:'น้ำหนักตัว',desc:'กล้ามเนื้อหน้าท้องบน' },
-  { id:'plank',     name:'Plank',               muscle:'core',     equip:'น้ำหนักตัว',desc:'คอร์ทั้งหมด เสริมความมั่นคง' },
-  { id:'legrise',   name:'Leg Raise',           muscle:'core',     equip:'บาร์',      desc:'หน้าท้องล่าง hip flexor' },
-  { id:'cable',     name:'Cable Crunch',        muscle:'core',     equip:'เชือก',    desc:'เพิ่มน้ำหนักให้คอร์ได้' },
+  { id:'bench',     name:'Bench Press',         muscle:'chest',    equip:'บาร์เบล',  desc:'กล้ามเนื้อหน้าอก ไหล่หน้า ไตรเซ็ป', yt:'AJFf4ATImPA' },
+  { id:'incline',   name:'Incline DB Press',    muscle:'chest',    equip:'ดัมเบล',   desc:'หน้าอกบน เน้นพัฒนายอดอก', yt:'uD7sMno9-Qs' },
+  { id:'pec',       name:'Pec Fly',             muscle:'chest',    equip:'เครื่อง', desc:'ยืดกล้ามเนื้อหน้าอกให้กว้าง', yt:'rySIVVd5WDE' },
+  { id:'pushup',    name:'Push-up',             muscle:'chest',    equip:'น้ำหนักตัว',desc:'ไม่ต้องอุปกรณ์ เหมาะสำหรับทุกระดับ', yt:'BNpwbSfLl5k' },
+  { id:'dips',      name:'Dips',                muscle:'chest',    equip:'บาร์',      desc:'หน้าอกล่าง ไตรเซ็ป', yt:'I1rj9FGtAZw' },
+  { id:'pullup',    name:'Pull-up',             muscle:'back',     equip:'บาร์',      desc:'หลังกว้าง ไบเซ็ป แขนท่อนบน', yt:'7hpQKnql9vc' },
+  { id:'row',       name:'Barbell Row',         muscle:'back',     equip:'บาร์เบล',  desc:'หลังกลาง สะบัก', yt:'ia_91XLs8to' },
+  { id:'latpull',   name:'Lat Pulldown',        muscle:'back',     equip:'เครื่อง', desc:'หลังกว้าง เหมาะสำหรับมือใหม่', yt:'iTD1XgPjP2k' },
+  { id:'deadlift',  name:'Deadlift',            muscle:'back',     equip:'บาร์เบล',  desc:'ท่าเทพ ฝึกทั้งตัว หลัง ขา สะโพก', yt:'QINZN4eONRg' },
+  { id:'shrug',     name:'Barbell Shrug',       muscle:'back',     equip:'บาร์เบล',  desc:'กล้ามเนื้อคอและบ่า', yt:'o7nQdW2y6bA' },
+  { id:'ohp',       name:'Overhead Press',      muscle:'shoulder', equip:'บาร์เบล',  desc:'ไหล่ทั้ง 3 หัว ไตรเซ็ป', yt:'8vvEDRp8ElY' },
+  { id:'lateral',   name:'Lateral Raise',       muscle:'shoulder', equip:'ดัมเบล',   desc:'ไหล่ด้านข้าง ทำให้ไหล่กว้าง', yt:'9n2mRhzQcM4' },
+  { id:'front',     name:'Front Raise',         muscle:'shoulder', equip:'ดัมเบล',   desc:'ไหล่หน้า', yt:'oT378HS534k' },
+  { id:'facepull',  name:'Face Pull',           muscle:'shoulder', equip:'เชือก',    desc:'ไหล่หลัง rotator cuff ป้องกันบาดเจ็บ', yt:'pmi_a0nhfF8' },
+  { id:'curl',      name:'Barbell Curl',        muscle:'bicep',    equip:'บาร์เบล',  desc:'ไบเซ็ป ท่าหลัก เพิ่มมวลได้ดี', yt:'ftIPwdMnvsU' },
+  { id:'hammercurl',name:'Hammer Curl',         muscle:'bicep',    equip:'ดัมเบล',   desc:'ไบเซ็ปและกล้ามเนื้อปลายแขน', yt:'I0WmTzb7viM' },
+  { id:'preacher',  name:'Preacher Curl',       muscle:'bicep',    equip:'เครื่อง', desc:'ไบเซ็ปหัวล่าง ยืดได้ดี', yt:'g_YT86IH6hw' },
+  { id:'pushdown',  name:'Tricep Pushdown',     muscle:'tricep',   equip:'เชือก',    desc:'ไตรเซ็ป 3 หัว ท่าหลัก', yt:'vfpQSsiVARM' },
+  { id:'skullcrush',name:'Skull Crusher',       muscle:'tricep',   equip:'บาร์เบล',  desc:'ไตรเซ็ปหัวยาว เพิ่มขนาดได้ดี', yt:'S0fmDR60X-o', ytEn:true },
+  { id:'dipbench',  name:'Bench Dips',          muscle:'tricep',   equip:'ม้านั่ง',  desc:'ไตรเซ็ป ไม่ต้องอุปกรณ์มาก', yt:'bsiQQSNml1s' },
+  { id:'squat',     name:'Back Squat',          muscle:'leg',      equip:'บาร์เบล',  desc:'ราชาท่าออกกำลังกาย ต้นขา สะโพก', yt:'gcNh17Ckjgg', ytEn:true },
+  { id:'legpress',  name:'Leg Press',           muscle:'leg',      equip:'เครื่อง', desc:'ต้นขาหน้า-หลัง เหมาะมือใหม่', yt:'z1iYIk7Jn-I' },
+  { id:'rdl',       name:'Romanian Deadlift',   muscle:'leg',      equip:'บาร์เบล',  desc:'ต้นขาหลัง สะโพก', yt:'gP-EvyS8DjA' },
+  { id:'legcurl',   name:'Leg Curl',            muscle:'leg',      equip:'เครื่อง', desc:'ต้นขาหลัง hamstring', yt:'WzS7KK4eI0g' },
+  { id:'calf',      name:'Calf Raise',          muscle:'leg',      equip:'เครื่อง', desc:'น่องทั้งหน้าและหลัง', yt:'oj3OeMrZr7w' },
+  { id:'lunge',     name:'Lunge',               muscle:'leg',      equip:'ดัมเบล',   desc:'ต้นขา สะโพก การทรงตัว', yt:'ChVb4bgLNYk' },
+  { id:'crunch',    name:'Crunch',              muscle:'core',     equip:'น้ำหนักตัว',desc:'กล้ามเนื้อหน้าท้องบน', yt:'SPpR5_QgVsw' },
+  { id:'plank',     name:'Plank',               muscle:'core',     equip:'น้ำหนักตัว',desc:'คอร์ทั้งหมด เสริมความมั่นคง', yt:'QPazS8gv8p4' },
+  { id:'legrise',   name:'Leg Raise',           muscle:'core',     equip:'บาร์',      desc:'หน้าท้องล่าง hip flexor', yt:'Ys7XaA47qCc' },
+  { id:'cable',     name:'Cable Crunch',        muscle:'core',     equip:'เชือก',    desc:'เพิ่มน้ำหนักให้คอร์ได้', yt:'POEWhbECyw8' },
 ];
 
 const MUSCLE_COLORS = { chest:'#e53935', back:'#1565c0', shoulder:'#6a1fb5', bicep:'#00838f', tricep:'#2e7d32', leg:'#e65100', core:'#f9a825' };
 const MUSCLE_TH = { chest:'หน้าอก', back:'หลัง', shoulder:'ไหล่', bicep:'ไบเซ็ป', tricep:'ไตรเซ็ป', leg:'ขา', core:'คอร์' };
 
-let state = JSON.parse(localStorage.getItem('fittrack') || '{}');
-if (!state.sessions) state.sessions = [];
-if (!state.cardioLog) state.cardioLog = [];
-if (!state.todaySets) state.todaySets = [];
-
-function save() { localStorage.setItem('fittrack', JSON.stringify(state)); }
-
+// ════════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════════
 // วันที่ตามเวลาท้องถิ่น (toISOString ใช้ UTC ทำให้ช่วง 00:00-07:00 ได้วันเมื่อวาน)
-function todayStr() {
-  const d = new Date();
+function localDateStr(d) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
+function todayStr() { return localDateStr(new Date()); }
+// 'YYYY-MM-DD' อ่านเป็นเที่ยงคืนท้องถิ่น (new Date('YYYY-MM-DD') จะตีความเป็น UTC)
+function parseLocalDate(str) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(str);
+  return m ? new Date(+m[1], m[2] - 1, +m[3]) : new Date(str);
+}
+function fmtDate(str, opts) { return parseLocalDate(str).toLocaleDateString('th-TH', opts); }
 function esc(t) {
-  return String(t).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+  return String(t ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+// ตัวเลขที่อยู่ในช่วงเท่านั้น ไม่เช่นนั้นคืน null (attribute min/max ใน HTML ไม่ได้บังคับค่าที่ JS อ่าน)
+function num(id, { min = 0, max = Infinity, int = false } = {}) {
+  const raw = document.getElementById(id).value;
+  const v = int ? parseInt(raw, 10) : parseFloat(raw);
+  return (!Number.isFinite(v) || v < min || v > max) ? null : v;
+}
+function newId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function muscleColor(m) { return MUSCLE_COLORS[m] || '#888'; }
+function muscleBadge(m) {
+  const c = muscleColor(m);
+  return `<span class="badge" style="background:${c}22;color:${c};border:1px solid ${c}">${esc(MUSCLE_TH[m] || m)}</span>`;
+}
+function toast(msg) {
+  let el = document.getElementById('toast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'toast'; el.className = 'toast'; el.setAttribute('role', 'status');
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ════════════════════════════════════════════
+// STORAGE
+// ════════════════════════════════════════════
+const STORE_KEY = 'fittrack';
+const SCHEMA_VERSION = 2;
+
+function normalizeState(s) {
+  if (!s || typeof s !== 'object') s = {};
+  const isObj = x => x && typeof x === 'object';
+  s.sessions = (Array.isArray(s.sessions) ? s.sessions : []).filter(isObj);
+  s.cardioLog = (Array.isArray(s.cardioLog) ? s.cardioLog : []).filter(isObj);
+  s.todaySets = (Array.isArray(s.todaySets) ? s.todaySets : []).filter(isObj);
+  s.sessions.forEach(x => {
+    if (!Array.isArray(x.sets)) x.sets = [];
+    if (!Array.isArray(x.muscles)) x.muscles = [];
+    x.volume = Number(x.volume) || 0;
+  });
+  // โปรไฟล์สำหรับโซนหัวใจ: เก็บเฉพาะตัวเลขในช่วงที่ใช้ได้
+  const p = isObj(s.profile) ? s.profile : {};
+  const age = parseInt(p.age, 10), rhr = parseInt(p.rhr, 10);
+  s.profile = (age >= 10 && age <= 90 && rhr >= 30 && rhr <= 100) ? { age, rhr } : {};
+  return s;
+}
+
+// v1 → v2: วันที่เป็น YYYY-MM-DD ท้องถิ่น (เก็บเวลาไว้ใน ts) และใส่ id ทุก record
+// รันทุกครั้งที่โหลด/นำเข้า (ทำซ้ำได้ไม่เสียหาย) เผื่อไฟล์นำเข้ามีวันที่หลายรูปแบบ
+function migrate(s) {
+  [...s.sessions, ...s.cardioLog].forEach(x => {
+    if (typeof x.date === 'string' && x.date.length > 10) {
+      const d = new Date(x.date);
+      if (!isNaN(d)) { x.ts = x.ts || d.getTime(); x.date = localDateStr(d); }
+    }
+    if (typeof x.date !== 'string' || isNaN(parseLocalDate(x.date))) x.date = todayStr();
+    if (!x.id) x.id = String(newId());
+    else x.id = String(x.id);
+  });
+  s.schemaVersion = SCHEMA_VERSION;
+  return s;
+}
+
+function loadState() {
+  const raw = localStorage.getItem(STORE_KEY);
+  let s = {};
+  try {
+    s = JSON.parse(raw || '{}');
+  } catch (e) {
+    // เก็บข้อมูลเสียไว้ เผื่อกู้ด้วยมือได้
+    try { localStorage.setItem(STORE_KEY + '-corrupt-' + Date.now(), raw); } catch (e2) {}
+    alert('ข้อมูลเดิมเสียหาย ระบบสำรองไว้แล้วและเริ่มใหม่');
+    s = {};
+  }
+  s = normalizeState(s);
+  if (raw && (s.schemaVersion || 1) < SCHEMA_VERSION) {
+    // สำรองก่อน migrate ครั้งแรก เพราะย้อนกลับไม่ได้
+    try { localStorage.setItem(STORE_KEY + '-backup-v' + (s.schemaVersion || 1), raw); } catch (e) {}
+  }
+  return migrate(s);
+}
+
+let state = loadState();
+
+function save() {
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify(state));
+  } catch (e) {
+    alert('บันทึกไม่สำเร็จ — พื้นที่เก็บข้อมูลอาจเต็ม กรุณา Export ข้อมูลไว้');
+  }
+}
+save();
+
+function exportData() {
+  const payload = { app: 'fittrack', version: SCHEMA_VERSION, exportedAt: new Date().toISOString(), state };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `fittrack-backup-${todayStr()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+function importData(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    let s;
+    try {
+      const data = JSON.parse(reader.result);
+      s = data && data.state ? data.state : data;
+      if (!s || !Array.isArray(s.sessions) || !Array.isArray(s.cardioLog)) throw new Error('invalid');
+    } catch (e) {
+      alert('ไฟล์ไม่ถูกต้อง');
+      return;
+    }
+    if (!confirm(`นำเข้า ${s.sessions.length} sessions และ ${s.cardioLog.length} คาร์ดิโอ?\nข้อมูลปัจจุบันจะถูกแทนที่`)) return;
+    state = migrate(normalizeState({
+      sessions: s.sessions, cardioLog: s.cardioLog, todaySets: s.todaySets, profile: s.profile, schemaVersion: s.schemaVersion
+    }));
+    save();
+    renderDashboard();
+    toast('นำเข้าข้อมูลสำเร็จ');
+  };
+  reader.readAsText(file);
 }
 
 // ════════════════════════════════════════════
@@ -830,11 +1045,12 @@ function esc(t) {
 // ════════════════════════════════════════════
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => { b.classList.remove('active'); b.removeAttribute('aria-current'); });
   document.getElementById('page-' + id).classList.add('active');
   const btns = document.querySelectorAll('nav button');
   const map = { dashboard:0, weight:1, cardio:2, plan:3, calc:4 };
   btns[map[id]].classList.add('active');
+  btns[map[id]].setAttribute('aria-current', 'page');
   if (id === 'dashboard') renderDashboard();
   if (id === 'weight') renderWeight();
   if (id === 'cardio') renderCardio();
@@ -850,10 +1066,11 @@ function renderDashboard() {
   const today = new Date();
   document.getElementById('today-date').textContent = today.toLocaleDateString('th-TH', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
 
+  const n = v => Number(v) || 0;
   const totalSessions = state.sessions.length;
-  const totalVolume = state.sessions.reduce((s, sess) => s + (sess.volume || 0), 0);
-  const totalCardioMin = state.cardioLog.reduce((s, c) => s + (c.duration || 0), 0);
-  const totalCals = state.sessions.reduce((s, sess) => s + (sess.cals || 0), 0) + state.cardioLog.reduce((s, c) => s + (c.kcal || 0), 0);
+  const totalVolume = state.sessions.reduce((s, sess) => s + n(sess.volume), 0);
+  const totalCardioMin = state.cardioLog.reduce((s, c) => s + n(c.duration), 0);
+  const totalCals = state.sessions.reduce((s, sess) => s + n(sess.cals), 0) + state.cardioLog.reduce((s, c) => s + n(c.kcal), 0);
 
   document.getElementById('stat-sessions').textContent = totalSessions;
   document.getElementById('stat-volume').textContent = totalVolume.toLocaleString();
@@ -865,53 +1082,52 @@ function renderDashboard() {
   renderMuscleChart();
 }
 
+// ใหม่สุดก่อน: เรียงตามวันที่ แล้วตามเวลาที่บันทึกในวันเดียวกัน
+function byNewest(a, b) {
+  return (parseLocalDate(b.date) - parseLocalDate(a.date)) || ((b.ts || 0) - (a.ts || 0));
+}
+
 function renderRecentLog() {
   const el = document.getElementById('recent-log');
   const all = [
     ...state.sessions.map(s => ({ ...s, kind: 'weight' })),
     ...state.cardioLog.map(c => ({ ...c, kind: 'cardio' }))
-  ].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 8);
+  ].sort(byNewest).slice(0, 8);
 
   if (!all.length) { el.innerHTML = '<div class="empty-state">ยังไม่มีบันทึก</div>'; return; }
 
-  el.innerHTML = `<table>
+  el.innerHTML = `<div class="table-wrap"><table>
     <thead><tr><th>วันที่</th><th>ประเภท</th><th>รายละเอียด</th><th>แคลอรี่</th></tr></thead>
     <tbody>${all.map(item => `
       <tr>
-        <td>${new Date(item.date).toLocaleDateString('th-TH')}</td>
+        <td>${esc(fmtDate(item.date))}</td>
         <td>${item.kind === 'weight' ? '🏋️ เวทเทรนนิ่ง' : '🏃 คาร์ดิโอ'}</td>
-        <td>${item.kind === 'weight' ? `Volume: ${(item.volume||0).toLocaleString()} kg` : `${item.type} ${item.duration} นาที${item.distance ? ' · ' + item.distance + ' km' : ''}`}</td>
-        <td><span class="badge badge-orange">${item.kcal || item.cals || 0} kcal</span></td>
+        <td>${item.kind === 'weight' ? `Volume: ${(Number(item.volume) || 0).toLocaleString()} kg` : `${esc(item.type)} ${esc(item.duration)} นาที${item.distance ? ' · ' + esc(item.distance) + ' km' : ''}`}</td>
+        <td><span class="badge badge-orange">${esc(item.kcal || item.cals || 0)} kcal</span></td>
       </tr>`).join('')}
-    </tbody></table>`;
+    </tbody></table></div>`;
 }
 
 function renderWeeklyChart() {
-  const days = ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'];
-  const weekData = Array(7).fill(0);
-  const cardioData = Array(7).fill(0);
-  const now = new Date();
-
-  state.sessions.forEach(s => {
-    const d = new Date(s.date);
-    const diff = Math.floor((now - d) / 86400000);
-    if (diff < 7) weekData[(d.getDay())] += (s.volume || 0) / 1000;
-  });
-  state.cardioLog.forEach(c => {
-    const d = new Date(c.date);
-    const diff = Math.floor((now - d) / 86400000);
-    if (diff < 7) cardioData[(d.getDay())] += (c.duration || 0);
-  });
+  if (typeof Chart === 'undefined') return;
+  const dayTh = ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'];
+  // 7 วันล่าสุดตามวันที่จริง (รายการลงวันในอนาคตไม่ถูกนับ)
+  const keys = [...Array(7)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() - 6 + i); return localDateStr(d); });
+  const vol = Object.fromEntries(keys.map(k => [k, 0]));
+  const car = Object.fromEntries(keys.map(k => [k, 0]));
+  state.sessions.forEach(s => { if (s.date in vol) vol[s.date] += (Number(s.volume) || 0) / 1000; });
+  state.cardioLog.forEach(c => { if (c.date in car) car[c.date] += (Number(c.duration) || 0); });
+  const labels = keys.map(k => dayTh[parseLocalDate(k).getDay()]);
 
   const ctx = document.getElementById('chartWeekly').getContext('2d');
   if (chartWeekly) chartWeekly.destroy();
   chartWeekly = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: days,
+      labels,
       datasets: [
-        { label: 'Volume (ton)', data: weekData, backgroundColor: '#e5393599', borderColor: '#e53935', borderWidth: 1, borderRadius: 6 },
-        { label: 'คาร์ดิโอ (นาที)', data: cardioData, backgroundColor: '#1565c099', borderColor: '#1565c0', borderWidth: 1, borderRadius: 6, yAxisID: 'y2' },
+        { label: 'Volume (ton)', data: keys.map(k => vol[k]), backgroundColor: '#e5393599', borderColor: '#e53935', borderWidth: 1, borderRadius: 6 },
+        { label: 'คาร์ดิโอ (นาที)', data: keys.map(k => car[k]), backgroundColor: '#1565c099', borderColor: '#1565c0', borderWidth: 1, borderRadius: 6, yAxisID: 'y2' },
       ]
     },
     options: { responsive:true, plugins:{legend:{labels:{color:'#ccc'}}}, scales:{ x:{ticks:{color:'#aaa'},grid:{color:'#333'}}, y:{ticks:{color:'#aaa'},grid:{color:'#333'}}, y2:{position:'right',ticks:{color:'#aaa'},grid:{display:false}} } }
@@ -923,18 +1139,19 @@ function renderMuscleChart() {
   state.sessions.forEach(s => { (s.muscles || []).forEach(m => { counts[m] = (counts[m] || 0) + 1; }); });
   const labels = Object.keys(counts).map(k => MUSCLE_TH[k] || k);
   const data = Object.values(counts);
-  const colors = Object.keys(counts).map(k => MUSCLE_COLORS[k] || '#888');
+  const colors = Object.keys(counts).map(muscleColor);
 
-  const ctx = document.getElementById('chartMuscle').getContext('2d');
-  if (chartMuscle) chartMuscle.destroy();
-  if (!data.length) {
-    ctx.clearRect(0, 0, 400, 200);
-    ctx.fillStyle = '#666';
-    ctx.textAlign = 'center';
-    ctx.fillText('ยังไม่มีข้อมูล', 200, 100);
+  const canvas = document.getElementById('chartMuscle');
+  const empty = document.getElementById('muscle-empty');
+  if (chartMuscle) { chartMuscle.destroy(); chartMuscle = null; }
+  if (!data.length || typeof Chart === 'undefined') {
+    canvas.style.display = 'none';
+    empty.style.display = '';
     return;
   }
-  chartMuscle = new Chart(ctx, {
+  canvas.style.display = '';
+  empty.style.display = 'none';
+  chartMuscle = new Chart(canvas.getContext('2d'), {
     type: 'doughnut',
     data: { labels, datasets: [{ data, backgroundColor: colors, borderColor: '#1a1a1a', borderWidth: 2 }] },
     options: { responsive:true, plugins:{ legend:{ position:'right', labels:{ color:'#ccc', padding:10 } } } }
@@ -963,13 +1180,123 @@ function filterMuscle(muscle, btn) {
 function renderExerciseLibrary() {
   const list = currentMuscleFilter === 'all' ? EXERCISES : EXERCISES.filter(e => e.muscle === currentMuscleFilter);
   document.getElementById('exercise-library').innerHTML = list.map(e => `
-    <div class="ex-card" onclick="selectExercise('${e.id}')">
+    <div class="ex-card" role="button" tabindex="0" aria-label="ดูวิดีโอสอน ${e.name}" onclick="openExerciseModal('${e.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openExerciseModal('${e.id}')}">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
         <div class="ex-name">${e.name}</div>
         <span class="badge" style="background:${MUSCLE_COLORS[e.muscle]}22;color:${MUSCLE_COLORS[e.muscle]};border:1px solid ${MUSCLE_COLORS[e.muscle]}">${MUSCLE_TH[e.muscle]}</span>
       </div>
       <div class="ex-meta">${e.equip} · ${e.desc}</div>
+      ${e.yt ? '<div class="ex-meta" style="margin-top:6px;color:var(--primary)">▶ ดูวิดีโอสอน</div>' : ''}
     </div>`).join('');
+}
+
+// ── วิดีโอสอนท่า (YouTube IFrame API) ──
+// กดการ์ดแล้วเล่นทันที ถ้าเบราว์เซอร์บล็อกการเล่นแบบมีเสียง (เช่น iOS) จะเล่นแบบปิดเสียงแล้วมีปุ่มเปิดเสียง
+let ytApiPromise = null, exPlayer = null, exModalId = null;
+
+function loadYouTubeApi() {
+  if (window.YT && window.YT.Player) return Promise.resolve();
+  if (ytApiPromise) return ytApiPromise;
+  ytApiPromise = new Promise((resolve, reject) => {
+    const prev = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = () => { if (prev) prev(); resolve(); };
+    const s = document.createElement('script');
+    s.src = 'https://www.youtube.com/iframe_api';
+    s.onerror = () => { ytApiPromise = null; reject(new Error('yt api')); };
+    document.head.appendChild(s);
+    setTimeout(() => reject(new Error('timeout')), 10000);
+  });
+  return ytApiPromise;
+}
+
+// ช่องวิดีโอ: YT.Player แทนที่ #ex-player ด้วย iframe และ destroy() ลบทิ้ง จึงสร้างช่องใหม่ทุกครั้ง
+function resetPlayerSlot(html = '') {
+  if (exPlayer) { try { exPlayer.destroy(); } catch (e) {} exPlayer = null; }
+  document.getElementById('ex-unmute').style.display = 'none';
+  const old = document.getElementById('ex-player');
+  if (old) old.remove();
+  const slot = document.createElement('div');
+  slot.id = 'ex-player';
+  if (html) { slot.className = 'video-msg'; slot.innerHTML = html; }
+  document.getElementById('ex-video').prepend(slot);
+}
+function showVideoMessage(html) { resetPlayerSlot(html); }
+
+function openExerciseModal(id) {
+  const ex = EXERCISES.find(e => e.id === id);
+  if (!ex) return;
+  exModalId = id;
+  exUnmuteTried = false;
+  document.getElementById('ex-modal-title').textContent = ex.name;
+  document.getElementById('ex-modal-meta').innerHTML =
+    `${muscleBadge(ex.muscle)}<span class="text-muted">${esc(ex.equip)} · ${esc(ex.desc)}</span>${ex.ytEn ? '<span class="badge badge-blue">วิดีโอภาษาอังกฤษ</span>' : ''}`;
+  const link = document.getElementById('ex-yt-link');
+  link.href = ex.yt ? `https://www.youtube.com/watch?v=${ex.yt}` : `https://www.youtube.com/results?search_query=${encodeURIComponent(ex.name + ' สอนท่า')}`;
+  document.getElementById('ex-use-btn').onclick = () => { closeExerciseModal(); selectExercise(id); };
+  document.getElementById('ex-modal').classList.add('open');
+
+  if (!ex.yt) { showVideoMessage('ยังไม่มีวิดีโอสำหรับท่านี้'); return; }
+  if (!navigator.onLine) { showVideoMessage('ต้องเชื่อมต่ออินเทอร์เน็ตเพื่อดูวิดีโอสอน'); return; }
+  // YouTube ไม่ยอมเล่นใน iframe เมื่อหน้าเว็บเปิดจากไฟล์ (file://) เพราะไม่มี origin/referrer
+  if (location.protocol === 'file:') {
+    showVideoMessage(`วิดีโอเล่นไม่ได้เมื่อเปิดไฟล์ตรงจากเครื่อง (file://)<br>ให้เปิดผ่านเว็บ (https) หรือ local server เช่น http://localhost<br><a href="${link.href}" target="_blank" rel="noopener">ดูบน YouTube ↗</a>`);
+    return;
+  }
+
+  showVideoMessage('กำลังโหลดวิดีโอ...');
+  loadYouTubeApi().then(() => {
+    if (exModalId !== id) return;   // ผู้ใช้ปิดหรือเปลี่ยนท่าไปแล้ว
+    resetPlayerSlot();
+    exPlayer = new YT.Player('ex-player', {
+      host: 'https://www.youtube-nocookie.com',
+      videoId: ex.yt,
+      playerVars: { autoplay: 1, playsinline: 1, rel: 0, modestbranding: 1 },
+      events: {
+        onReady: e => {
+          e.target.playVideo();
+          // ไม่เริ่มเล่นภายใน 1.5 วิ = ถูกบล็อกเสียง → เล่นแบบปิดเสียง
+          setTimeout(() => {
+            if (exPlayer !== e.target) return;
+            const st = e.target.getPlayerState();
+            if (st !== YT.PlayerState.PLAYING && st !== YT.PlayerState.BUFFERING) startMuted(e.target);
+          }, 1500);
+        },
+        onAutoplayBlocked: e => startMuted(e.target),
+        onError: () => showVideoMessage(`เล่นวิดีโอนี้ในแอปไม่ได้ — <a href="${link.href}" target="_blank" rel="noopener">ดูบน YouTube ↗</a>`),
+      },
+    });
+  }).catch(() => {
+    if (exModalId === id) showVideoMessage(`โหลดวิดีโอไม่ได้ — <a href="${link.href}" target="_blank" rel="noopener">ดูบน YouTube ↗</a>`);
+  });
+}
+
+let exUnmuteTried = false;
+function startMuted(player) {
+  if (exPlayer !== player) return;
+  player.mute();
+  player.playVideo();
+  // กดเปิดเสียงไปแล้วแต่ถูกบล็อกอีก: ไม่แสดงปุ่มวนซ้ำ ให้ใช้ปุ่มลำโพงของ YouTube แทน
+  if (!exUnmuteTried) document.getElementById('ex-unmute').style.display = '';
+}
+
+function unmuteExerciseVideo() {
+  if (!exPlayer) return;
+  const player = exPlayer;
+  exUnmuteTried = true;
+  player.unMute();
+  player.setVolume(100);
+  player.playVideo();
+  document.getElementById('ex-unmute').style.display = 'none';
+  // บางเบราว์เซอร์ (เช่น iOS) ยอมให้เปิดเสียงเฉพาะเมื่อแตะในตัววิดีโอเอง
+  setTimeout(() => {
+    if (exPlayer === player && player.isMuted()) toast('แตะไอคอนลำโพง 🔊 ในวิดีโอเพื่อเปิดเสียง');
+  }, 1000);
+}
+
+function closeExerciseModal() {
+  exModalId = null;
+  resetPlayerSlot();
+  document.getElementById('ex-modal').classList.remove('open');
 }
 
 function selectExercise(id) {
@@ -986,17 +1313,20 @@ function populateExerciseSelect() {
 
 function addWeightSet() {
   const exId = document.getElementById('log-exercise').value;
-  const w = parseFloat(document.getElementById('log-weight').value) || 0;
-  const reps = parseInt(document.getElementById('log-reps').value) || 0;
-  const sets = parseInt(document.getElementById('log-sets').value) || 1;
-  const rir = parseInt(document.getElementById('log-rir').value);
+  const w = num('log-weight', { min: 0, max: 1000 }) ?? 0;
+  const reps = num('log-reps', { min: 1, max: 100, int: true });
+  const sets = num('log-sets', { min: 1, max: 20, int: true }) ?? 1;
+  const rir = num('log-rir', { min: 0, max: 10, int: true });
   const note = document.getElementById('log-note').value;
 
-  if (!exId || !reps) { alert('กรุณาเลือกท่าและกรอก Reps'); return; }
+  if (!exId || reps === null) { alert('กรุณาเลือกท่าและกรอก Reps (1–100)'); return; }
+  if (document.getElementById('log-sets').value && num('log-sets', { min: 1, max: 20, int: true }) === null) { alert('จำนวน Sets ต้องอยู่ระหว่าง 1–20'); return; }
+  if (document.getElementById('log-weight').value && num('log-weight', { min: 0, max: 1000 }) === null) { alert('น้ำหนักต้องอยู่ระหว่าง 0–1000 kg'); return; }
   const ex = EXERCISES.find(e => e.id === exId);
+  if (!ex) return;
 
   for (let i = 0; i < sets; i++) {
-    state.todaySets.push({ exId, exName: ex.name, muscle: ex.muscle, weight: w, reps, rir: isNaN(rir) ? null : rir, note, ts: Date.now() });
+    state.todaySets.push({ exId, exName: ex.name, muscle: ex.muscle, weight: w, reps, rir, note, ts: Date.now() });
   }
   save();
   renderSetLog();
@@ -1004,26 +1334,46 @@ function addWeightSet() {
   document.getElementById('log-reps').value = '';
   document.getElementById('log-sets').value = '';
   document.getElementById('log-note').value = '';
+  toast(`เพิ่ม ${sets} set แล้ว`);
+}
+
+function setVolume(sets) {
+  return sets.reduce((s, st) => s + (Number(st.weight) || 0) * (Number(st.reps) || 0), 0);
+}
+
+// วันที่ของ set แรก (set ที่ค้างจากวันก่อนจะได้ไม่ถูกบันทึกเป็นวันนี้)
+function pendingSetsTs() {
+  return Number(state.todaySets[0] && state.todaySets[0].ts) || Date.now();
 }
 
 function renderSetLog() {
   const el = document.getElementById('today-sets');
   const volEl = document.getElementById('today-volume');
-  if (!state.todaySets.length) { el.innerHTML = '<div class="empty-state">ยังไม่มี set — เพิ่มข้างบน</div>'; volEl.textContent = ''; return; }
+  const warnEl = document.getElementById('today-warn');
+  if (!state.todaySets.length) {
+    el.innerHTML = '<div class="empty-state">ยังไม่มี set — เพิ่มข้างบน</div>';
+    volEl.textContent = '';
+    warnEl.innerHTML = '';
+    return;
+  }
 
-  const vol = state.todaySets.reduce((s, st) => s + st.weight * st.reps, 0);
-  volEl.textContent = `Volume รวม: ${vol.toLocaleString()} kg`;
+  const firstDate = localDateStr(new Date(pendingSetsTs()));
+  warnEl.innerHTML = firstDate !== todayStr()
+    ? `<div class="warn-box">มี set ค้างจากวันที่ ${esc(fmtDate(firstDate))} — กด "บันทึก Session" เพื่อบันทึกลงวันนั้น หรือลบทิ้ง</div>`
+    : '';
+
+  volEl.textContent = `Volume รวม: ${setVolume(state.todaySets).toLocaleString()} kg`;
 
   el.innerHTML = state.todaySets.map((s, i) => `
     <div class="set-row">
       <div class="set-num">${i + 1}</div>
       <div class="set-info">
-        <strong>${s.exName}</strong>
-        <span class="text-muted" style="margin-left:8px">${s.weight} kg × ${s.reps} reps${s.rir !== null ? ` · RIR ${s.rir}` : ''}</span>
+        <strong>${esc(s.exName)}</strong>
+        <span class="text-muted" style="margin-left:8px">${esc(s.weight)} kg × ${esc(s.reps)} reps${s.rir !== null && s.rir !== undefined ? ` · RIR ${esc(s.rir)}` : ''}</span>
         ${s.note ? `<div class="text-muted" style="font-size:.78rem">${esc(s.note)}</div>` : ''}
       </div>
-      <span class="badge" style="background:${MUSCLE_COLORS[s.muscle]}22;color:${MUSCLE_COLORS[s.muscle]};border:1px solid ${MUSCLE_COLORS[s.muscle]}">${MUSCLE_TH[s.muscle]}</span>
-      <button class="btn btn-danger btn-sm" onclick="removeSet(${i})">✕</button>
+      ${muscleBadge(s.muscle)}
+      <button class="btn btn-danger btn-sm" aria-label="ลบ set ${i + 1}" onclick="removeSet(${i})">✕</button>
     </div>`).join('');
 }
 
@@ -1035,28 +1385,38 @@ function removeSet(i) {
 
 function saveSession() {
   if (!state.todaySets.length) { alert('ไม่มี set'); return; }
-  const vol = state.todaySets.reduce((s, st) => s + st.weight * st.reps, 0);
+  const ts = pendingSetsTs();
   const muscles = [...new Set(state.todaySets.map(s => s.muscle))];
-  state.sessions.push({ date: new Date().toISOString(), sets: [...state.todaySets], volume: vol, muscles, cals: 0 });
+  state.sessions.push({ id: newId(), date: localDateStr(new Date(ts)), ts, sets: [...state.todaySets], volume: setVolume(state.todaySets), muscles, cals: 0 });
   state.todaySets = [];
   save();
   renderSetLog();
   renderWeightHistory();
-  alert('บันทึก Session สำเร็จ! 🎉');
+  toast('บันทึก Session สำเร็จ! 🎉');
+}
+
+function deleteSession(id) {
+  if (!confirm('ลบ session นี้?')) return;
+  state.sessions = state.sessions.filter(s => s.id !== id);
+  save();
+  renderWeightHistory();
+  renderDashboard();
+  toast('ลบแล้ว');
 }
 
 function renderWeightHistory() {
   const el = document.getElementById('weight-history');
   if (!state.sessions.length) { el.innerHTML = '<div class="empty-state">ยังไม่มีประวัติ</div>'; return; }
-  el.innerHTML = [...state.sessions].reverse().map(s => `
+  el.innerHTML = [...state.sessions].sort(byNewest).map(s => `
     <div style="border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px">
-      <div class="flex-between">
+      <div class="flex-between" style="gap:10px;flex-wrap:wrap">
         <div>
-          <strong>${new Date(s.date).toLocaleDateString('th-TH', {day:'numeric',month:'long',year:'numeric'})}</strong>
-          <span class="text-muted" style="margin-left:8px">${s.sets.length} sets · Volume ${s.volume.toLocaleString()} kg</span>
+          <strong>${esc(fmtDate(s.date, {day:'numeric',month:'long',year:'numeric'}))}</strong>
+          <span class="text-muted" style="margin-left:8px">${s.sets.length} sets · Volume ${(Number(s.volume) || 0).toLocaleString()} kg</span>
         </div>
         <div class="flex-gap">
-          ${(s.muscles || []).map(m => `<span class="badge" style="background:${MUSCLE_COLORS[m]}22;color:${MUSCLE_COLORS[m]};border:1px solid ${MUSCLE_COLORS[m]}">${MUSCLE_TH[m]}</span>`).join('')}
+          ${s.muscles.map(muscleBadge).join('')}
+          <button class="btn btn-danger btn-sm" aria-label="ลบ session" data-id="${esc(s.id)}" onclick="deleteSession(this.dataset.id)">✕</button>
         </div>
       </div>
       ${s.note ? `<div class="text-muted" style="margin-top:6px">${esc(s.note)}</div>` : ''}
@@ -1088,6 +1448,7 @@ function tickTimer() {
   updateTimerDisplay();
   if (timerSecs <= 0) {
     clearInterval(timerInterval); timerRunning = false;
+    keepAwake(false);
     document.getElementById('btn-start').textContent = '▶ เริ่ม';
     document.getElementById('timer-label').textContent = 'หมดเวลาพัก! 💪';
     notifyTimerDone();
@@ -1098,10 +1459,13 @@ function startTimer() {
   if (timerRunning) {
     tickTimer();
     clearInterval(timerInterval); timerRunning = false; btn.textContent = '▶ เริ่ม';
+    keepAwake(false);
     return;
   }
   if (timerSecs <= 0) timerSecs = timerMax;
   requestNotifyPermission();
+  unlockAudio();
+  keepAwake(true);
   timerRunning = true;
   timerEndTs = Date.now() + timerSecs * 1000;
   btn.textContent = '⏸ หยุด';
@@ -1110,6 +1474,7 @@ function startTimer() {
 }
 function resetTimer() {
   clearInterval(timerInterval); timerRunning = false;
+  keepAwake(false);
   timerSecs = timerMax;
   document.getElementById('btn-start').textContent = '▶ เริ่ม';
   document.getElementById('timer-label').textContent = 'กดเริ่มเมื่อพัก';
@@ -1120,10 +1485,20 @@ function resetTimer() {
 function requestNotifyPermission() {
   if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
 }
-function beep() {
+// AudioContext ตัวเดียว สร้างตอนกดเริ่ม (user gesture) มือถือจะได้ไม่ suspend เสียง
+let audioCtx = null;
+function unlockAudio() {
   try {
     const AC = window.AudioContext || window.webkitAudioContext;
-    const ctx = new AC();
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  } catch (e) {}
+}
+function beep() {
+  if (!audioCtx) return;
+  try {
+    const ctx = audioCtx;
     [0, 0.25, 0.5].forEach(t => {
       const o = ctx.createOscillator(), g = ctx.createGain();
       o.frequency.value = 880; o.connect(g); g.connect(ctx.destination);
@@ -1133,6 +1508,22 @@ function beep() {
     });
   } catch (e) {}
 }
+// กันจอดับระหว่างพัก (มือถือหยุด JS เมื่อจอดับ ทำให้ไม่มีการแจ้งเตือน)
+let wakeLock = null;
+async function keepAwake(on) {
+  try {
+    if (on && 'wakeLock' in navigator && !wakeLock) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => { wakeLock = null; });
+    } else if (!on && wakeLock) {
+      await wakeLock.release();
+    }
+  } catch (e) {}
+}
+// wake lock ถูกปล่อยอัตโนมัติเมื่อสลับแอป ขอใหม่เมื่อกลับมาถ้ายังจับเวลาอยู่
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && timerRunning) keepAwake(true);
+});
 function notifyTimerDone() {
   beep();
   if (navigator.vibrate) navigator.vibrate([300, 150, 300, 150, 300]);
@@ -1151,57 +1542,85 @@ function notifyTimerDone() {
 // ════════════════════════════════════════════
 function renderCardio() {
   document.getElementById('cardio-date').value = todayStr();
+  // เติมอายุ/HR พักที่เคยกรอกไว้ในแท็บโซนหัวใจ
+  const p = state.profile || {};
+  if (p.age && !document.getElementById('zone-age').value) {
+    document.getElementById('zone-age').value = p.age;
+    document.getElementById('zone-rhr').value = p.rhr;
+    calcZones();
+  }
   renderCardioHistory();
+}
+
+// ช่องที่ไม่บังคับ: ว่างได้ (คืน 0) แต่ถ้ากรอกต้องอยู่ในช่วง (คืน null)
+function optNum(id, opts) {
+  if (document.getElementById(id).value === '') return 0;
+  return num(id, opts);
 }
 
 function logCardio() {
   const type = document.getElementById('cardio-type').value;
-  const duration = parseInt(document.getElementById('cardio-duration').value) || 0;
-  const distance = parseFloat(document.getElementById('cardio-distance').value) || 0;
-  const hr = parseInt(document.getElementById('cardio-hr').value) || 0;
-  const kcal = parseInt(document.getElementById('cardio-kcal').value) || 0;
+  const duration = num('cardio-duration', { min: 1, max: 1440, int: true });
+  const distance = optNum('cardio-distance', { min: 0, max: 1000 });
+  const hr = optNum('cardio-hr', { min: 30, max: 230, int: true });
+  const kcal = optNum('cardio-kcal', { min: 0, max: 20000, int: true });
   const intensity = document.getElementById('cardio-intensity').value;
   const date = document.getElementById('cardio-date').value || todayStr();
   const note = document.getElementById('cardio-note').value;
-  if (!duration) { alert('กรุณากรอกระยะเวลา'); return; }
-  state.cardioLog.push({ type, duration, distance, hr, kcal, intensity, date, note });
+  if (duration === null) { alert('กรุณากรอกระยะเวลา (1–1440 นาที)'); return; }
+  if (distance === null || hr === null || kcal === null) { alert('ค่าที่กรอกไม่ถูกต้อง: ระยะทาง 0–1000 km, HR 30–230 bpm, แคลอรี่ 0–20000'); return; }
+  state.cardioLog.push({ id: newId(), type, duration, distance, hr, kcal, intensity, date, note, ts: Date.now() });
   save();
   ['cardio-duration','cardio-distance','cardio-hr','cardio-kcal','cardio-note'].forEach(id => { document.getElementById(id).value = ''; });
   renderCardioHistory();
-  alert('บันทึกสำเร็จ! 🏃');
+  toast('บันทึกสำเร็จ! 🏃');
+}
+
+function deleteCardio(id) {
+  if (!confirm('ลบรายการนี้?')) return;
+  state.cardioLog = state.cardioLog.filter(c => c.id !== id);
+  save();
+  renderCardioHistory();
+  toast('ลบแล้ว');
 }
 
 function renderCardioHistory() {
   const el = document.getElementById('cardio-history');
-  if (!state.cardioLog.length) { el.innerHTML = '<div class="empty-state">ยังไม่มีประวัติ</div>'; return; }
-  el.innerHTML = `<table>
-    <thead><tr><th>วันที่</th><th>ประเภท</th><th>เวลา</th><th>ระยะ</th><th>HR</th><th>kcal</th><th>ระดับ</th></tr></thead>
-    <tbody>${[...state.cardioLog].reverse().map(c => `
+  if (!state.cardioLog.length) {
+    el.innerHTML = '<div class="empty-state">ยังไม่มีประวัติ</div>';
+    renderCardioChart();
+    return;
+  }
+  el.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>วันที่</th><th>ประเภท</th><th>เวลา</th><th>ระยะ</th><th>HR</th><th>kcal</th><th>ระดับ</th><th></th></tr></thead>
+    <tbody>${[...state.cardioLog].sort(byNewest).map(c => `
       <tr>
-        <td>${new Date(c.date).toLocaleDateString('th-TH')}</td>
-        <td>${c.type}${c.note ? `<div class="text-muted" style="font-size:.75rem">${esc(c.note)}</div>` : ''}</td>
-        <td>${c.duration} นาที</td>
-        <td>${c.distance || '-'} km</td>
-        <td>${c.hr || '-'} bpm</td>
-        <td><span class="badge badge-orange">${c.kcal || 0}</span></td>
-        <td><span class="badge ${c.intensity==='เบา'?'badge-green':c.intensity==='หนัก'?'badge-red':'badge-blue'}">${c.intensity}</span></td>
+        <td>${esc(fmtDate(c.date))}</td>
+        <td>${esc(c.type)}${c.note ? `<div class="text-muted" style="font-size:.75rem">${esc(c.note)}</div>` : ''}</td>
+        <td>${esc(c.duration)} นาที</td>
+        <td>${esc(c.distance || '-')} km</td>
+        <td>${esc(c.hr || '-')} bpm</td>
+        <td><span class="badge badge-orange">${esc(c.kcal || 0)}</span></td>
+        <td><span class="badge ${c.intensity==='เบา'?'badge-green':c.intensity==='หนัก'?'badge-red':'badge-blue'}">${esc(c.intensity)}</span></td>
+        <td><button class="btn btn-danger btn-sm" aria-label="ลบรายการ" data-id="${esc(c.id)}" onclick="deleteCardio(this.dataset.id)">✕</button></td>
       </tr>`).join('')}
-    </tbody></table>`;
+    </tbody></table></div>`;
 
   renderCardioChart();
 }
 
 function renderCardioChart() {
-  const last10 = [...state.cardioLog].slice(-10);
+  if (typeof Chart === 'undefined') return;
+  const last10 = [...state.cardioLog].sort(byNewest).slice(0, 10).reverse();
   const ctx = document.getElementById('chartCardio').getContext('2d');
   if (chartCardio) chartCardio.destroy();
   chartCardio = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: last10.map(c => new Date(c.date).toLocaleDateString('th-TH', {day:'numeric',month:'short'})),
+      labels: last10.map(c => fmtDate(c.date, {day:'numeric',month:'short'})),
       datasets: [
-        { label: 'ระยะเวลา (นาที)', data: last10.map(c => c.duration), borderColor: '#1565c0', backgroundColor: '#1565c022', tension: 0.3, fill: true },
-        { label: 'แคลอรี่', data: last10.map(c => c.kcal || 0), borderColor: '#e53935', backgroundColor: '#e5393522', tension: 0.3, fill: true, yAxisID: 'y2' },
+        { label: 'ระยะเวลา (นาที)', data: last10.map(c => Number(c.duration) || 0), borderColor: '#1565c0', backgroundColor: '#1565c022', tension: 0.3, fill: true },
+        { label: 'แคลอรี่', data: last10.map(c => Number(c.kcal) || 0), borderColor: '#e53935', backgroundColor: '#e5393522', tension: 0.3, fill: true, yAxisID: 'y2' },
       ]
     },
     options: { responsive:true, plugins:{legend:{labels:{color:'#ccc'}}}, scales:{ x:{ticks:{color:'#aaa'},grid:{color:'#333'}}, y:{ticks:{color:'#aaa'},grid:{color:'#333'}}, y2:{position:'right',ticks:{color:'#aaa'},grid:{display:false}} } }
@@ -1241,34 +1660,162 @@ function swLap() {
   lastLap = now;
   document.getElementById('sw-laps').innerHTML = `<div class="set-row"><div class="set-num">${lapCount}</div><div class="set-info">Lap ${lapCount}</div><strong>${fmtHMS(lapTime)}</strong></div>` + document.getElementById('sw-laps').innerHTML;
 }
-function swReset() { clearInterval(swInterval); swRunning = false; swElapsed = 0; lapCount = 0; lastLap = 0; updateSWDisplay(); document.getElementById('sw-btn-start').textContent = '▶ เริ่ม'; document.getElementById('sw-laps').innerHTML = ''; }
+function swReset() { clearInterval(swInterval); swRunning = false; swElapsed = 0; lapCount = 0; lastLap = 0; updateSWDisplay(); document.getElementById('sw-btn-start').textContent = '▶ เริ่ม'; document.getElementById('sw-laps').innerHTML = ''; resetHrSession(); }
 function updateSWDisplay() { document.getElementById('sw-display').textContent = fmtHMS(swNow()); }
 
-// Heart Rate Zones (Karvonen)
-function calcZones() {
-  const age = parseInt(document.getElementById('zone-age').value);
-  const rhr = parseInt(document.getElementById('zone-rhr').value);
-  const mhr = 220 - age;
-  if (!age || !rhr || rhr >= mhr) {
-    document.getElementById('zone-results').style.display = 'none';
-    document.getElementById('zone-placeholder').style.display = '';
+// เติมฟอร์มบันทึกคาร์ดิโอจาก stopwatch (+ HR เฉลี่ยจากนาฬิกาถ้าเชื่อมต่ออยู่)
+function swSaveAsCardio() {
+  const secs = swNow();
+  if (!secs) { alert('ยังไม่ได้จับเวลา'); return; }
+  if (swRunning) swStart();   // หยุดก่อน
+  showCardioTab('log');
+  document.getElementById('cardio-duration').value = Math.max(1, Math.round(secs / 60));
+  if (hrSession.count) document.getElementById('cardio-hr').value = Math.round(hrSession.sum / hrSession.count);
+  document.getElementById('cardio-date').value = todayStr();
+  toast('เติมข้อมูลแล้ว — ตรวจแล้วกด 💾 บันทึก');
+}
+
+// ════════════════════════════════════════════
+// LIVE HEART RATE (Web Bluetooth, Heart Rate Service 0x180D)
+// ════════════════════════════════════════════
+let hrDevice = null, hrChar = null, hrManualDisconnect = false, hrRetry = 0;
+let hrSession = { sum: 0, count: 0, max: 0 };
+
+// Heart Rate Measurement: บิต 0 ของ flags บอกว่าค่าเป็น uint8 หรือ uint16 (little-endian)
+function parseHeartRate(view) {
+  const flags = view.getUint8(0);
+  return (flags & 0x01) ? view.getUint16(1, true) : view.getUint8(1);
+}
+
+function setHrStatus(text, connected) {
+  document.getElementById('hr-status').textContent = text;
+  document.getElementById('hr-connect-btn').textContent = connected ? 'ตัดการเชื่อมต่อ' : 'เชื่อมต่อ';
+}
+
+function resetHrSession() {
+  hrSession = { sum: 0, count: 0, max: 0 };
+  ['hr-avg', 'hr-max'].forEach(id => { document.getElementById(id).textContent = '--'; });
+  document.getElementById('hr-count').textContent = '0';
+}
+
+function toggleHrDevice() {
+  if (hrDevice && hrDevice.gatt.connected) disconnectHr();
+  else connectHr();
+}
+
+async function connectHr() {
+  if (!('bluetooth' in navigator)) {
+    setHrStatus(window.isSecureContext
+      ? 'เบราว์เซอร์นี้ไม่รองรับ Bluetooth — ใช้ Chrome บน Android หรือคอมพิวเตอร์ (iPhone ไม่รองรับ)'
+      : 'ต้องเปิดแอปผ่าน https หรือ localhost จึงจะใช้ Bluetooth ได้', false);
     return;
   }
+  try {
+    setHrStatus('เลือกอุปกรณ์จากรายการ...', false);
+    const device = await navigator.bluetooth.requestDevice({ filters: [{ services: ['heart_rate'] }] });
+    if (hrDevice && hrDevice !== device) hrDevice.removeEventListener('gattserverdisconnected', onHrDisconnected);
+    hrDevice = device;
+    hrDevice.addEventListener('gattserverdisconnected', onHrDisconnected);
+    hrManualDisconnect = false;
+    await startHrNotifications();
+  } catch (e) {
+    if (e.name === 'NotFoundError') setHrStatus('ไม่ได้เลือกอุปกรณ์ — ถ้าไม่เห็นนาฬิกาในรายการ ให้เปิดโหมดส่ง HR บนนาฬิกาก่อน', false);
+    else setHrStatus('เชื่อมต่อไม่สำเร็จ: ' + e.message, false);
+  }
+}
+
+async function startHrNotifications() {
+  setHrStatus(`กำลังเชื่อมต่อ ${hrDevice.name || 'อุปกรณ์'}...`, false);
+  const server = await hrDevice.gatt.connect();
+  const service = await server.getPrimaryService('heart_rate');
+  if (hrChar) hrChar.removeEventListener('characteristicvaluechanged', onHrValue);
+  hrChar = await service.getCharacteristic('heart_rate_measurement');
+  hrChar.addEventListener('characteristicvaluechanged', onHrValue);
+  await hrChar.startNotifications();
+  hrRetry = 0;
+  setHrStatus(`เชื่อมต่อแล้ว: ${hrDevice.name || 'อุปกรณ์ HR'} — HR จะถูกนับเฉลี่ยเฉพาะตอน Stopwatch เดินอยู่`, true);
+  document.getElementById('hr-live').style.display = '';
+}
+
+function onHrValue(e) {
+  const bpm = parseHeartRate(e.target.value);
+  if (!bpm) return;   // 0 = ยังไม่ได้สัมผัสผิว
+  const el = document.getElementById('hr-bpm');
+  el.textContent = bpm;
+  el.classList.remove('hr-beat'); void el.offsetWidth; el.classList.add('hr-beat');
+  renderHrZone(bpm);
+  if (swRunning) {
+    hrSession.sum += bpm; hrSession.count++; hrSession.max = Math.max(hrSession.max, bpm);
+    document.getElementById('hr-avg').textContent = Math.round(hrSession.sum / hrSession.count);
+    document.getElementById('hr-max').textContent = hrSession.max;
+    document.getElementById('hr-count').textContent = hrSession.count;
+  }
+}
+
+function renderHrZone(bpm) {
+  const el = document.getElementById('hr-zone');
+  const p = state.profile || {};
+  const zones = buildZones(p.age, p.rhr);
+  if (!zones) { el.innerHTML = '<span class="text-muted" style="font-size:.82rem">ตั้งอายุและ HR พักในแท็บ “โซนหัวใจ” เพื่อดูว่าอยู่โซนไหน</span>'; return; }
+  const z = bpm < zones[0].min ? null : (zones.find(z => bpm <= z.max) || zones[zones.length - 1]);
+  el.innerHTML = z
+    ? `<span class="badge" style="background:${z.color}22;color:${z.color};border:1px solid ${z.color};font-size:.9rem">${z.name} · ${z.label}</span>`
+    : '<span class="badge badge-blue" style="font-size:.9rem">ต่ำกว่า Zone 1 · พัก/วอร์มอัพ</span>';
+}
+
+function onHrDisconnected() {
+  if (hrManualDisconnect) { setHrStatus('ตัดการเชื่อมต่อแล้ว', false); return; }
+  // หลุดเอง (ไกลเกิน/นาฬิกาหยุดส่ง): ลองเชื่อมใหม่ 3 ครั้ง
+  if (hrRetry < 3) {
+    hrRetry++;
+    setHrStatus(`สัญญาณหลุด — กำลังเชื่อมใหม่ (ครั้งที่ ${hrRetry}/3)...`, false);
+    setTimeout(() => startHrNotifications().catch(() => onHrDisconnected()), 1000 * hrRetry);
+  } else {
+    setHrStatus('สัญญาณหลุด เชื่อมใหม่ไม่สำเร็จ — กด “เชื่อมต่อ” อีกครั้ง', false);
+  }
+}
+
+function disconnectHr() {
+  hrManualDisconnect = true;
+  if (hrDevice && hrDevice.gatt.connected) hrDevice.gatt.disconnect();
+  setHrStatus('ตัดการเชื่อมต่อแล้ว', false);
+}
+
+// Heart Rate Zones (Karvonen)
+function buildZones(age, rhr) {
+  if (!age || !rhr) return null;
+  const mhr = 220 - age;
+  if (rhr >= mhr) return null;
   const hrr = mhr - rhr;
-  const zones = [
+  return [
     { name:'Zone 1', label:'เบามาก', color:'#64b5f6', min: Math.round(hrr * 0.50 + rhr), max: Math.round(hrr * 0.60 + rhr), desc:'ฟื้นฟู, เผาไขมัน' },
     { name:'Zone 2', label:'เบา',    color:'#81c784', min: Math.round(hrr * 0.60 + rhr), max: Math.round(hrr * 0.70 + rhr), desc:'Aerobic base, เผาไขมัน' },
     { name:'Zone 3', label:'ปานกลาง',color:'#fff176', min: Math.round(hrr * 0.70 + rhr), max: Math.round(hrr * 0.80 + rhr), desc:'Aerobic, ความอดทน' },
     { name:'Zone 4', label:'หนัก',   color:'#ffb74d', min: Math.round(hrr * 0.80 + rhr), max: Math.round(hrr * 0.90 + rhr), desc:'Lactate threshold' },
     { name:'Zone 5', label:'สูงสุด', color:'#ef5350', min: Math.round(hrr * 0.90 + rhr), max: mhr, desc:'VO2 max, HIIT' },
   ];
+}
+
+function calcZones() {
+  const age = num('zone-age', { min: 10, max: 90, int: true });
+  const rhr = num('zone-rhr', { min: 30, max: 100, int: true });
+  const zones = age === null || rhr === null ? null : buildZones(age, rhr);
+  if (!zones) {
+    document.getElementById('zone-results').style.display = 'none';
+    document.getElementById('zone-placeholder').style.display = '';
+    return;
+  }
+  // จำไว้ใช้กับ HR สดจากนาฬิกา
+  state.profile = { ...(state.profile || {}), age, rhr };
+  save();
+  const mhr = 220 - age;
 
   document.getElementById('zone-placeholder').style.display = 'none';
   document.getElementById('zone-results').style.display = '';
   document.getElementById('zone-bar').innerHTML = zones.map(z => `<div style="flex:1;background:${z.color}" title="${z.name}"></div>`).join('');
   document.getElementById('zone-table').innerHTML = `
     <div style="font-size:.8rem;color:var(--text-muted);margin-bottom:6px">HR สูงสุด: <strong style="color:var(--primary)">${mhr} bpm</strong></div>
-    <table>
+    <div class="table-wrap"><table>
       <thead><tr><th>โซน</th><th>ระดับ</th><th>HR (bpm)</th><th>ประโยชน์</th></tr></thead>
       <tbody>${zones.map(z => `
         <tr>
@@ -1278,7 +1825,7 @@ function calcZones() {
           <td class="text-muted">${z.desc}</td>
         </tr>`).join('')}
       </tbody>
-    </table>`;
+    </table></div>`;
 }
 
 function showCardioTab(tab) {
@@ -1342,11 +1889,11 @@ function showCalcTab(tab) {
 
 function calcBMR() {
   const gender = document.getElementById('bmr-gender').value;
-  const age = parseInt(document.getElementById('bmr-age').value);
-  const w = parseFloat(document.getElementById('bmr-weight').value);
-  const h = parseFloat(document.getElementById('bmr-height').value);
+  const age = num('bmr-age', { min: 10, max: 100, int: true });
+  const w = num('bmr-weight', { min: 30, max: 300 });
+  const h = num('bmr-height', { min: 100, max: 250 });
   const act = parseFloat(document.getElementById('bmr-activity').value);
-  if (!age || !w || !h) { alert('กรุณากรอกข้อมูลให้ครบ'); return; }
+  if (age === null || w === null || h === null) { alert('กรุณากรอกข้อมูลให้ครบ: อายุ 10–100, น้ำหนัก 30–300 kg, ส่วนสูง 100–250 cm'); return; }
 
   const bmr = gender === 'male' ? 88.362 + 13.397 * w + 4.799 * h - 5.677 * age : 447.593 + 9.247 * w + 3.098 * h - 4.330 * age;
   const tdee = bmr * act;
@@ -1365,9 +1912,10 @@ function calcBMR() {
 }
 
 function calcBMI() {
-  const w = parseFloat(document.getElementById('bmi-weight').value);
-  const h = parseFloat(document.getElementById('bmi-height').value) / 100;
-  if (!w || !h) { alert('กรุณากรอกข้อมูล'); return; }
+  const w = num('bmi-weight', { min: 30, max: 300 });
+  const hcm = num('bmi-height', { min: 100, max: 250 });
+  if (w === null || hcm === null) { alert('กรุณากรอกข้อมูล: น้ำหนัก 30–300 kg, ส่วนสูง 100–250 cm'); return; }
+  const h = hcm / 100;
   const bmi = w / (h * h);
   let cat, col;
   if (bmi < 18.5) { cat = 'น้ำหนักน้อย'; col = '#42a5f5'; }
@@ -1388,15 +1936,19 @@ function calcBMI() {
 }
 
 function calcMacro() {
-  const kcal = parseInt(document.getElementById('macro-kcal').value);
+  const kcal = num('macro-kcal', { min: 1000, max: 6000, int: true });
   const goal = document.getElementById('macro-goal').value;
-  const bw = parseFloat(document.getElementById('macro-weight').value) || 70;
-  if (!kcal) { alert('กรุณากรอกแคลอรี่'); return; }
+  const bw = optNum('macro-weight', { min: 30, max: 300 });
+  if (kcal === null) { alert('กรุณากรอกแคลอรี่ (1000–6000 kcal)'); return; }
+  if (bw === null) { alert('น้ำหนักตัวต้องอยู่ระหว่าง 30–300 kg'); return; }
+  const weight = bw || 70;
 
   let protein, fat, carb;
-  if (goal === 'cut') { protein = bw * 2.4; fat = kcal * 0.25 / 9; carb = (kcal - protein * 4 - fat * 9) / 4; }
-  else if (goal === 'bulk') { protein = bw * 2.0; fat = kcal * 0.30 / 9; carb = (kcal - protein * 4 - fat * 9) / 4; }
-  else { protein = bw * 2.2; fat = kcal * 0.27 / 9; carb = (kcal - protein * 4 - fat * 9) / 4; }
+  if (goal === 'cut') { protein = weight * 2.4; fat = kcal * 0.25 / 9; carb = (kcal - protein * 4 - fat * 9) / 4; }
+  else if (goal === 'bulk') { protein = weight * 2.0; fat = kcal * 0.30 / 9; carb = (kcal - protein * 4 - fat * 9) / 4; }
+  else { protein = weight * 2.2; fat = kcal * 0.27 / 9; carb = (kcal - protein * 4 - fat * 9) / 4; }
+  // โปรตีน + ไขมันเกินแคลอรี่รวม: คาร์บถูกตัดเป็น 0 ต้องบอกผู้ใช้
+  const overBudget = carb < 0;
   carb = Math.max(0, Math.round(carb)); protein = Math.round(protein); fat = Math.round(fat);
 
   document.getElementById('macro-result').innerHTML = `
@@ -1405,32 +1957,35 @@ function calcMacro() {
       <div class="stat-box"><div class="val" style="color:var(--secondary)">${carb}g</div><div class="lbl">🍚 คาร์บ (${carb * 4} kcal)</div><div class="progress-wrap mt8"><div class="progress-fill" style="width:${Math.min(100,(carb*4/kcal*100).toFixed(0))}%;background:var(--secondary)"></div></div></div>
       <div class="stat-box"><div class="val" style="color:var(--orange)">${fat}g</div><div class="lbl">🧈 ไขมัน (${fat * 9} kcal)</div><div class="progress-wrap mt8"><div class="progress-fill" style="width:${Math.min(100,(fat*9/kcal*100).toFixed(0))}%;background:var(--orange)"></div></div></div>
     </div>
-    <div class="text-muted mt8" style="font-size:.82rem">* มื้อ 4 มื้อ/วัน: โปรตีน ~${Math.round(protein/4)}g · คาร์บ ~${Math.round(carb/4)}g · ไขมัน ~${Math.round(fat/4)}g ต่อมื้อ</div>`;
+    ${overBudget ? `<div class="warn-box mt8">แคลอรี่ ${kcal} kcal ต่ำเกินไปสำหรับน้ำหนักตัว ${weight} kg — โปรตีนและไขมันรวมกันเกินแคลอรี่แล้ว (${protein * 4 + fat * 9} kcal) คาร์บจึงเป็น 0</div>` : ''}
+    <div class="text-muted mt8" style="font-size:.82rem">* มื้อ 4 มื้อ/วัน: โปรตีน ~${Math.round(protein/4)}g · คาร์บ ~${Math.round(carb/4)}g · ไขมัน ~${Math.round(fat/4)}g ต่อมื้อ${bw ? '' : ' (ใช้น้ำหนักตัว 70 kg เพราะไม่ได้กรอก)'}</div>`;
 }
 
 function calc1RM() {
-  const w = parseFloat(document.getElementById('orm-weight').value);
-  const r = parseInt(document.getElementById('orm-reps').value);
-  if (!w || !r) { alert('กรุณากรอกข้อมูล'); return; }
+  const w = num('orm-weight', { min: 1, max: 1000 });
+  const r = num('orm-reps', { min: 1, max: 30, int: true });
+  if (w === null || r === null) { alert('น้ำหนัก 1–1000 kg และ Reps 1–30'); return; }
 
-  const epley = w * (1 + r / 30);
+  // Brzycki แม่นช่วง 1–10 reps และหารด้วย 0 ที่ 37 reps
+  const epley = r === 1 ? w : w * (1 + r / 30);
   const brzycki = w * 36 / (37 - r);
-  const avg = (epley + brzycki) / 2;
+  const avg = r <= 10 ? (epley + brzycki) / 2 : epley;
 
   const pcts = [100, 95, 90, 85, 80, 75, 70, 65, 60];
   document.getElementById('orm-result').innerHTML = `
     <div class="grid3" style="margin-bottom:16px">
-      <div class="stat-box"><div class="val" style="color:var(--primary)">${avg.toFixed(1)}kg</div><div class="lbl">1RM เฉลี่ย</div></div>
+      <div class="stat-box"><div class="val" style="color:var(--primary)">${avg.toFixed(1)}kg</div><div class="lbl">${r <= 10 ? '1RM เฉลี่ย' : '1RM (Epley)'}</div></div>
       <div class="stat-box"><div class="val" style="color:var(--secondary)">${epley.toFixed(1)}kg</div><div class="lbl">สูตร Epley</div></div>
-      <div class="stat-box"><div class="val" style="color:var(--green)">${brzycki.toFixed(1)}kg</div><div class="lbl">สูตร Brzycki</div></div>
+      <div class="stat-box"><div class="val" style="color:var(--green)">${r <= 10 ? brzycki.toFixed(1) + 'kg' : '—'}</div><div class="lbl">สูตร Brzycki${r <= 10 ? '' : ' (ใช้ได้ถึง 10 reps)'}</div></div>
     </div>
-    <table>
+    ${r > 10 ? '<div class="warn-box">Reps เกิน 10 ค่าประมาณ 1RM คลาดเคลื่อนสูง</div>' : ''}
+    <div class="table-wrap"><table>
       <thead><tr><th>%1RM</th><th>น้ำหนัก (kg)</th><th>Reps โดยประมาณ</th></tr></thead>
       <tbody>${pcts.map(p => {
         const repsMap = {100:1,95:2,90:4,85:6,80:8,75:10,70:12,65:15,60:18};
         return `<tr><td><span class="badge badge-blue">${p}%</span></td><td><strong>${(avg * p / 100).toFixed(1)} kg</strong></td><td class="text-muted">${repsMap[p]} reps</td></tr>`;
       }).join('')}</tbody>
-    </table>`;
+    </table></div>`;
 }
 
 // ════════════════════════════════════════════
@@ -1440,23 +1995,29 @@ function openLogModal() {
   document.getElementById('modal-date').value = todayStr();
   document.getElementById('log-modal').classList.add('open');
 }
-function closeLogModal() { document.getElementById('log-modal').classList.remove('open'); }
+function closeLogModal() {
+  document.getElementById('log-modal').classList.remove('open');
+  ['modal-duration', 'modal-cals', 'modal-note'].forEach(id => { document.getElementById(id).value = ''; });
+}
 function saveQuickLog() {
   const type = document.getElementById('modal-type').value;
   const date = document.getElementById('modal-date').value || todayStr();
-  const dur = parseInt(document.getElementById('modal-duration').value) || 0;
-  const cals = parseInt(document.getElementById('modal-cals').value) || 0;
+  const dur = num('modal-duration', { min: 1, max: 1440, int: true });
+  const cals = optNum('modal-cals', { min: 0, max: 20000, int: true });
   const note = document.getElementById('modal-note').value;
-  if (!dur) { alert('กรุณากรอกระยะเวลา'); return; }
+  if (dur === null) { alert('กรุณากรอกระยะเวลา (1–1440 นาที)'); return; }
+  if (cals === null) { alert('แคลอรี่ต้องอยู่ระหว่าง 0–20000'); return; }
+  const ts = Date.now();
   if (type === 'cardio' || type === 'both') {
-    state.cardioLog.push({ type:'ออกกำลังกาย', duration:dur, kcal:cals, date, note, intensity:'ปานกลาง' });
+    state.cardioLog.push({ id: newId(), type:'ออกกำลังกาย', duration:dur, kcal:cals, date, note, intensity:'ปานกลาง', ts });
   }
   if (type === 'weight' || type === 'both') {
-    state.sessions.push({ date, sets:[], volume:0, muscles:[], cals: type === 'both' ? 0 : cals, note });
+    state.sessions.push({ id: newId(), date, ts, sets:[], volume:0, muscles:[], cals: type === 'both' ? 0 : cals, note });
   }
   save();
   closeLogModal();
   renderDashboard();
+  toast('บันทึกสำเร็จ');
 }
 
 // ════════════════════════════════════════════
@@ -1464,7 +2025,24 @@ function saveQuickLog() {
 // ════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
   renderDashboard();
+
+  // Modal: ปิดด้วย Esc หรือคลิกพื้นหลัง
+  const modal = document.getElementById('log-modal');
+  const exModal = document.getElementById('ex-modal');
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if (exModal.classList.contains('open')) closeExerciseModal();
+    else if (modal.classList.contains('open')) closeLogModal();
+  });
+  modal.addEventListener('click', e => { if (e.target === modal) closeLogModal(); });
+  exModal.addEventListener('click', e => { if (e.target === exModal) closeExerciseModal(); });
+
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    // ติดตั้งครั้งแรก clients.claim() ก็ทำให้ controllerchange ทำงาน จึงแจ้งเฉพาะเมื่อมี SW ตัวเดิมอยู่แล้ว
+    const hadController = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (hadController) toast('มีเวอร์ชันใหม่ — รีโหลดหน้าเพื่ออัปเดต');
+    });
     navigator.serviceWorker.register('sw.js').catch(() => {});
   }
 });

@@ -1,5 +1,6 @@
-const CACHE = 'fittrack-v1';
-const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
+// เปลี่ยนเลขทุกครั้งที่ deploy เพื่อล้างแคชเก่า
+const CACHE = 'fittrack-v2';
+const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './vendor/chart.umd.min.js'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -12,13 +13,15 @@ self.addEventListener('activate', e => {
   );
 });
 
-// ใช้แคชก่อน แล้วอัปเดตเบื้องหลัง (รวม Chart.js จาก CDN) ทำให้เปิดออฟไลน์ได้
+// ใช้แคชก่อน แล้วอัปเดตเบื้องหลัง ทำให้เปิดออฟไลน์ได้
+// แคชเฉพาะไฟล์ของแอปเอง (Chart.js อยู่ใน vendor/ แล้ว) ไม่ให้แคชโตไม่จำกัด
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+  if (new URL(e.request.url).origin !== self.location.origin) return;
   e.respondWith(
     caches.match(e.request).then(cached => {
       const network = fetch(e.request).then(res => {
-        if (res && (res.ok || res.type === 'opaque')) {
+        if (res && res.ok) {
           const copy = res.clone();
           caches.open(CACHE).then(c => c.put(e.request, copy));
         }
