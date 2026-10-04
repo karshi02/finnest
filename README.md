@@ -2,27 +2,40 @@
 
 PWA สำหรับบันทึกเวทเทรนนิ่งและคาร์ดิโอ: คลังท่าพร้อมวิดีโอสอน, นาฬิกาพัก, stopwatch, โซนหัวใจ, HR สดจากนาฬิกาผ่าน Bluetooth และเครื่องคำนวณ BMR/BMI/มาโคร/1RM ข้อมูลเก็บในเครื่อง (localStorage) และ Export/Import เป็น JSON ได้
 
-## รันในเครื่อง
+## ติดตั้ง / เปิดใช้ (Windows): คำสั่งเดียว
 
-ต้องมี [Git](https://git-scm.com/) และ [Python](https://www.python.org/downloads/) (หรือ [Node.js](https://nodejs.org/))
+ไม่ต้องติดตั้ง Git หรือ Python
 
-**Windows (PowerShell)**: ก๊อปทั้งบรรทัดไปวาง จะดาวน์โหลดโปรเจกต์ เปิด server และเปิดเบราว์เซอร์ให้เอง
+1. กด **Win + R** พิมพ์ `powershell` แล้วกด Enter
+2. ก๊อปคำสั่งนี้ไปวาง แล้วกด Enter
 
 ```powershell
-if (!(Test-Path fitt)) { git clone https://github.com/teslatesla040-del/fitt.git }; cd fitt; git pull; Start-Process cmd -ArgumentList '/c timeout /t 2 >nul & start http://localhost:8080/'; python -m http.server 8080 --bind 127.0.0.1
+irm https://raw.githubusercontent.com/teslatesla040-del/fitt/main/run.ps1 | iex
 ```
 
-**macOS / Linux**
+คำสั่งนี้จะดาวน์โหลดแอปเวอร์ชันล่าสุด เปิดแอปที่ `http://localhost:8080` แล้วเปิดเบราว์เซอร์ให้เอง
+
+- **ต้องเปิดหน้าต่าง PowerShell ทิ้งไว้** ระหว่างใช้งาน ปิดหน้าต่างหรือกด `Ctrl + C` เมื่อเลิกใช้
+- ครั้งต่อไปรันคำสั่งเดิมได้เลย จะได้เวอร์ชันล่าสุดทุกครั้ง และข้อมูลการออกกำลังกายยังอยู่ เพราะเก็บไว้ในเบราว์เซอร์ ไม่ได้อยู่ในโฟลเดอร์แอป
+- ใช้พอร์ต 8080 เสมอ ข้อมูลผูกกับที่อยู่ `http://localhost:8080` ถ้าเปิดที่อยู่อื่นจะเห็นแอปว่างเปล่า
+
+## สำหรับนักพัฒนา
+
+โหลดโปรเจกต์แล้วดับเบิลคลิก **`start.bat`** หรือรัน:
+
+```powershell
+git clone https://github.com/teslatesla040-del/fitt.git; cd fitt; powershell -ExecutionPolicy Bypass -File run.ps1
+```
+
+macOS / Linux (ต้องมี Python 3):
 
 ```bash
 [ -d fitt ] || git clone https://github.com/teslatesla040-del/fitt.git; cd fitt && git pull; (sleep 2; open http://localhost:8080/ 2>/dev/null || xdg-open http://localhost:8080/) & python3 -m http.server 8080 --bind 127.0.0.1
 ```
 
-ถ้าโหลดโปรเจกต์มาแล้ว ให้ดับเบิลคลิก **`start.bat`** (Windows)
-
-หยุด server ด้วย `Ctrl + C` หรือปิดหน้าต่าง
-
 > อย่าเปิดด้วยการดับเบิลคลิก `index.html` (`file://`) เพราะวิดีโอ YouTube, Bluetooth และ Service Worker จะใช้ไม่ได้
+>
+> `run.ps1` ต้องเป็น ASCII ล้วน และห้ามมี BOM ไม่เช่นนั้น `irm | iex` บน PowerShell 5.1 จะพัง
 
 ## เอกสาร
 
