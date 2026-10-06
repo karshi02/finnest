@@ -10,7 +10,7 @@ PWA สำหรับบันทึกเวทเทรนนิ่งแล�
 2. ก๊อปคำสั่งนี้ไปวาง แล้วกด Enter
 
 ```powershell
-irm https://raw.githubusercontent.com/karshi02/fitt/main/run.ps1 | iex
+irm https://raw.githubusercontent.com/karshi02/finnest/main/run.ps1 | iex
 ```
 
 คำสั่งนี้จะดาวน์โหลดแอปเวอร์ชันล่าสุด เปิดแอปที่ `http://localhost:8080` แล้วเปิดเบราว์เซอร์ให้เอง
@@ -24,13 +24,13 @@ irm https://raw.githubusercontent.com/karshi02/fitt/main/run.ps1 | iex
 โหลดโปรเจกต์แล้วดับเบิลคลิก **`start.bat`** หรือรัน:
 
 ```powershell
-git clone https://github.com/karshi02/fitt.git; cd fitt; powershell -ExecutionPolicy Bypass -File run.ps1
+git clone https://github.com/karshi02/finnest.git; cd finnest; powershell -ExecutionPolicy Bypass -File run.ps1
 ```
 
 macOS / Linux (ต้องมี Python 3):
 
 ```bash
-[ -d fitt ] || git clone https://github.com/karshi02/fitt.git; cd fitt && git pull; (sleep 2; open http://localhost:8080/ 2>/dev/null || xdg-open http://localhost:8080/) & python3 -m http.server 8080 --bind 127.0.0.1
+[ -d finnest ] || git clone https://github.com/karshi02/finnest.git; cd finnest && git pull; (sleep 2; open http://localhost:8080/ 2>/dev/null || xdg-open http://localhost:8080/) & python3 -m http.server 8080 --bind 127.0.0.1
 ```
 
 > อย่าเปิดด้วยการดับเบิลคลิก `index.html` (`file://`) เพราะวิดีโอ YouTube, Bluetooth และ Service Worker จะใช้ไม่ได้

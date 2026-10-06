@@ -1,11 +1,11 @@
 # FitTrack Pro launcher (Windows PowerShell 5.1+, no Git/Python needed)
-#   Download + run:  irm https://raw.githubusercontent.com/karshi02/fitt/main/run.ps1 | iex
+#   Download + run:  irm https://raw.githubusercontent.com/karshi02/finnest/main/run.ps1 | iex
 #   Inside the repo: powershell -ExecutionPolicy Bypass -File run.ps1
 # Serves the app on http://localhost:8080 and opens the browser.
 # Keep this file ASCII-only: a BOM or non-ASCII text breaks "irm | iex" on PowerShell 5.1.
 
 $ErrorActionPreference = 'Stop'
-$Repo   = 'karshi02/fitt'
+$Repo   = 'karshi02/finnest'
 $Branch = 'main'
 # Fixed port: browser data (localStorage) belongs to http://localhost:8080,
 # a different port would look like an empty app.
