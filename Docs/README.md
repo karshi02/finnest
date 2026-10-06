@@ -14,3 +14,4 @@
 | 8 | 2026-10-05 | [PLAN-STRAVA-SYNC.md](PLAN-STRAVA-SYNC.md) | ร่างแผนซิงก์กิจกรรมจากนาฬิกาผ่าน Strava: สถาปัตยกรรม, mapping, งาน S1–S10 (~10–14 ชม.), ทดสอบ, ความปลอดภัย (ยังไม่ลงมือ) |
 | 9 | 2026-10-05 | [FIX-REPORT-05.md](FIX-REPORT-05.md) | คำสั่งเดียวสำหรับลูกค้า (run.ps1: ดาวน์โหลด + server + เปิดเบราว์เซอร์ ไม่ต้องมี Git/Python) และสถานะ push (403) |
 | 10 | 2026-10-06 | [FIX-REPORT-06.md](FIX-REPORT-06.md) | ย้ายไป karshi02/finnest, push สำเร็จ และตรวจแล้วว่าคำสั่งของลูกค้าดาวน์โหลดเวอร์ชันใหม่ได้ |
+| 11 | 2026-10-06 | [FIX-REPORT-07.md](FIX-REPORT-07.md) | Deploy ขึ้น Vercel (fitt-zeta.vercel.app, แบบชั่วคราว) และตั้งค่า Vercel CLI, plugin และ MCP |
