@@ -15,3 +15,4 @@
 | 9 | 2026-10-05 | [FIX-REPORT-05.md](FIX-REPORT-05.md) | คำสั่งเดียวสำหรับลูกค้า (run.ps1: ดาวน์โหลด + server + เปิดเบราว์เซอร์ ไม่ต้องมี Git/Python) และสถานะ push (403) |
 | 10 | 2026-10-06 | [FIX-REPORT-06.md](FIX-REPORT-06.md) | ย้ายไป karshi02/finnest, push สำเร็จ และตรวจแล้วว่าคำสั่งของลูกค้าดาวน์โหลดเวอร์ชันใหม่ได้ |
 | 11 | 2026-10-06 | [FIX-REPORT-07.md](FIX-REPORT-07.md) | Deploy ขึ้น Vercel (fitt-zeta.vercel.app, แบบชั่วคราว) และตั้งค่า Vercel CLI, plugin และ MCP |
+| 12 | 2026-10-07 | [BOOK-REPORT-01.md](BOOK-REPORT-01.md) | เล่มโครงงาน 5 บท [PROJECT-BOOK.pdf](PROJECT-BOOK.pdf) 51 หน้า ตามรูปแบบ มรภ.มหาสารคาม, ต้นฉบับใน `book/` และรายการช่องที่ต้องเติมก่อนส่ง |

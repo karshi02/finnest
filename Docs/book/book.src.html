@@ -1,0 +1,1026 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>โปรแกรมออกกำลังกายสำหรับมือใหม่</title>
+<style>
+@font-face { font-family: 'Sarabun'; src: url(fonts/Sarabun-Regular.ttf); font-weight: 400; font-style: normal; }
+@font-face { font-family: 'Sarabun'; src: url(fonts/Sarabun-Bold.ttf); font-weight: 700; font-style: normal; }
+@font-face { font-family: 'Sarabun'; src: url(fonts/Sarabun-Italic.ttf); font-weight: 400; font-style: italic; }
+@font-face { font-family: 'Sarabun'; src: url(fonts/Sarabun-BoldItalic.ttf); font-weight: 700; font-style: italic; }
+
+/* build.py แทนที่บรรทัดนี้ด้วย @counter-style frontnum / bodynum ตามเลขหน้าจริง */
+/*COUNTERS*/
+
+@page { size: A4; margin: 1.5in 1in 1in 1.5in; }
+@page cover { @top-right { content: none; } }
+@page front { @top-right { content: counter(page, frontnum); font: 12pt 'Sarabun'; vertical-align: bottom; padding-bottom: 0.35in; } }
+@page body  { @top-right { content: counter(page, bodynum);  font: 12pt 'Sarabun'; vertical-align: bottom; padding-bottom: 0.35in; } }
+
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font-family: 'Sarabun', sans-serif; font-size: 12pt; line-height: 1.7; color: #000; margin: 0; }
+.cover { page: cover; break-after: page; }
+.front { page: front; break-after: page; }
+.body  { page: body; }
+.chapter { break-before: page; }
+.newpage { break-before: page; }
+
+p { margin: 0 0 0.35em; text-align: justify; text-indent: 0.5in; }
+p.ni { text-indent: 0; }
+h1.chap { text-align: center; font-size: 15pt; margin: 0 0 1.2em; line-height: 1.6; }
+h1.chap span { display: block; }
+h1.fronth { text-align: center; font-size: 15pt; margin: 0 0 1em; }
+h2 { font-size: 13pt; margin: 1em 0 0.3em; break-after: avoid; }
+h3 { font-size: 12pt; margin: 0.8em 0 0.2em; break-after: avoid; }
+h3.sub { padding-left: 0.5in; }
+ul, ol { margin: 0 0 0.4em; padding-left: 0.9in; }
+li { text-align: justify; }
+code, pre { font-family: Consolas, 'Courier New', monospace; font-size: 9.5pt; }
+pre { border: 1px solid #999; background: #f6f6f6; padding: 8px 10px; line-height: 1.35; white-space: pre-wrap; break-inside: avoid; }
+.mk { font-size: 1px; color: #fff; }
+
+/* ตารางและภาพ */
+.tcap { font-weight: 700; margin: 0.8em 0 0.2em; break-after: avoid; }
+.tcap b { font-weight: 700; }
+table.t { width: 100%; border-collapse: collapse; font-size: 11pt; line-height: 1.45; margin-bottom: 0.8em; }
+table.t th, table.t td { border: 1px solid #000; padding: 3px 6px; vertical-align: top; text-align: left; }
+table.t th { background: #e8e8e8; text-align: center; }
+table.t td.c { text-align: center; }
+table.t tr { break-inside: avoid; }
+.tblk { break-inside: avoid; }
+table.t thead { display: table-header-group; }
+table.kv td { border: none; padding: 1px 4px; vertical-align: top; }
+figure { margin: 0.8em 0; text-align: center; break-inside: avoid; }
+figure img.shot { width: 100%; border: 1px solid #888; }
+figure svg { max-width: 100%; height: auto; }
+figcaption { margin-top: 0.3em; font-size: 12pt; }
+figcaption b { font-weight: 700; }
+
+/* ปก */
+.cv { text-align: center; height: 9.1in; display: flex; flex-direction: column; justify-content: space-between; }
+.cv .title { font-size: 16pt; font-weight: 700; line-height: 1.6; }
+.cv .names { font-size: 14pt; font-weight: 700; line-height: 1.8; }
+.cv .stmt { font-size: 14pt; font-weight: 700; line-height: 1.7; }
+.cv img { width: 1.3in; margin: 0 auto; }
+
+/* หน้าอนุมัติ */
+.sig { margin: 1.4em 0 0 3in; line-height: 1.6; }
+.sig div { text-align: center; }
+.appr { width: 100%; border-collapse: collapse; }
+.appr td { padding: 0.55em 0 0; vertical-align: bottom; }
+
+/* สารบัญ */
+.toc { width: 100%; }
+.toc .row { display: flex; align-items: baseline; line-height: 1.75; }
+.toc .row .tx { flex: 0 1 auto; }
+.toc .row .dots { flex: 1 1 auto; border-bottom: 1px dotted #000; margin: 0 4px; transform: translateY(-4px); min-width: 12px; }
+.toc .row .pg { flex: 0 0 auto; min-width: 22px; text-align: right; }
+.toc .l2 { padding-left: 0.45in; }
+.toc .head { display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 0.3em; }
+
+.abs-head td { padding: 0 6px 0 0; vertical-align: top; }
+.blank { color: #000; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ ปกนอก ═══════════ -->
+<section class="cover"><div class="cv">
+  <div><img src="img/logo.png" alt="ตรามหาวิทยาลัยราชภัฏมหาสารคาม"></div>
+  <div class="title">โปรแกรมออกกำลังกายสำหรับมือใหม่<br>BEGINNER WORKOUT PROGRAM</div>
+  <div class="names">ปฏิภาณทวี ศรีจันทร์ไชย &nbsp; 623121070119<br>กิติชา ลาจ้อย &nbsp; 613121070105<br>นายสุรภักดิ์ รักสกุล &nbsp; 643121070131</div>
+  <div class="stmt">โครงการวิจัยนี้เป็นส่วนหนึ่งของการศึกษาตาม<br>หลักสูตรวิศวกรรมศาสตรบัณฑิต สาขาวิชาวิศวกรรมคอมพิวเตอร์<br>คณะวิศวกรรมศาสตร์ มหาวิทยาลัยราชภัฏมหาสารคาม<br>ปี พ.ศ. ๒๕๖๙</div>
+</div></section>
+
+<!-- ═══════════ ปกใน ═══════════ -->
+<section class="cover"><div class="cv">
+  <div class="title" style="margin-top:0.6in">โปรแกรมออกกำลังกายสำหรับมือใหม่</div>
+  <div class="names">ปฏิภาณทวี ศรีจันทร์ไชย<br>กิติชา ลาจ้อย<br>นายสุรภักดิ์ รักสกุล</div>
+  <div class="stmt">โครงการวิจัยนี้เป็นส่วนหนึ่งของการศึกษาตามหลักสูตรวิศวกรรมศาสตรบัณฑิต<br>สาขาวิชาวิศวกรรมคอมพิวเตอร์<br>คณะวิศวกรรมศาสตร์ มหาวิทยาลัยราชภัฏมหาสารคาม<br>ปี พ.ศ. 2569</div>
+</div></section>
+
+<!-- ═══════════ ปกภาษาอังกฤษ ═══════════ -->
+<section class="cover"><div class="cv">
+  <div class="title" style="margin-top:0.6in">BEGINNER WORKOUT PROGRAM</div>
+  <div class="names">..........................................................<br>..........................................................<br>..........................................................</div>
+  <div class="stmt">A Research Project Submitted in Partial Fulfillment of the Requirements<br>for the Bachelor of Engineering Program in Computer Engineering<br>Faculty of Engineering<br>Rajabhat Maha Sarakham University<br>2026</div>
+</div></section>
+
+<!-- ═══════════ หน้าอนุมัติ (คณะกรรมการ) ═══════════ -->
+<section class="cover">
+  <p class="ni" style="text-align:center"><img src="img/logo.png" alt="" style="width:0.9in"></p>
+  <p class="ni" style="text-align:center"><b>ใบรับรองโครงการวิจัย<br>สาขาวิชาวิศวกรรมคอมพิวเตอร์ คณะวิศวกรรมศาสตร์ มหาวิทยาลัยราชภัฏมหาสารคาม</b></p>
+  <p>คณะกรรมการสอบโครงการวิจัย ได้พิจารณาโครงการวิจัยเรื่อง “โปรแกรมออกกำลังกายสำหรับมือใหม่” ของ ปฏิภาณทวี ศรีจันทร์ไชย, กิติชา ลาจ้อย และนายสุรภักดิ์ รักสกุล แล้ว เห็นสมควรรับเป็นส่วนหนึ่งของการศึกษาตามหลักสูตรวิศวกรรมศาสตรบัณฑิต สาขาวิชาวิศวกรรมคอมพิวเตอร์ มหาวิทยาลัยราชภัฏมหาสารคาม</p>
+  <table class="appr">
+    <tr><td style="width:3in"><b>คณะกรรมการสอบ</b></td><td></td></tr>
+    <tr><td></td><td style="text-align:center">.............................................................. ประธานกรรมการ<br>(ผู้ช่วยศาสตราจารย์ ดร.ภาคย์ สธนเสาวภาคย์)</td></tr>
+    <tr><td></td><td style="text-align:center">.............................................................. กรรมการ<br>(อาจารย์วุฒิกร อนันตสิริชัย)<br>อาจารย์ที่ปรึกษาโครงการวิจัยหลัก</td></tr>
+    <tr><td></td><td style="text-align:center">.............................................................. กรรมการ<br>(..............................................................)</td></tr>
+    <tr><td></td><td style="text-align:center">.............................................................. กรรมการ<br>(..............................................................)</td></tr>
+  </table>
+</section>
+
+<!-- ═══════════ หน้าอนุมัติ (มหาวิทยาลัย) ═══════════ -->
+<section class="cover">
+  <p class="ni" style="text-align:center"><b>หน้าอนุมัติ</b></p>
+  <p>มหาวิทยาลัยราชภัฏมหาสารคาม อนุมัติให้นับโครงการวิจัยฉบับนี้เป็นส่วนหนึ่งของการศึกษาตามหลักสูตรวิศวกรรมศาสตรบัณฑิต สาขาวิชาวิศวกรรมคอมพิวเตอร์</p>
+  <table class="appr" style="margin-top:1em">
+    <tr><td style="width:2.6in"></td><td style="text-align:center">..............................................................<br>(ผู้ช่วยศาสตราจารย์ ดร.ภาคย์ สธนเสาวภาคย์)<br>อาจารย์ผู้รับผิดชอบรายวิชา<br>วันที่ ........ เดือน .................... พ.ศ. ............</td></tr>
+    <tr><td></td><td style="text-align:center;padding-top:1.4em">..............................................................<br>(อาจารย์ภัทราวัลย์ คำปลิว)<br>ประธานสาขาวิชาวิศวกรรมคอมพิวเตอร์<br>วันที่ ........ เดือน .................... พ.ศ. ............</td></tr>
+    <tr><td></td><td style="text-align:center;padding-top:1.4em">..............................................................<br>(อาจารย์ ดร.ภาณุวัตร รื่นเรืองฤทธิ์)<br>คณบดีคณะวิศวกรรมศาสตร์<br>วันที่ ........ เดือน .................... พ.ศ. ............</td></tr>
+  </table>
+</section>
+
+<!-- ═══════════ บทคัดย่อ ═══════════ -->
+<section class="front" id="front-start">
+  <h1 class="fronth" data-toc="บทคัดย่อภาษาไทย" data-kind="front">บทคัดย่อ</h1>
+  <table class="abs-head" style="margin-bottom:0.8em">
+    <tr><td style="width:1.55in"><b>ชื่อโครงการวิจัย</b></td><td>โปรแกรมออกกำลังกายสำหรับมือใหม่</td></tr>
+    <tr><td><b>ผู้วิจัย</b></td><td>ปฏิภาณทวี ศรีจันทร์ไชย, กิติชา ลาจ้อย, นายสุรภักดิ์ รักสกุล</td></tr>
+    <tr><td><b>อาจารย์ที่ปรึกษา</b></td><td>อาจารย์วุฒิกร อนันตสิริชัย</td></tr>
+    <tr><td><b>ปริญญา</b></td><td>วิศวกรรมศาสตรบัณฑิต สาขาวิชาวิศวกรรมคอมพิวเตอร์</td></tr>
+    <tr><td><b>สถานศึกษา</b></td><td>คณะวิศวกรรมศาสตร์ มหาวิทยาลัยราชภัฏมหาสารคาม</td></tr>
+    <tr><td><b>ปีที่พิมพ์</b></td><td>พ.ศ. 2569</td></tr>
+  </table>
+  <p>โครงการวิจัยนี้มีวัตถุประสงค์เพื่อพัฒนาโปรแกรมออกกำลังกายสำหรับผู้ที่เพิ่งเริ่มออกกำลังกาย ชื่อว่า FitTrack Pro ในรูปแบบ Progressive Web App (PWA) ที่เปิดใช้งานผ่านเว็บเบราว์เซอร์ได้ทั้งบนคอมพิวเตอร์และโทรศัพท์มือถือ และติดตั้งลงหน้าจอโฮมได้โดยไม่ต้องผ่านร้านค้าแอปพลิเคชัน โปรแกรมประกอบด้วยคลังท่าออกกำลังกาย 30 ท่าใน 7 กลุ่มกล้ามเนื้อ พร้อมวิดีโอสอนจาก YouTube ที่เล่นได้ภายในแอป ระบบบันทึกเวทเทรนนิ่งแบบราย set พร้อมนาฬิกาจับเวลาพัก ระบบบันทึกคาร์ดิโอและนาฬิกาจับเวลา การคำนวณโซนอัตราการเต้นของหัวใจด้วยวิธีของ Karvonen การรับค่าอัตราการเต้นของหัวใจแบบสดจากนาฬิกาอัจฉริยะผ่าน Web Bluetooth ตารางและแผนการฝึกสำเร็จรูป 6 แบบ เครื่องคำนวณ BMR/TDEE, BMI, สารอาหารหลัก และ 1RM ตลอดจนหน้าสรุปภาพรวมพร้อมกราฟ ข้อมูลทั้งหมดเก็บไว้ในเครื่องของผู้ใช้ (localStorage) และสำรองหรือย้ายเครื่องได้ด้วยไฟล์ JSON</p>
+  <p>ผลการทดสอบการทำงานด้วยการทดสอบอัตโนมัติบนเว็บเบราว์เซอร์ Chrome พบว่าผ่านกรณีทดสอบชุดหลักครบ 31 จาก 31 กรณี และเมื่อรวมกรณีทดสอบระบบวิดีโอสอนแล้ว ผ่านครบ 42 จาก 42 กรณี ส่วนการเชื่อมต่อนาฬิกาผ่าน Bluetooth ผ่านการทดสอบกับอุปกรณ์จำลองครบทุกกรณี ผลการประเมินความพึงพอใจของผู้ใช้งานกลุ่มตัวอย่างจำนวน ....... คน อยู่ในระดับ ....... มีค่าเฉลี่ย ....... และส่วนเบี่ยงเบนมาตรฐาน .......</p>
+  <p class="ni" style="margin-top:0.6em"><b>คำสำคัญ:</b> โปรแกรมออกกำลังกาย, ผู้เริ่มต้นออกกำลังกาย, Progressive Web App, โซนอัตราการเต้นของหัวใจ, Web Bluetooth</p>
+</section>
+
+<section class="front">
+  <h1 class="fronth" data-toc="บทคัดย่อภาษาอังกฤษ" data-kind="front">ABSTRACT</h1>
+  <table class="abs-head" style="margin-bottom:0.8em">
+    <tr><td style="width:1.3in"><b>Title</b></td><td>Beginner Workout Program</td></tr>
+    <tr><td><b>Authors</b></td><td>..........................................................................................</td></tr>
+    <tr><td><b>Advisor</b></td><td>..........................................................................................</td></tr>
+    <tr><td><b>Degree</b></td><td>Bachelor of Engineering (Computer Engineering)</td></tr>
+    <tr><td><b>Institution</b></td><td>Faculty of Engineering, Rajabhat Maha Sarakham University</td></tr>
+    <tr><td><b>Year</b></td><td>2026</td></tr>
+  </table>
+  <p>This research project aimed to develop a workout program for people who are new to exercise, named FitTrack Pro. It is a Progressive Web App (PWA) that runs in a web browser on both computers and mobile phones and can be installed to the home screen without an app store. The program provides an exercise library of 30 exercises covering 7 muscle groups with in-app YouTube tutorial videos, set-by-set weight training logging with a rest timer, cardio logging with a stopwatch, heart-rate zone calculation using the Karvonen method, live heart-rate readings from smartwatches over Web Bluetooth, a weekly schedule and 6 ready-made training programs, calculators for BMR/TDEE, BMI, macronutrients and one-repetition maximum (1RM), and a dashboard with charts. All data are stored on the user's device (localStorage) and can be backed up or moved with a JSON file.</p>
+  <p>Automated functional tests in the Chrome browser passed all 31 of 31 core test cases, and all 42 of 42 cases after adding the tutorial-video tests. The Bluetooth heart-rate connection passed all test cases with a simulated device. The satisfaction evaluation of ....... sample users was at the ....... level, with a mean of ....... and a standard deviation of .......</p>
+  <p class="ni" style="margin-top:0.6em"><b>Keywords:</b> Workout Program, Beginner Exercise, Progressive Web App, Heart Rate Zones, Web Bluetooth</p>
+</section>
+
+<!-- ═══════════ กิตติกรรมประกาศ ═══════════ -->
+<section class="front">
+  <h1 class="fronth" data-toc="กิตติกรรมประกาศ" data-kind="front">กิตติกรรมประกาศ</h1>
+  <p>โครงการวิจัยเรื่อง “โปรแกรมออกกำลังกายสำหรับมือใหม่” สำเร็จลุล่วงได้ด้วยความกรุณาจากอาจารย์วุฒิกร อนันตสิริชัย อาจารย์ที่ปรึกษาโครงการวิจัยหลัก ที่ให้คำแนะนำ ตรวจสอบ และแก้ไขข้อบกพร่องต่าง ๆ ด้วยความเอาใจใส่ตลอดระยะเวลาการดำเนินงาน คณะผู้วิจัยขอกราบขอบพระคุณเป็นอย่างสูงไว้ ณ โอกาสนี้</p>
+  <p>ขอกราบขอบพระคุณผู้ช่วยศาสตราจารย์ ดร.ภาคย์ สธนเสาวภาคย์ อาจารย์ผู้รับผิดชอบรายวิชา และคณะกรรมการสอบโครงการวิจัยทุกท่าน ที่ให้ข้อเสนอแนะอันเป็นประโยชน์ต่อการปรับปรุงโครงการวิจัยให้สมบูรณ์ยิ่งขึ้น</p>
+  <p>ขอขอบพระคุณคณาจารย์สาขาวิชาวิศวกรรมคอมพิวเตอร์ คณะวิศวกรรมศาสตร์ มหาวิทยาลัยราชภัฏมหาสารคาม ทุกท่าน ที่ได้ประสิทธิ์ประสาทวิชาความรู้ซึ่งเป็นพื้นฐานสำคัญในการทำโครงการวิจัยนี้ และขอขอบคุณผู้ทดลองใช้งานโปรแกรมทุกท่านที่สละเวลาตอบแบบประเมินความพึงพอใจ</p>
+  <p>สุดท้ายนี้ คณะผู้วิจัยขอกราบขอบพระคุณบิดา มารดา และครอบครัว ที่ให้การสนับสนุนและเป็นกำลังใจตลอดมา หากโครงการวิจัยนี้มีข้อบกพร่องประการใด คณะผู้วิจัยขออภัยไว้ ณ ที่นี้</p>
+  <p class="ni" style="text-align:right;margin-top:1.2em">คณะผู้วิจัย</p>
+</section>
+
+<!-- ═══════════ สารบัญ ═══════════ -->
+<section class="front">
+  <h1 class="fronth">สารบัญ</h1>
+  <div class="toc"><div class="head"><span></span><span>หน้า</span></div><!--TOC--></div>
+</section>
+<section class="front">
+  <h1 class="fronth" data-toc="สารบัญตาราง" data-kind="front">สารบัญตาราง</h1>
+  <div class="toc"><div class="head"><span>ตารางที่</span><span>หน้า</span></div><!--LOT--></div>
+</section>
+<section class="front">
+  <h1 class="fronth" data-toc="สารบัญภาพ" data-kind="front">สารบัญภาพ</h1>
+  <div class="toc"><div class="head"><span>ภาพที่</span><span>หน้า</span></div><!--LOF--></div>
+</section>
+
+<main class="body" id="body-start">
+
+<!-- ═══════════ บทที่ 1 ═══════════ -->
+<section class="chapter">
+<h1 class="chap" data-toc="บทที่ 1 บทนำ"><span>บทที่ 1</span><span>บทนำ</span></h1>
+
+<h2 data-toc="1.1 ความเป็นมาและความสำคัญของปัญหา">1.1 ความเป็นมาและความสำคัญของปัญหา</h2>
+<p>การออกกำลังกายอย่างสม่ำเสมอเป็นปัจจัยสำคัญต่อสุขภาพ องค์การอนามัยโลกแนะนำให้ผู้ใหญ่มีกิจกรรมทางกายระดับปานกลางอย่างน้อย 150–300 นาทีต่อสัปดาห์ ร่วมกับการฝึกเสริมสร้างกล้ามเนื้ออย่างน้อย 2 วันต่อสัปดาห์ [8] อย่างไรก็ตาม ผู้ที่เพิ่งเริ่มออกกำลังกายมักพบปัญหาหลายประการ ได้แก่ ไม่รู้ว่าควรเล่นท่าใด ไม่แน่ใจว่าท่าที่ทำถูกต้องหรือไม่ ไม่รู้ว่าควรพักระหว่าง set นานเท่าใด ไม่รู้ว่าควรใช้ความหนักระดับใด และไม่ได้จดบันทึกการฝึก จึงไม่เห็นความก้าวหน้าของตนเองและเลิกฝึกไปในที่สุด</p>
+<p>แอปพลิเคชันด้านการออกกำลังกายที่มีอยู่ในปัจจุบันจำนวนมากต้องสมัครสมาชิก ต้องติดตั้งจากร้านค้าแอปพลิเคชัน มีค่าบริการรายเดือนสำหรับฟังก์ชันสำคัญ หรือแยกการบันทึกเวทเทรนนิ่ง การบันทึกคาร์ดิโอ และการคำนวณทางโภชนาการไว้คนละแอป ผู้เริ่มต้นจึงต้องใช้หลายแอปพร้อมกัน นอกจากนี้ข้อมูลสุขภาพของผู้ใช้มักถูกส่งไปเก็บไว้บนเซิร์ฟเวอร์ของผู้ให้บริการ</p>
+<p>คณะผู้วิจัยจึงพัฒนา “โปรแกรมออกกำลังกายสำหรับมือใหม่” ชื่อ FitTrack Pro ในรูปแบบ Progressive Web App ที่รวมเครื่องมือที่ผู้เริ่มต้นจำเป็นต้องใช้ไว้ในที่เดียว ได้แก่ คลังท่าพร้อมวิดีโอสอน การบันทึกเวทเทรนนิ่งและคาร์ดิโอ นาฬิกาจับเวลาพัก โซนอัตราการเต้นของหัวใจ การรับค่าหัวใจแบบสดจากนาฬิกาอัจฉริยะ แผนการฝึกสำเร็จรูป และเครื่องคำนวณด้านโภชนาการและความแข็งแรง โปรแกรมใช้งานได้ฟรี ไม่ต้องสมัครสมาชิก ใช้งานออฟไลน์ได้ และเก็บข้อมูลไว้ในเครื่องของผู้ใช้เท่านั้น</p>
+
+<h2 data-toc="1.2 วัตถุประสงค์ของโครงการวิจัย">1.2 วัตถุประสงค์ของโครงการวิจัย</h2>
+<ol>
+  <li>เพื่อพัฒนาโปรแกรมออกกำลังกายสำหรับผู้เริ่มต้นในรูปแบบ Progressive Web App ที่ใช้งานได้ทั้งบนคอมพิวเตอร์และโทรศัพท์มือถือ</li>
+  <li>เพื่อพัฒนาระบบบันทึกและสรุปผลการออกกำลังกายแบบเวทเทรนนิ่งและคาร์ดิโอ พร้อมเครื่องมือช่วยฝึก ได้แก่ วิดีโอสอนท่า นาฬิกาจับเวลาพัก และโซนอัตราการเต้นของหัวใจ</li>
+  <li>เพื่อพัฒนาการเชื่อมต่อนาฬิกาอัจฉริยะผ่าน Web Bluetooth เพื่อแสดงอัตราการเต้นของหัวใจแบบสดระหว่างออกกำลังกาย</li>
+  <li>เพื่อทดสอบการทำงานและประเมินความพึงพอใจของผู้ใช้งานที่มีต่อโปรแกรม</li>
+</ol>
+
+<h2 data-toc="1.3 ขอบเขตของโครงการวิจัย">1.3 ขอบเขตของโครงการวิจัย</h2>
+<h3 class="sub">1.3.1 ขอบเขตด้านระบบ</h3>
+<ol>
+  <li>หน้าภาพรวม แสดงสถิติรวม กราฟ 7 วันล่าสุด กราฟกลุ่มกล้ามเนื้อที่ฝึก และรายการบันทึกล่าสุด</li>
+  <li>เวทเทรนนิ่ง ประกอบด้วยคลังท่า 30 ท่า แยกตามกลุ่มกล้ามเนื้อ 7 กลุ่ม พร้อมวิดีโอสอน การบันทึกราย set (น้ำหนัก, จำนวนครั้ง, จำนวน set, RIR, บันทึก) นาฬิกาจับเวลาพัก และประวัติการฝึก</li>
+  <li>คาร์ดิโอ ประกอบด้วยการบันทึกคาร์ดิโอ 8 ประเภท การคำนวณ pace นาฬิกาจับเวลาพร้อม lap การคำนวณโซนอัตราการเต้นของหัวใจ 5 โซน การรับค่าหัวใจแบบสดผ่าน Bluetooth ประวัติ และกราฟ</li>
+  <li>แผนออกกำลังกาย ประกอบด้วยตารางรายสัปดาห์ และแผนโปรแกรมสำเร็จรูป 6 แบบ</li>
+  <li>เครื่องคำนวณ BMR/TDEE, BMI, สารอาหารหลัก (มาโคร) และ 1RM</li>
+  <li>การส่งออกและนำเข้าข้อมูลเป็นไฟล์ JSON</li>
+  <li>การติดตั้งเป็นแอปบนหน้าจอโฮมและใช้งานแบบออฟไลน์</li>
+</ol>
+<h3 class="sub">1.3.2 ขอบเขตด้านผู้ใช้งาน</h3>
+<p>ผู้ใช้งานคือบุคคลทั่วไปที่เพิ่งเริ่มออกกำลังกายหรือมีประสบการณ์น้อย ใช้งานแบบส่วนบุคคล ไม่มีระบบสมาชิกและไม่มีผู้ดูแลระบบ</p>
+<h3 class="sub">1.3.3 ขอบเขตด้านอุปกรณ์</h3>
+<p>โปรแกรมใช้งานบนเว็บเบราว์เซอร์รุ่นปัจจุบัน ได้แก่ Google Chrome, Microsoft Edge และ Safari ฟังก์ชันรับค่าหัวใจผ่าน Bluetooth ใช้ได้บน Chrome หรือ Edge (Android, Windows, macOS) กับอุปกรณ์ที่ส่งข้อมูลตามมาตรฐาน Heart Rate Service ของ Bluetooth SIG ส่วน iPhone และ iPad ยังไม่รองรับ Web Bluetooth</p>
+
+<h2 data-toc="1.4 ประโยชน์ที่คาดว่าจะได้รับ">1.4 ประโยชน์ที่คาดว่าจะได้รับ</h2>
+<ol>
+  <li>ได้โปรแกรมออกกำลังกายที่ช่วยให้ผู้เริ่มต้นเรียนรู้ท่าที่ถูกต้อง วางแผน และบันทึกการฝึกได้ในที่เดียวโดยไม่มีค่าใช้จ่าย</li>
+  <li>ผู้ใช้เห็นความก้าวหน้าของตนเองจากสถิติและกราฟ ซึ่งช่วยสร้างแรงจูงใจในการฝึกอย่างต่อเนื่อง</li>
+  <li>ผู้ใช้ควบคุมความหนักของการฝึกคาร์ดิโอได้เหมาะสมจากโซนอัตราการเต้นของหัวใจ</li>
+  <li>ข้อมูลสุขภาพของผู้ใช้อยู่ในเครื่องของผู้ใช้เอง ไม่ถูกส่งไปยังเซิร์ฟเวอร์ภายนอก</li>
+  <li>คณะผู้วิจัยได้ประยุกต์ความรู้ด้านการพัฒนาเว็บแอปพลิเคชัน การออกแบบระบบ และการทดสอบซอฟต์แวร์</li>
+</ol>
+
+<h2 data-toc="1.5 นิยามศัพท์เฉพาะ">1.5 นิยามศัพท์เฉพาะ</h2>
+<ol>
+  <li><b>มือใหม่ (ผู้เริ่มต้น)</b> หมายถึง ผู้ที่เพิ่งเริ่มออกกำลังกาย หรือออกกำลังกายอย่างสม่ำเสมอมาไม่เกิน 6 เดือน</li>
+  <li><b>Set และ Reps</b> หมายถึง จำนวนรอบของการเล่นท่าหนึ่ง (set) และจำนวนครั้งที่ทำในแต่ละรอบ (repetitions)</li>
+  <li><b>RIR (Repetitions in Reserve)</b> หมายถึง จำนวนครั้งที่ผู้ฝึกยังทำต่อได้อีกเมื่อจบ set ใช้บอกความหนักของ set [12]</li>
+  <li><b>Volume</b> หมายถึง ปริมาณการฝึก คำนวณจากผลรวมของน้ำหนัก × จำนวนครั้ง ของทุก set</li>
+  <li><b>คาร์ดิโอ (Cardio)</b> หมายถึง การออกกำลังกายแบบแอโรบิก เช่น วิ่ง ปั่นจักรยาน ว่ายน้ำ เดินเร็ว</li>
+  <li><b>HR (Heart Rate)</b> หมายถึง อัตราการเต้นของหัวใจ หน่วยเป็นครั้งต่อนาที (bpm)</li>
+  <li><b>1RM (One-Repetition Maximum)</b> หมายถึง น้ำหนักสูงสุดที่ผู้ฝึกยกได้ 1 ครั้งในท่านั้น</li>
+  <li><b>PWA (Progressive Web App)</b> หมายถึง เว็บแอปพลิเคชันที่ติดตั้งลงหน้าจอโฮมและทำงานแบบออฟไลน์ได้คล้ายแอปพลิเคชันทั่วไป</li>
+</ol>
+</section>
+
+<!-- ═══════════ บทที่ 2 ═══════════ -->
+<section class="chapter">
+<h1 class="chap" data-toc="บทที่ 2 ทฤษฎีและงานวิจัยที่เกี่ยวข้อง"><span>บทที่ 2</span><span>ทฤษฎีและงานวิจัยที่เกี่ยวข้อง</span></h1>
+<p>ในการพัฒนาโปรแกรมออกกำลังกายสำหรับมือใหม่ คณะผู้วิจัยได้ศึกษาทฤษฎีด้านการออกกำลังกาย หลักการคำนวณที่ใช้ในโปรแกรม เทคโนโลยีที่ใช้ในการพัฒนา และแอปพลิเคชันที่เกี่ยวข้อง โดยมีรายละเอียดดังนี้</p>
+
+<h2 data-toc="2.1 หลักการออกกำลังกายสำหรับผู้เริ่มต้น">2.1 หลักการออกกำลังกายสำหรับผู้เริ่มต้น</h2>
+<h3 class="sub">2.1.1 การฝึกด้วยแรงต้าน (เวทเทรนนิ่ง)</h3>
+<p>American College of Sports Medicine (ACSM) แนะนำให้ผู้เริ่มต้นฝึกกล้ามเนื้อมัดใหญ่ทุกกลุ่ม 2–3 วันต่อสัปดาห์ ใช้น้ำหนักที่ทำได้ประมาณ 8–12 ครั้งต่อ set และค่อย ๆ เพิ่มน้ำหนักหรือจำนวนครั้งเมื่อร่างกายปรับตัวได้ ซึ่งเรียกว่าหลักการเพิ่มภาระอย่างต่อเนื่อง (Progressive Overload) [1] การบันทึกน้ำหนักและจำนวนครั้งทุก set จึงจำเป็น เพื่อให้ผู้ฝึกรู้ว่าครั้งต่อไปควรเพิ่มภาระเท่าใด</p>
+<p>การกำหนดความหนักของ set ด้วย RIR ช่วยให้ผู้เริ่มต้นไม่ฝึกจนหมดแรงทุก set ซึ่งเสี่ยงต่อการบาดเจ็บ Zourdos และคณะ [12] เสนอมาตราวัดความเหนื่อยที่อิงจำนวนครั้งที่เหลือ (RIR) และพบว่าใช้ได้ดีกับการฝึกด้วยแรงต้าน สำหรับระยะเวลาพักระหว่าง set งานวิจัยของ Schoenfeld และคณะ [13] พบว่าการพักนานประมาณ 3 นาทีให้ผลด้านความแข็งแรงดีกว่าการพัก 1 นาที โปรแกรมจึงมีนาฬิกาพักให้เลือก 1 นาที, 90 วินาที, 2 นาที และ 3 นาที</p>
+<h3 class="sub">2.1.2 การออกกำลังกายแบบแอโรบิก (คาร์ดิโอ)</h3>
+<p>การออกกำลังกายแบบแอโรบิกช่วยพัฒนาระบบหัวใจและหลอดเลือด องค์การอนามัยโลกแนะนำให้ผู้ใหญ่ทำกิจกรรมระดับปานกลาง 150–300 นาทีต่อสัปดาห์ หรือระดับหนัก 75–150 นาทีต่อสัปดาห์ [8] ความหนักของการออกกำลังกายแบบแอโรบิกนิยมกำหนดด้วยอัตราการเต้นของหัวใจ ดังหัวข้อ 2.2</p>
+
+<h2 data-toc="2.2 อัตราการเต้นของหัวใจและโซนการฝึก">2.2 อัตราการเต้นของหัวใจและโซนการฝึก</h2>
+<p>อัตราการเต้นของหัวใจสูงสุด (Maximum Heart Rate: MHR) ประมาณได้จากสูตร 220 − อายุ [9] ส่วนวิธีของ Karvonen [2] คำนวณอัตราการเต้นของหัวใจเป้าหมายจากอัตราการเต้นของหัวใจสำรอง (Heart Rate Reserve: HRR) ซึ่งคำนึงถึงอัตราการเต้นของหัวใจขณะพัก (Resting Heart Rate: RHR) ของแต่ละคน ทำให้เหมาะกับผู้ที่มีระดับความฟิตต่างกัน ดังสมการที่ 2.1 และ 2.2</p>
+<p class="ni" style="text-align:center">HRR = MHR − RHR &nbsp;&nbsp;&nbsp;&nbsp; (2.1)</p>
+<p class="ni" style="text-align:center">HR เป้าหมาย = (HRR × ร้อยละความหนัก) + RHR &nbsp;&nbsp;&nbsp;&nbsp; (2.2)</p>
+<p>โปรแกรมแบ่งโซนการฝึกเป็น 5 โซนตามร้อยละของ HRR ดังตารางที่ 2.1 และแสดงโซนปัจจุบันให้ผู้ใช้เห็นทันทีเมื่อรับค่าหัวใจจากนาฬิกา</p>
+<div class="tblk"><div class="tcap">ตารางที่ 2.1 โซนอัตราการเต้นของหัวใจที่ใช้ในโปรแกรม</div>
+<table class="t">
+  <thead><tr><th>โซน</th><th>ระดับ</th><th>ร้อยละของ HRR</th><th>ประโยชน์</th></tr></thead>
+  <tr><td class="c">Zone 1</td><td>เบามาก</td><td class="c">50–60</td><td>ฟื้นฟูร่างกาย อบอุ่นร่างกาย</td></tr>
+  <tr><td class="c">Zone 2</td><td>เบา</td><td class="c">60–70</td><td>สร้างพื้นฐานแอโรบิก</td></tr>
+  <tr><td class="c">Zone 3</td><td>ปานกลาง</td><td class="c">70–80</td><td>เพิ่มความอดทน</td></tr>
+  <tr><td class="c">Zone 4</td><td>หนัก</td><td class="c">80–90</td><td>ฝึกที่ระดับ lactate threshold</td></tr>
+  <tr><td class="c">Zone 5</td><td>สูงสุด</td><td class="c">90–100</td><td>พัฒนา VO<sub>2</sub> max, HIIT</td></tr>
+</table></div>
+
+<h2 data-toc="2.3 หลักการคำนวณด้านพลังงานและความแข็งแรง">2.3 หลักการคำนวณด้านพลังงานและความแข็งแรง</h2>
+<h3 class="sub">2.3.1 อัตราการเผาผลาญพลังงานขณะพัก (BMR) และพลังงานที่ใช้ต่อวัน (TDEE)</h3>
+<p>โปรแกรมคำนวณ BMR ด้วยสมการ Harris–Benedict ฉบับปรับปรุงของ Roza และ Shizgal [4] ซึ่งพัฒนาต่อจากสมการต้นฉบับของ Harris และ Benedict [3] โดยน้ำหนัก (W) มีหน่วยเป็นกิโลกรัม ส่วนสูง (H) เป็นเซนติเมตร และอายุ (A) เป็นปี ดังนี้</p>
+<p class="ni" style="text-align:center">ผู้ชาย: BMR = 88.362 + 13.397W + 4.799H − 5.677A &nbsp;&nbsp;&nbsp;&nbsp; (2.3)</p>
+<p class="ni" style="text-align:center">ผู้หญิง: BMR = 447.593 + 9.247W + 3.098H − 4.330A &nbsp;&nbsp;&nbsp;&nbsp; (2.4)</p>
+<p>TDEE คำนวณจาก BMR คูณตัวคูณระดับกิจกรรม (1.2–1.9) จากนั้นโปรแกรมแสดงพลังงานเป้าหมายสำหรับการลดไขมัน (−15% และ −25%) การรักษาน้ำหนัก และการเพิ่มกล้ามเนื้อ (+10%)</p>
+<h3 class="sub">2.3.2 ดัชนีมวลกาย (BMI)</h3>
+<p>BMI คำนวณจากน้ำหนัก (กิโลกรัม) หารด้วยส่วนสูง (เมตร) ยกกำลังสอง โปรแกรมใช้เกณฑ์สำหรับประชากรเอเชียขององค์การอนามัยโลก [7] โดยช่วงน้ำหนักปกติคือ 18.5–22.9 กก./ม.<sup>2</sup></p>
+<h3 class="sub">2.3.3 สารอาหารหลัก (มาโครนิวเทรียนต์)</h3>
+<p>โปรแกรมแบ่งพลังงานเป้าหมายเป็นโปรตีน ไขมัน และคาร์โบไฮเดรต ตามเป้าหมายของผู้ใช้ ได้แก่ ลดไขมัน (โปรตีน 2.4 กรัมต่อน้ำหนักตัว 1 กิโลกรัม, ไขมันร้อยละ 25) รักษาน้ำหนัก (โปรตีน 2.2 กรัม/กก., ไขมันร้อยละ 27) และเพิ่มกล้ามเนื้อ (โปรตีน 2.0 กรัม/กก., ไขมันร้อยละ 30) ส่วนที่เหลือเป็นคาร์โบไฮเดรต โดยใช้ค่าพลังงาน 4, 9 และ 4 กิโลแคลอรีต่อกรัม ตามลำดับ</p>
+<h3 class="sub">2.3.4 การประมาณ 1RM</h3>
+<p>การทดสอบ 1RM โดยตรงเสี่ยงต่อการบาดเจ็บสำหรับผู้เริ่มต้น โปรแกรมจึงประมาณ 1RM จากน้ำหนัก (w) และจำนวนครั้ง (r) ที่ยกได้ ด้วยสูตรของ Epley [5] และ Brzycki [6] ดังนี้</p>
+<p class="ni" style="text-align:center">Epley: 1RM = w × (1 + r / 30) &nbsp;&nbsp;&nbsp;&nbsp; (2.5)</p>
+<p class="ni" style="text-align:center">Brzycki: 1RM = w × 36 / (37 − r) &nbsp;&nbsp;&nbsp;&nbsp; (2.6)</p>
+<p>เมื่อจำนวนครั้งไม่เกิน 10 ครั้ง โปรแกรมใช้ค่าเฉลี่ยของทั้งสองสูตร และเมื่อเกิน 10 ครั้งใช้สูตร Epley เพียงสูตรเดียว เนื่องจากสูตร Brzycki คลาดเคลื่อนมากขึ้นเมื่อจำนวนครั้งสูง และหารด้วยศูนย์ที่ 37 ครั้ง</p>
+
+<h2 data-toc="2.4 เทคโนโลยีที่ใช้ในการพัฒนา">2.4 เทคโนโลยีที่ใช้ในการพัฒนา</h2>
+<h3 class="sub">2.4.1 HTML, CSS และ JavaScript</h3>
+<p>โปรแกรมพัฒนาด้วย HTML สำหรับโครงสร้างหน้าจอ CSS สำหรับการจัดรูปแบบและการแสดงผลที่ปรับตามขนาดหน้าจอ (Responsive Design) และ JavaScript สำหรับการประมวลผลทั้งหมดฝั่งผู้ใช้ โดยไม่ใช้เฟรมเวิร์ก ทำให้โปรแกรมมีขนาดเล็กและโหลดได้เร็ว</p>
+<h3 class="sub">2.4.2 Progressive Web App (PWA)</h3>
+<p>PWA คือเว็บแอปพลิเคชันที่ติดตั้งลงอุปกรณ์ได้ ประกอบด้วย Web App Manifest ที่กำหนดชื่อ ไอคอน และรูปแบบการแสดงผลของแอป และ Service Worker ซึ่งเป็นสคริปต์ที่ทำงานเบื้องหลังเพื่อเก็บไฟล์ของแอปไว้ในแคช ทำให้เปิดใช้งานได้แม้ไม่มีอินเทอร์เน็ต [10]</p>
+<h3 class="sub">2.4.3 Web Storage (localStorage)</h3>
+<p>localStorage เป็นพื้นที่เก็บข้อมูลแบบคีย์–ค่าในเว็บเบราว์เซอร์ ข้อมูลอยู่ถาวรแม้ปิดเบราว์เซอร์ และแยกตามต้นทาง (origin) ของเว็บไซต์ โปรแกรมใช้เก็บข้อมูลการฝึกทั้งหมดในรูปแบบ JSON ภายใต้คีย์ <code>fittrack</code> [10]</p>
+<h3 class="sub">2.4.4 Chart.js</h3>
+<p>Chart.js เป็นไลบรารี JavaScript แบบโอเพนซอร์สสำหรับวาดกราฟบน HTML Canvas [14] โปรแกรมใช้เวอร์ชัน 4.4.4 โดยเก็บไฟล์ไว้ในโปรเจกต์เอง (vendor) เพื่อให้กราฟแสดงผลได้แม้ไม่มีอินเทอร์เน็ต</p>
+<h3 class="sub">2.4.5 YouTube IFrame Player API</h3>
+<p>YouTube IFrame Player API ช่วยให้ฝังและควบคุมวิดีโอ YouTube ในหน้าเว็บด้วย JavaScript ได้ เช่น สั่งเล่น หยุด และตรวจสอบสถานะ [15] โปรแกรมใช้แสดงวิดีโอสอนท่าออกกำลังกายภายในแอป และแสดงข้อความแนะนำเมื่อวิดีโอเล่นไม่ได้</p>
+<h3 class="sub">2.4.6 Web Bluetooth และ Heart Rate Service</h3>
+<p>Web Bluetooth API ช่วยให้หน้าเว็บเชื่อมต่ออุปกรณ์ Bluetooth Low Energy ได้โดยตรง [11] ส่วน Heart Rate Service (UUID 0x180D) เป็นมาตรฐานของ Bluetooth SIG [16] ที่อุปกรณ์วัดหัวใจ เช่น สายคาดอก และนาฬิกาที่เปิดโหมดส่งค่าหัวใจ ใช้ส่งค่าผ่าน characteristic Heart Rate Measurement (0x2A37) โดยบิตแรกของไบต์ flags บอกว่าค่าหัวใจเป็นเลขขนาด 8 บิตหรือ 16 บิต Web Bluetooth ใช้ได้เฉพาะหน้าเว็บที่เปิดผ่าน https หรือ localhost</p>
+<h3 class="sub">2.4.7 PowerShell และ HttpListener</h3>
+<p>PowerShell เป็นเชลล์ที่ติดมากับระบบปฏิบัติการ Windows ส่วน HttpListener เป็นคลาสของ .NET ที่ใช้สร้างเว็บเซิร์ฟเวอร์ขนาดเล็ก คณะผู้วิจัยใช้ทั้งสองอย่างสร้างสคริปต์ติดตั้งและเปิดโปรแกรม (run.ps1) ที่ดาวน์โหลดโปรแกรมจาก GitHub แล้วเปิดเว็บเซิร์ฟเวอร์ในเครื่องที่ http://localhost:8080 ผู้ใช้จึงไม่ต้องติดตั้งโปรแกรมอื่นเพิ่ม</p>
+<h3 class="sub">2.4.8 Git, GitHub และ Vercel</h3>
+<p>Git ใช้จัดการเวอร์ชันของซอร์สโค้ด GitHub ใช้เก็บซอร์สโค้ดและเป็นแหล่งดาวน์โหลดของสคริปต์ติดตั้ง ส่วน Vercel เป็นบริการโฮสต์เว็บที่ให้บริการผ่าน https ซึ่งจำเป็นต่อการใช้ Service Worker และ Web Bluetooth บนโทรศัพท์มือถือ</p>
+
+<h2 data-toc="2.5 แอปพลิเคชันที่เกี่ยวข้อง">2.5 แอปพลิเคชันที่เกี่ยวข้อง</h2>
+<p>คณะผู้วิจัยได้ศึกษาแอปพลิเคชันด้านการออกกำลังกายที่มีผู้ใช้จำนวนมาก เพื่อนำจุดเด่นมาออกแบบและหาส่วนที่ยังขาดสำหรับผู้เริ่มต้น ดังนี้</p>
+<ol>
+  <li><b>Strong</b> แอปบันทึกเวทเทรนนิ่งบนโทรศัพท์มือถือ บันทึกน้ำหนักและจำนวนครั้งราย set และมีนาฬิกาจับเวลาพัก เน้นการบันทึกเวทเทรนนิ่งเป็นหลัก</li>
+  <li><b>Hevy</b> แอปบันทึกเวทเทรนนิ่งที่มีคลังท่าพร้อมภาพประกอบ ใช้งานผ่านบัญชีผู้ใช้ และมีฟังก์ชันด้านสังคม เช่น การติดตามเพื่อน</li>
+  <li><b>Strava</b> แอปบันทึกกิจกรรมคาร์ดิโอ เช่น วิ่งและปั่นจักรยาน บันทึกเส้นทางด้วย GPS และรับข้อมูลจากนาฬิกาได้ ต้องสมัครบัญชีผู้ใช้</li>
+  <li><b>Nike Training Club</b> แอปที่มีคลาสออกกำลังกายแบบมีวิดีโอนำ เหมาะกับการฝึกตาม แต่ไม่ได้เน้นการบันทึกน้ำหนักราย set</li>
+</ol>
+<p>จากการศึกษาพบว่าแต่ละแอปเด่นคนละด้าน ผู้เริ่มต้นที่ต้องการทั้งการเรียนรู้ท่า การบันทึกเวทเทรนนิ่ง การบันทึกคาร์ดิโอ และการคำนวณด้านโภชนาการ จึงต้องใช้หลายแอปพร้อมกัน คณะผู้วิจัยสรุปการเปรียบเทียบเชิงแนวคิดไว้ในตารางที่ 2.2 ทั้งนี้ ฟังก์ชันของแอปพลิเคชันเชิงพาณิชย์อาจเปลี่ยนแปลงตามรุ่นและแพ็กเกจที่ใช้</p>
+<div class="tblk"><div class="tcap">ตารางที่ 2.2 เปรียบเทียบจุดเน้นของแอปพลิเคชันที่เกี่ยวข้องกับโปรแกรมที่พัฒนา</div>
+<table class="t">
+  <thead><tr><th>ประเด็น</th><th>Strong</th><th>Hevy</th><th>Strava</th><th>Nike Training Club</th><th>โปรแกรมที่พัฒนา</th></tr></thead>
+  <tr><td>จุดเน้นหลัก</td><td>บันทึกเวท</td><td>บันทึกเวท + สังคม</td><td>คาร์ดิโอ + GPS</td><td>คลาสวิดีโอ</td><td>เวท + คาร์ดิโอ + เครื่องคำนวณ</td></tr>
+  <tr><td>รูปแบบการติดตั้ง</td><td>แอปมือถือ</td><td>แอปมือถือ</td><td>แอปมือถือ</td><td>แอปมือถือ</td><td>เว็บ (PWA) ติดตั้งได้ ไม่ผ่าน store</td></tr>
+  <tr><td>บัญชีผู้ใช้</td><td>ตามนโยบายแอป</td><td>ต้องมี</td><td>ต้องมี</td><td>ต้องมี</td><td>ไม่ต้องมี</td></tr>
+  <tr><td>ที่เก็บข้อมูล</td><td>ตามนโยบายแอป</td><td>เซิร์ฟเวอร์ผู้ให้บริการ</td><td>เซิร์ฟเวอร์ผู้ให้บริการ</td><td>เซิร์ฟเวอร์ผู้ให้บริการ</td><td>ในเครื่องผู้ใช้</td></tr>
+  <tr><td>ภาษาไทยทั้งระบบ</td><td colspan="4" class="c">ขึ้นอยู่กับแอปและรุ่น</td><td>มี</td></tr>
+</table></div>
+
+<h2 data-toc="2.6 กรอบแนวคิดของโครงการวิจัย">2.6 กรอบแนวคิดของโครงการวิจัย</h2>
+<p>จากการศึกษาทฤษฎีและแอปพลิเคชันที่เกี่ยวข้อง คณะผู้วิจัยกำหนดกรอบแนวคิดของโครงการวิจัยดังภาพที่ 2.1 โดยรับข้อมูลจากผู้ใช้และอุปกรณ์วัดหัวใจ นำมาประมวลผลในโปรแกรม แล้วแสดงผลลัพธ์ที่ช่วยให้ผู้เริ่มต้นฝึกได้อย่างถูกต้องและต่อเนื่อง</p>
+<figure>
+<svg viewBox="0 0 640 300" width="600" xmlns="http://www.w3.org/2000/svg" font-family="Sarabun" font-size="13">
+  <defs><marker id="ar" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z"/></marker></defs>
+  <rect x="5" y="20" width="185" height="260" rx="8" fill="#e3f2fd" stroke="#000"/>
+  <text x="97" y="45" text-anchor="middle" font-weight="700" font-size="14">ข้อมูลนำเข้า</text>
+  <text x="18" y="80">• ท่า น้ำหนัก reps sets RIR</text>
+  <text x="18" y="108">• ประเภท เวลา ระยะทาง</text>
+  <text x="18" y="136">• อายุ และ HR ขณะพัก</text>
+  <text x="18" y="164">• ค่าหัวใจสดจากนาฬิกา</text>
+  <text x="18" y="192">• น้ำหนัก ส่วนสูง เพศ</text>
+  <text x="18" y="220">• เป้าหมายการฝึก</text>
+  <text x="18" y="248">• ไฟล์ JSON (นำเข้า)</text>
+  <rect x="227" y="20" width="185" height="260" rx="8" fill="#fff3e0" stroke="#000"/>
+  <text x="319" y="45" text-anchor="middle" font-weight="700" font-size="14">กระบวนการ</text>
+  <text x="319" y="65" text-anchor="middle">FitTrack Pro (PWA)</text>
+  <text x="240" y="98">• บันทึกและตรวจสอบข้อมูล</text>
+  <text x="240" y="126">• คำนวณ Volume, pace</text>
+  <text x="240" y="154">• คำนวณโซนหัวใจ (Karvonen)</text>
+  <text x="240" y="182">• คำนวณ BMR/TDEE, BMI</text>
+  <text x="240" y="210">• คำนวณมาโคร และ 1RM</text>
+  <text x="240" y="238">• เก็บข้อมูลใน localStorage</text>
+  <rect x="449" y="20" width="185" height="260" rx="8" fill="#e8f5e9" stroke="#000"/>
+  <text x="541" y="45" text-anchor="middle" font-weight="700" font-size="14">ผลลัพธ์</text>
+  <text x="462" y="80">• สถิติและกราฟความก้าวหน้า</text>
+  <text x="462" y="108">• ประวัติการฝึก</text>
+  <text x="462" y="136">• โซนหัวใจปัจจุบัน</text>
+  <text x="462" y="164">• วิดีโอสอนท่า</text>
+  <text x="462" y="192">• แผนการฝึกรายสัปดาห์</text>
+  <text x="462" y="220">• พลังงานและสารอาหาร</text>
+  <text x="462" y="248">• ไฟล์สำรองข้อมูล</text>
+  <line x1="190" y1="150" x2="225" y2="150" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+  <line x1="412" y1="150" x2="447" y2="150" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
+</svg>
+<figcaption><b>ภาพที่ 2.1</b> กรอบแนวคิดของโครงการวิจัย</figcaption>
+</figure>
+</section>
+
+<!-- ═══════════ บทที่ 3 ═══════════ -->
+<section class="chapter">
+<h1 class="chap" data-toc="บทที่ 3 วิธีดำเนินการวิจัย"><span>บทที่ 3</span><span>วิธีดำเนินการวิจัย</span></h1>
+<p>บทนี้อธิบายขั้นตอนการพัฒนาโปรแกรมออกกำลังกายสำหรับมือใหม่ ตั้งแต่การศึกษาความเป็นไปได้ การวิเคราะห์ความต้องการ การออกแบบระบบ เครื่องมือที่ใช้ กลุ่มเป้าหมาย วิธีการประเมินผล และแผนการดำเนินงาน</p>
+
+<h2 data-toc="3.1 การศึกษาความเป็นไปได้">3.1 การศึกษาความเป็นไปได้</h2>
+<ol>
+  <li><b>ด้านเทคนิค</b> ฟังก์ชันทั้งหมดของโปรแกรมใช้ความสามารถมาตรฐานของเว็บเบราว์เซอร์ ได้แก่ localStorage, Service Worker, Canvas, Web Bluetooth และ iframe ไม่ต้องมีเซิร์ฟเวอร์ฐานข้อมูล จึงพัฒนาได้ด้วยความรู้และเครื่องมือที่คณะผู้วิจัยมีอยู่</li>
+  <li><b>ด้านเศรษฐศาสตร์</b> เครื่องมือพัฒนาทั้งหมดใช้ได้ฟรี การเผยแพร่ใช้ GitHub และ Vercel แบบไม่มีค่าใช้จ่าย และผู้ใช้ไม่ต้องเสียค่าบริการ</li>
+  <li><b>ด้านการใช้งาน</b> ผู้ใช้เปิดโปรแกรมได้จากลิงก์เว็บ หรือรันคำสั่งเดียวบน Windows โปรแกรมเป็นภาษาไทย และแบ่งเมนูเป็น 5 หน้าตามกิจกรรมของผู้ใช้</li>
+</ol>
+
+<h2 data-toc="3.2 การวิเคราะห์ความต้องการของระบบ">3.2 การวิเคราะห์ความต้องการของระบบ</h2>
+<h3 class="sub">3.2.1 ความต้องการด้านฟังก์ชัน</h3>
+<ol>
+  <li>ผู้ใช้ดูคลังท่าแยกตามกลุ่มกล้ามเนื้อ และดูวิดีโอสอนท่าได้</li>
+  <li>ผู้ใช้บันทึกเวทเทรนนิ่งราย set รวมเป็น session และลบรายการที่บันทึกผิดได้</li>
+  <li>ผู้ใช้จับเวลาพักระหว่าง set และได้รับเสียงหรือการแจ้งเตือนเมื่อหมดเวลา</li>
+  <li>ผู้ใช้บันทึกคาร์ดิโอ จับเวลาด้วย stopwatch และบันทึกผลจาก stopwatch เป็นคาร์ดิโอได้</li>
+  <li>ผู้ใช้คำนวณโซนหัวใจจากอายุและ HR ขณะพัก และเชื่อมต่อนาฬิกาเพื่อดูค่าหัวใจแบบสดได้</li>
+  <li>ผู้ใช้ดูแผนการฝึกรายสัปดาห์และแผนสำเร็จรูปได้</li>
+  <li>ผู้ใช้คำนวณ BMR/TDEE, BMI, มาโคร และ 1RM ได้</li>
+  <li>ผู้ใช้ดูสถิติรวมและกราฟความก้าวหน้า และส่งออกหรือนำเข้าข้อมูลได้</li>
+</ol>
+<h3 class="sub">3.2.2 ความต้องการที่ไม่ใช่ฟังก์ชัน</h3>
+<ol>
+  <li>ใช้งานได้บนหน้าจอกว้างตั้งแต่ 360 พิกเซล โดยไม่มีการเลื่อนหน้าจอแนวนอน</li>
+  <li>ใช้งานแบบออฟไลน์ได้ ยกเว้นวิดีโอสอนท่าที่ต้องใช้อินเทอร์เน็ต</li>
+  <li>ข้อมูลไม่สูญหายเมื่อรูปแบบข้อมูลเปลี่ยน (มีการแปลงข้อมูลรุ่นเก่าและสำรองข้อมูลก่อนแปลง)</li>
+  <li>ป้องกันสคริปต์อันตรายจากไฟล์ที่นำเข้า (Cross-Site Scripting)</li>
+  <li>ตรวจสอบค่าที่ผู้ใช้กรอกให้อยู่ในช่วงที่เป็นไปได้ก่อนบันทึก</li>
+</ol>
+
+<h2 data-toc="3.3 การออกแบบระบบ">3.3 การออกแบบระบบ</h2>
+<h3 class="sub">3.3.1 สถาปัตยกรรมของระบบ</h3>
+<p>โปรแกรมทำงานทั้งหมดในเว็บเบราว์เซอร์ของผู้ใช้ ดังภาพที่ 3.1 ไฟล์ของโปรแกรมให้บริการจาก Vercel ผ่าน https หรือจากเว็บเซิร์ฟเวอร์ในเครื่องที่สร้างโดย run.ps1 เมื่อโหลดครั้งแรก Service Worker จะเก็บไฟล์ไว้ในแคช ข้อมูลของผู้ใช้เก็บใน localStorage ส่วนที่ติดต่อภายนอกมีเพียงวิดีโอจาก YouTube และนาฬิกาที่เชื่อมผ่าน Bluetooth</p>
+<figure>
+<svg viewBox="0 0 640 330" width="600" xmlns="http://www.w3.org/2000/svg" font-family="Sarabun" font-size="12.5">
+  <defs><marker id="a2" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z"/></marker></defs>
+  <rect x="150" y="10" width="340" height="250" rx="10" fill="#f5f5f5" stroke="#000" stroke-dasharray="6 4"/>
+  <text x="320" y="32" text-anchor="middle" font-weight="700">เว็บเบราว์เซอร์ของผู้ใช้ (Chrome / Edge / Safari)</text>
+  <rect x="170" y="45" width="300" height="70" rx="6" fill="#ffebee" stroke="#000"/>
+  <text x="320" y="68" text-anchor="middle" font-weight="700">ส่วนติดต่อผู้ใช้ (index.html)</text>
+  <text x="320" y="88" text-anchor="middle">ภาพรวม · เวทเทรนนิ่ง · คาร์ดิโอ · แผน · คำนวณ</text>
+  <text x="320" y="106" text-anchor="middle">JavaScript + Chart.js 4.4.4</text>
+  <rect x="170" y="135" width="140" height="55" rx="6" fill="#e3f2fd" stroke="#000"/>
+  <text x="240" y="158" text-anchor="middle" font-weight="700">localStorage</text>
+  <text x="240" y="177" text-anchor="middle">คีย์ fittrack (schema v2)</text>
+  <rect x="330" y="135" width="140" height="55" rx="6" fill="#e8f5e9" stroke="#000"/>
+  <text x="400" y="158" text-anchor="middle" font-weight="700">Service Worker</text>
+  <text x="400" y="177" text-anchor="middle">แคช fittrack-v2</text>
+  <rect x="170" y="205" width="300" height="40" rx="6" fill="#fff" stroke="#000"/>
+  <text x="320" y="230" text-anchor="middle" font-size="11">Web Bluetooth · YouTube IFrame · Wake Lock · Notification</text>
+  <line x1="240" y1="115" x2="240" y2="133" stroke="#000" marker-end="url(#a2)"/>
+  <line x1="400" y1="115" x2="400" y2="133" stroke="#000" marker-end="url(#a2)"/>
+  <rect x="5" y="60" width="125" height="60" rx="6" fill="#fff3e0" stroke="#000"/>
+  <text x="67" y="85" text-anchor="middle" font-weight="700">นาฬิกา / สายคาดอก</text>
+  <text x="67" y="104" text-anchor="middle">Heart Rate Service</text>
+  <line x1="130" y1="90" x2="168" y2="220" stroke="#000" marker-end="url(#a2)"/>
+  <text x="102" y="160">BLE</text>
+  <rect x="510" y="60" width="125" height="60" rx="6" fill="#fff3e0" stroke="#000"/>
+  <text x="572" y="85" text-anchor="middle" font-weight="700">YouTube</text>
+  <text x="572" y="104" text-anchor="middle">วิดีโอสอนท่า</text>
+  <line x1="508" y1="90" x2="472" y2="220" stroke="#000" marker-end="url(#a2)"/>
+  <rect x="40" y="280" width="170" height="44" rx="6" fill="#ede7f6" stroke="#000"/>
+  <text x="125" y="300" text-anchor="middle" font-weight="700">GitHub</text>
+  <text x="125" y="317" text-anchor="middle">karshi02/finnest</text>
+  <rect x="235" y="280" width="170" height="44" rx="6" fill="#ede7f6" stroke="#000"/>
+  <text x="320" y="300" text-anchor="middle" font-weight="700">run.ps1 (Windows)</text>
+  <text x="320" y="317" text-anchor="middle">http://localhost:8080</text>
+  <rect x="430" y="280" width="170" height="44" rx="6" fill="#ede7f6" stroke="#000"/>
+  <text x="515" y="300" text-anchor="middle" font-weight="700">Vercel</text>
+  <text x="515" y="317" text-anchor="middle">https</text>
+  <line x1="210" y1="302" x2="233" y2="302" stroke="#000" marker-end="url(#a2)"/>
+  <line x1="320" y1="280" x2="320" y2="262" stroke="#000" marker-end="url(#a2)"/>
+  <line x1="515" y1="280" x2="440" y2="262" stroke="#000" marker-end="url(#a2)"/>
+</svg>
+<figcaption><b>ภาพที่ 3.1</b> สถาปัตยกรรมของระบบ</figcaption>
+</figure>
+
+<h3 class="sub">3.3.2 แผนภาพยูสเคส (Use Case Diagram)</h3>
+<p>ระบบมีผู้กระทำ (Actor) 2 ราย คือ ผู้ใช้งาน และนาฬิกาหรืออุปกรณ์วัดหัวใจ ซึ่งส่งค่าหัวใจให้ระบบ ดังภาพที่ 3.2</p>
+<figure>
+<svg viewBox="0 0 640 470" width="560" xmlns="http://www.w3.org/2000/svg" font-family="Sarabun" font-size="12.5">
+  <g stroke="#000" fill="none" stroke-width="1.5">
+    <circle cx="55" cy="200" r="13"/><line x1="55" y1="213" x2="55" y2="250"/><line x1="30" y1="225" x2="80" y2="225"/><line x1="55" y1="250" x2="35" y2="280"/><line x1="55" y1="250" x2="75" y2="280"/>
+    <circle cx="590" cy="330" r="13"/><line x1="590" y1="343" x2="590" y2="380"/><line x1="565" y1="355" x2="615" y2="355"/><line x1="590" y1="380" x2="570" y2="410"/><line x1="590" y1="380" x2="610" y2="410"/>
+  </g>
+  <text x="55" y="300" text-anchor="middle" font-weight="700">ผู้ใช้งาน</text>
+  <text x="590" y="430" text-anchor="middle" font-weight="700">นาฬิกา / อุปกรณ์</text>
+  <text x="590" y="446" text-anchor="middle" font-weight="700">วัดหัวใจ</text>
+  <rect x="140" y="8" width="390" height="455" fill="none" stroke="#000"/>
+  <text x="335" y="28" text-anchor="middle" font-weight="700">FitTrack Pro</text>
+  <g fill="#fff" stroke="#000">
+    <ellipse cx="335" cy="55" rx="150" ry="16"/><ellipse cx="335" cy="92" rx="150" ry="16"/><ellipse cx="335" cy="129" rx="150" ry="16"/>
+    <ellipse cx="335" cy="166" rx="150" ry="16"/><ellipse cx="335" cy="203" rx="150" ry="16"/><ellipse cx="335" cy="240" rx="150" ry="16"/>
+    <ellipse cx="335" cy="277" rx="150" ry="16"/><ellipse cx="335" cy="314" rx="150" ry="16"/><ellipse cx="335" cy="351" rx="150" ry="16"/>
+    <ellipse cx="335" cy="388" rx="150" ry="16"/><ellipse cx="335" cy="425" rx="150" ry="16"/>
+  </g>
+  <g text-anchor="middle">
+    <text x="335" y="59">UC01 ดูคลังท่าและวิดีโอสอน</text>
+    <text x="335" y="96">UC02 บันทึกเวทเทรนนิ่ง</text>
+    <text x="335" y="133">UC03 จับเวลาพัก</text>
+    <text x="335" y="170">UC04 บันทึกคาร์ดิโอ</text>
+    <text x="335" y="207">UC05 จับเวลาคาร์ดิโอ (Stopwatch)</text>
+    <text x="335" y="244">UC06 คำนวณโซนหัวใจ</text>
+    <text x="335" y="281">UC07 ดูหัวใจสดจากนาฬิกา</text>
+    <text x="335" y="318">UC08 ดูแผนออกกำลังกาย</text>
+    <text x="335" y="355">UC09 ใช้เครื่องคำนวณ</text>
+    <text x="335" y="392">UC10 ดูภาพรวมและกราฟ</text>
+    <text x="335" y="429">UC11 ส่งออก / นำเข้าข้อมูล</text>
+  </g>
+  <g stroke="#000">
+    <line x1="80" y1="225" x2="185" y2="55"/><line x1="80" y1="225" x2="185" y2="92"/><line x1="80" y1="225" x2="185" y2="129"/>
+    <line x1="80" y1="225" x2="185" y2="166"/><line x1="80" y1="225" x2="185" y2="203"/><line x1="80" y1="225" x2="185" y2="240"/>
+    <line x1="80" y1="225" x2="185" y2="277"/><line x1="80" y1="225" x2="185" y2="314"/><line x1="80" y1="225" x2="185" y2="351"/>
+    <line x1="80" y1="225" x2="185" y2="388"/><line x1="80" y1="225" x2="185" y2="425"/>
+    <line x1="565" y1="345" x2="485" y2="277"/>
+  </g>
+</svg>
+<figcaption><b>ภาพที่ 3.2</b> แผนภาพยูสเคสของระบบ</figcaption>
+</figure>
+
+<h3 class="sub">3.3.3 คำอธิบายยูสเคส (Use Case Scenario)</h3>
+<p>คณะผู้วิจัยอธิบายยูสเคสหลักที่มีขั้นตอนการทำงานหลายขั้น ดังตารางที่ 3.1 ถึง 3.3</p>
+<div class="tblk"><div class="tcap">ตารางที่ 3.1 คำอธิบายยูสเคส UC02 บันทึกเวทเทรนนิ่ง</div>
+<table class="t">
+  <tr><td style="width:28%"><b>ชื่อยูสเคส</b></td><td>บันทึกเวทเทรนนิ่ง</td></tr>
+  <tr><td><b>ผู้กระทำ</b></td><td>ผู้ใช้งาน</td></tr>
+  <tr><td><b>เงื่อนไขก่อนเริ่ม</b></td><td>ผู้ใช้อยู่ที่หน้าเวทเทรนนิ่ง แท็บบันทึก Workout</td></tr>
+  <tr><td><b>ขั้นตอนหลัก</b></td><td>1. ผู้ใช้เลือกท่า กรอกน้ำหนัก จำนวนครั้ง จำนวน set และ RIR<br>2. ผู้ใช้กดปุ่ม “บันทึก Set”<br>3. ระบบตรวจสอบช่วงของค่า (reps 1–100, sets 1–20, น้ำหนัก 0–1000 กก.)<br>4. ระบบเพิ่ม set ในรายการวันนี้และแสดง Volume รวม<br>5. เมื่อฝึกครบ ผู้ใช้กด “บันทึก Session”<br>6. ระบบรวม set เป็น session บันทึกลง localStorage และล้างรายการวันนี้</td></tr>
+  <tr><td><b>ขั้นตอนทางเลือก</b></td><td>3a. ค่าไม่อยู่ในช่วง ระบบแจ้งเตือนและไม่บันทึก<br>5a. ถ้ามี set ค้างจากวันก่อน ระบบแจ้งเตือนและบันทึก session เป็นวันที่ของ set นั้น</td></tr>
+  <tr><td><b>ผลลัพธ์</b></td><td>session ใหม่ปรากฏในประวัติ และสถิติในหน้าภาพรวมถูกปรับปรุง</td></tr>
+</table></div>
+<div class="tblk"><div class="tcap">ตารางที่ 3.2 คำอธิบายยูสเคส UC07 ดูหัวใจสดจากนาฬิกา</div>
+<table class="t">
+  <tr><td style="width:28%"><b>ชื่อยูสเคส</b></td><td>ดูหัวใจสดจากนาฬิกา</td></tr>
+  <tr><td><b>ผู้กระทำ</b></td><td>ผู้ใช้งาน, นาฬิกาหรืออุปกรณ์วัดหัวใจ</td></tr>
+  <tr><td><b>เงื่อนไขก่อนเริ่ม</b></td><td>เปิดโปรแกรมผ่าน https หรือ localhost บน Chrome/Edge และนาฬิกาเปิดโหมดส่งค่าหัวใจ</td></tr>
+  <tr><td><b>ขั้นตอนหลัก</b></td><td>1. ผู้ใช้กด “เชื่อมต่อ” ที่แท็บจับเวลา<br>2. เบราว์เซอร์แสดงรายการอุปกรณ์ที่มี Heart Rate Service<br>3. ผู้ใช้เลือกอุปกรณ์<br>4. ระบบเชื่อมต่อและเริ่มรับค่า Heart Rate Measurement<br>5. ระบบแสดงค่าหัวใจ โซนปัจจุบัน ค่าเฉลี่ย และค่าสูงสุดระหว่างจับเวลา</td></tr>
+  <tr><td><b>ขั้นตอนทางเลือก</b></td><td>1a. เบราว์เซอร์ไม่รองรับ Bluetooth ระบบแสดงคำแนะนำ<br>3a. ผู้ใช้ไม่เลือกอุปกรณ์ ระบบแนะนำให้เปิดโหมดส่งค่าหัวใจบนนาฬิกา<br>5a. สัญญาณหลุด ระบบเชื่อมต่อใหม่อัตโนมัติ (ยกเว้นผู้ใช้กดตัดการเชื่อมต่อเอง)</td></tr>
+  <tr><td><b>ผลลัพธ์</b></td><td>ผู้ใช้เห็นโซนหัวใจขณะออกกำลังกาย และบันทึก HR เฉลี่ยเป็นคาร์ดิโอได้</td></tr>
+</table></div>
+<div class="tblk"><div class="tcap">ตารางที่ 3.3 คำอธิบายยูสเคส UC11 ส่งออก / นำเข้าข้อมูล</div>
+<table class="t">
+  <tr><td style="width:28%"><b>ชื่อยูสเคส</b></td><td>ส่งออก / นำเข้าข้อมูล</td></tr>
+  <tr><td><b>ผู้กระทำ</b></td><td>ผู้ใช้งาน</td></tr>
+  <tr><td><b>เงื่อนไขก่อนเริ่ม</b></td><td>ผู้ใช้อยู่ที่หน้าภาพรวม</td></tr>
+  <tr><td><b>ขั้นตอนหลัก</b></td><td>1. ผู้ใช้กด “Export” ระบบสร้างไฟล์ JSON ของข้อมูลทั้งหมดให้ดาวน์โหลด<br>2. ที่เครื่องใหม่ ผู้ใช้กด “Import” และเลือกไฟล์<br>3. ระบบตรวจรูปแบบไฟล์ แปลงข้อมูลเป็น schema ปัจจุบัน และบันทึก</td></tr>
+  <tr><td><b>ขั้นตอนทางเลือก</b></td><td>3a. ไฟล์ผิดรูปแบบ ระบบปฏิเสธและแจ้งผู้ใช้ โดยข้อมูลเดิมไม่เปลี่ยน</td></tr>
+  <tr><td><b>ผลลัพธ์</b></td><td>ข้อมูลในเครื่องใหม่ตรงกับเครื่องเดิม</td></tr>
+</table></div>
+
+<h3 class="sub">3.3.4 โครงสร้างข้อมูล</h3>
+<p>โปรแกรมเก็บข้อมูลทั้งหมดเป็นวัตถุ JSON ก้อนเดียวใน localStorage คีย์ <code>fittrack</code> ประกอบด้วยรายการย่อยดังตารางที่ 3.4 ถึง 3.6 วันที่เก็บเป็นวันที่ท้องถิ่นรูปแบบ YYYY-MM-DD และเวลาเก็บแยกเป็น timestamp เพื่อป้องกันปัญหาเขตเวลา</p>
+<div class="tblk"><div class="tcap">ตารางที่ 3.4 โครงสร้างข้อมูลหลัก (state)</div>
+<table class="t">
+  <thead><tr><th>ฟิลด์</th><th>ชนิดข้อมูล</th><th>คำอธิบาย</th></tr></thead>
+  <tr><td>schemaVersion</td><td>Number</td><td>รุ่นของรูปแบบข้อมูล (ปัจจุบันคือ 2)</td></tr>
+  <tr><td>sessions</td><td>Array</td><td>รายการ session เวทเทรนนิ่ง (ตารางที่ 3.5)</td></tr>
+  <tr><td>todaySets</td><td>Array</td><td>set ที่บันทึกแล้วแต่ยังไม่รวมเป็น session</td></tr>
+  <tr><td>cardioLog</td><td>Array</td><td>รายการคาร์ดิโอ (ตารางที่ 3.6)</td></tr>
+  <tr><td>profile</td><td>Object</td><td>อายุ (10–90) และ HR ขณะพัก (30–100) สำหรับโซนหัวใจ</td></tr>
+</table></div>
+<div class="tblk"><div class="tcap">ตารางที่ 3.5 โครงสร้างข้อมูล session และ set</div>
+<table class="t">
+  <thead><tr><th>ฟิลด์</th><th>ชนิดข้อมูล</th><th>คำอธิบาย</th></tr></thead>
+  <tr><td>id</td><td>String</td><td>รหัสของรายการ</td></tr>
+  <tr><td>date / ts</td><td>String / Number</td><td>วันที่ท้องถิ่น และเวลาที่บันทึก</td></tr>
+  <tr><td>sets[]</td><td>Array</td><td>แต่ละ set มี exId, exName, muscle, weight, reps, rir, note, ts</td></tr>
+  <tr><td>volume</td><td>Number</td><td>ผลรวมน้ำหนัก × จำนวนครั้ง</td></tr>
+  <tr><td>muscles</td><td>Array</td><td>กลุ่มกล้ามเนื้อที่ฝึกใน session</td></tr>
+</table></div>
+<div class="tblk"><div class="tcap">ตารางที่ 3.6 โครงสร้างข้อมูลคาร์ดิโอ</div>
+<table class="t">
+  <thead><tr><th>ฟิลด์</th><th>ชนิดข้อมูล</th><th>คำอธิบาย</th></tr></thead>
+  <tr><td>id, date, ts</td><td>String, String, Number</td><td>รหัส วันที่ และเวลาที่บันทึก</td></tr>
+  <tr><td>type</td><td>String</td><td>ประเภท เช่น วิ่ง จักรยาน ว่ายน้ำ เดินเร็ว HIIT</td></tr>
+  <tr><td>duration</td><td>Number</td><td>ระยะเวลา (1–1440 นาที)</td></tr>
+  <tr><td>distance</td><td>Number</td><td>ระยะทาง (0–1000 กม.) ไม่บังคับ</td></tr>
+  <tr><td>hr</td><td>Number</td><td>HR เฉลี่ย (30–230 bpm) ไม่บังคับ</td></tr>
+  <tr><td>kcal, intensity, note</td><td>Number, String, String</td><td>แคลอรี่ ระดับความเข้มข้น และบันทึก</td></tr>
+</table></div>
+
+<h3 class="sub">3.3.5 ผังงาน (Flowchart)</h3>
+<p>ภาพที่ 3.3 แสดงผังงานการบันทึกเวทเทรนนิ่ง และภาพที่ 3.4 แสดงผังงานการเชื่อมต่อนาฬิกาเพื่อรับค่าหัวใจ</p>
+<figure>
+<svg viewBox="0 0 520 560" width="430" xmlns="http://www.w3.org/2000/svg" font-family="Sarabun" font-size="12.5">
+  <defs><marker id="a3" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z"/></marker></defs>
+  <g stroke="#000" fill="#fff">
+    <rect x="200" y="5" width="120" height="34" rx="17"/>
+    <polygon points="185,60 345,60 330,100 170,100"/>
+    <rect x="175" y="122" width="170" height="38"/>
+    <polygon points="260,180 350,220 260,260 170,220"/>
+    <rect x="390" y="202" width="120" height="38"/>
+    <rect x="175" y="282" width="170" height="38"/>
+    <polygon points="260,340 350,380 260,420 170,380"/>
+    <rect x="175" y="442" width="170" height="38"/>
+    <rect x="200" y="505" width="120" height="34" rx="17"/>
+  </g>
+  <g text-anchor="middle">
+    <text x="260" y="27">เริ่มต้น</text>
+    <text x="258" y="77">เลือกท่า กรอกน้ำหนัก</text><text x="258" y="94">reps, sets, RIR</text>
+    <text x="260" y="146">กดปุ่ม “บันทึก Set”</text>
+    <text x="260" y="217">ค่าอยู่ใน</text><text x="260" y="233">ช่วงที่กำหนด?</text>
+    <text x="450" y="226">แจ้งเตือน</text>
+    <text x="260" y="306">เพิ่ม set ในรายการวันนี้</text>
+    <text x="260" y="377">ฝึกครบ</text><text x="260" y="393">ทุกท่าแล้ว?</text>
+    <text x="260" y="466">บันทึก Session ลง localStorage</text>
+    <text x="260" y="527">สิ้นสุด</text>
+  </g>
+  <g stroke="#000" fill="none">
+    <line x1="260" y1="39" x2="260" y2="58" marker-end="url(#a3)"/>
+    <line x1="260" y1="100" x2="260" y2="120" marker-end="url(#a3)"/>
+    <line x1="260" y1="160" x2="260" y2="178" marker-end="url(#a3)"/>
+    <line x1="350" y1="220" x2="388" y2="220" marker-end="url(#a3)"/>
+    <polyline points="450,202 450,80 340,80" marker-end="url(#a3)"/>
+    <line x1="260" y1="260" x2="260" y2="280" marker-end="url(#a3)"/>
+    <line x1="260" y1="320" x2="260" y2="338" marker-end="url(#a3)"/>
+    <polyline points="170,380 110,380 110,80 175,80" marker-end="url(#a3)"/>
+    <line x1="260" y1="420" x2="260" y2="440" marker-end="url(#a3)"/>
+    <line x1="260" y1="480" x2="260" y2="503" marker-end="url(#a3)"/>
+  </g>
+  <text x="362" y="212">ไม่ใช่</text><text x="268" y="275">ใช่</text>
+  <text x="125" y="372">ไม่ใช่</text><text x="268" y="436">ใช่</text>
+</svg>
+<figcaption><b>ภาพที่ 3.3</b> ผังงานการบันทึกเวทเทรนนิ่ง</figcaption>
+</figure>
+<figure>
+<svg viewBox="0 0 560 600" width="440" xmlns="http://www.w3.org/2000/svg" font-family="Sarabun" font-size="12.5">
+  <defs><marker id="a4" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z"/></marker></defs>
+  <g stroke="#000" fill="#fff">
+    <rect x="200" y="5" width="120" height="34" rx="17"/>
+    <rect x="175" y="58" width="170" height="36"/>
+    <polygon points="260,112 355,150 260,188 165,150"/>
+    <rect x="395" y="132" width="155" height="38"/>
+    <rect x="175" y="206" width="170" height="36"/>
+    <polygon points="260,260 355,298 260,336 165,298"/>
+    <rect x="175" y="354" width="170" height="36"/>
+    <rect x="175" y="408" width="170" height="44"/>
+    <polygon points="260,470 355,505 260,540 165,505"/>
+    <rect x="395" y="487" width="155" height="38"/>
+    <rect x="15" y="487" width="130" height="38"/>
+  </g>
+  <g text-anchor="middle">
+    <text x="260" y="27">กดปุ่มเชื่อมต่อ</text>
+    <text x="260" y="81">ตรวจการรองรับ Bluetooth</text>
+    <text x="260" y="147">รองรับและเปิดผ่าน</text><text x="260" y="163">https / localhost?</text>
+    <text x="472" y="156">แสดงคำแนะนำ</text>
+    <text x="260" y="229">requestDevice(heart_rate)</text>
+    <text x="260" y="295">ผู้ใช้เลือก</text><text x="260" y="311">อุปกรณ์?</text>
+    <text x="260" y="377">เชื่อมต่อ GATT</text>
+    <text x="260" y="427">รับค่า 0x2A37 อ่าน 8/16 บิต</text><text x="260" y="444">แสดง HR และโซน</text>
+    <text x="260" y="502">สัญญาณ</text><text x="260" y="518">หลุด?</text>
+    <text x="472" y="510">เชื่อมต่อใหม่อัตโนมัติ</text>
+    <text x="80" y="510">ทำงานต่อ</text>
+  </g>
+  <g stroke="#000" fill="none">
+    <line x1="260" y1="39" x2="260" y2="56" marker-end="url(#a4)"/>
+    <line x1="260" y1="94" x2="260" y2="110" marker-end="url(#a4)"/>
+    <line x1="355" y1="150" x2="393" y2="150" marker-end="url(#a4)"/>
+    <line x1="260" y1="188" x2="260" y2="204" marker-end="url(#a4)"/>
+    <line x1="260" y1="242" x2="260" y2="258" marker-end="url(#a4)"/>
+    <polyline points="355,298 472,298 472,172" marker-end="url(#a4)"/>
+    <line x1="260" y1="336" x2="260" y2="352" marker-end="url(#a4)"/>
+    <line x1="260" y1="390" x2="260" y2="406" marker-end="url(#a4)"/>
+    <line x1="260" y1="452" x2="260" y2="468" marker-end="url(#a4)"/>
+    <line x1="355" y1="505" x2="393" y2="505" marker-end="url(#a4)"/>
+    <polyline points="472,525 472,575 530,575 530,370 347,370" marker-end="url(#a4)"/>
+    <line x1="165" y1="505" x2="147" y2="505" marker-end="url(#a4)"/>
+    <polyline points="80,487 80,430 173,430" marker-end="url(#a4)"/>
+  </g>
+  <text x="362" y="142">ไม่ใช่</text><text x="268" y="201">ใช่</text>
+  <text x="362" y="290">ไม่ใช่</text><text x="268" y="349">ใช่</text>
+  <text x="362" y="497">ใช่</text><text x="150" y="497">ไม่</text>
+</svg>
+<figcaption><b>ภาพที่ 3.4</b> ผังงานการเชื่อมต่อนาฬิกาเพื่อรับค่าหัวใจ</figcaption>
+</figure>
+
+<h3 class="sub">3.3.6 การออกแบบส่วนติดต่อผู้ใช้</h3>
+<p>ส่วนติดต่อผู้ใช้ใช้โทนสีเข้มเพื่อให้อ่านง่ายในยิมและประหยัดพลังงานบนจอ OLED แถบเมนูด้านบนแบ่งเป็น 5 หน้า ได้แก่ ภาพรวม เวทเทรนนิ่ง คาร์ดิโอ แผนออกกำลังกาย และคำนวณ หน้าที่มีหลายส่วนแบ่งย่อยเป็นแท็บ ฟอร์มทุกช่องมีป้ายกำกับที่ผูกกับช่องกรอก และรองรับการใช้งานด้วยแป้นพิมพ์ เช่น กด Esc เพื่อปิดหน้าต่างวิดีโอ</p>
+
+<h2 data-toc="3.4 ข้อกำหนดด้านฟังก์ชัน (Functional Specification)">3.4 ข้อกำหนดด้านฟังก์ชัน (Functional Specification)</h2>
+<div class="tblk"><div class="tcap">ตารางที่ 3.7 ข้อกำหนดด้านฟังก์ชันของระบบ</div>
+<table class="t">
+  <thead><tr><th style="width:9%">รหัส</th><th style="width:25%">ฟังก์ชัน</th><th>รายละเอียด</th></tr></thead>
+  <tr><td class="c">F01</td><td>คลังท่าออกกำลังกาย</td><td>แสดงท่า 30 ท่า กรองตามกลุ่มกล้ามเนื้อ 7 กลุ่ม (หน้าอก หลัง ไหล่ ไบเซ็ป ไตรเซ็ป ขา คอร์) แต่ละท่ามีอุปกรณ์ คำอธิบาย และวิดีโอสอน</td></tr>
+  <tr><td class="c">F02</td><td>วิดีโอสอนท่า</td><td>กดการ์ดแล้วเล่นวิดีโอทันที ถ้าเบราว์เซอร์บล็อกเสียงจะเล่นแบบปิดเสียงพร้อมปุ่มเปิดเสียง ถ้าออฟไลน์หรือวิดีโอถูกปิด embed จะแสดงลิงก์ไป YouTube</td></tr>
+  <tr><td class="c">F03</td><td>บันทึกเวทเทรนนิ่ง</td><td>บันทึกราย set, ลบ set, รวมเป็น session, ดูและลบประวัติ</td></tr>
+  <tr><td class="c">F04</td><td>นาฬิกาจับเวลาพัก</td><td>ตั้งเวลา 1 นาที, 90 วินาที, 2 นาที, 3 นาที แจ้งด้วยเสียง การสั่น และการแจ้งเตือน ป้องกันหน้าจอดับระหว่างจับเวลา (Wake Lock)</td></tr>
+  <tr><td class="c">F05</td><td>บันทึกคาร์ดิโอ</td><td>บันทึก 8 ประเภท พร้อมระยะเวลา ระยะทาง HR แคลอรี่ ระดับความเข้มข้น และคำนวณ pace</td></tr>
+  <tr><td class="c">F06</td><td>Stopwatch</td><td>จับเวลา lap และบันทึกเวลาพร้อม HR เฉลี่ยเป็นคาร์ดิโอ</td></tr>
+  <tr><td class="c">F07</td><td>โซนหัวใจ</td><td>คำนวณ 5 โซนด้วยวิธี Karvonen และจำอายุกับ HR ขณะพักไว้</td></tr>
+  <tr><td class="c">F08</td><td>หัวใจสดผ่าน Bluetooth</td><td>เชื่อมต่ออุปกรณ์ Heart Rate Service แสดง HR โซน ค่าเฉลี่ย และค่าสูงสุด และเชื่อมต่อใหม่เมื่อสัญญาณหลุด</td></tr>
+  <tr><td class="c">F09</td><td>แผนออกกำลังกาย</td><td>ตารางรายสัปดาห์ 7 วัน และแผนสำเร็จรูป 6 แบบ (PPL, 5×5 StrongLifts, PHUL, Full Body 3×/Week, Arnold Split, HIIT + Weights Hybrid)</td></tr>
+  <tr><td class="c">F10</td><td>เครื่องคำนวณ</td><td>BMR/TDEE, BMI, มาโคร และ 1RM พร้อมตาราง %1RM</td></tr>
+  <tr><td class="c">F11</td><td>ภาพรวม</td><td>สถิติรวม 4 ค่า กราฟ 7 วันล่าสุด กราฟกลุ่มกล้ามเนื้อ และบันทึกล่าสุด</td></tr>
+  <tr><td class="c">F12</td><td>ส่งออก / นำเข้า</td><td>ไฟล์ JSON พร้อมตรวจรูปแบบและแปลงรุ่นข้อมูล</td></tr>
+  <tr><td class="c">F13</td><td>PWA</td><td>ติดตั้งลงหน้าจอโฮม ใช้งานออฟไลน์ และแจ้งเมื่อมีเวอร์ชันใหม่</td></tr>
+</table></div>
+
+<h2 data-toc="3.5 เครื่องมือที่ใช้ในการพัฒนา">3.5 เครื่องมือที่ใช้ในการพัฒนา</h2>
+<div class="tblk"><div class="tcap">ตารางที่ 3.8 ฮาร์ดแวร์และซอฟต์แวร์ที่ใช้ในการพัฒนา</div>
+<table class="t">
+  <thead><tr><th style="width:30%">ประเภท</th><th>รายการ</th></tr></thead>
+  <tr><td>ฮาร์ดแวร์</td><td>เครื่องคอมพิวเตอร์ระบบปฏิบัติการ Windows 11, โทรศัพท์มือถือ Android สำหรับทดสอบ, นาฬิกาหรือสายคาดอกที่ส่งค่าหัวใจผ่าน Bluetooth</td></tr>
+  <tr><td>โปรแกรมแก้ไขโค้ด</td><td>Visual Studio Code</td></tr>
+  <tr><td>ภาษาและไลบรารี</td><td>HTML, CSS, JavaScript, Chart.js 4.4.4, YouTube IFrame Player API</td></tr>
+  <tr><td>เว็บเบราว์เซอร์</td><td>Google Chrome, Microsoft Edge</td></tr>
+  <tr><td>การทดสอบ</td><td>Chrome แบบ headless ควบคุมด้วย puppeteer-core บน Node.js</td></tr>
+  <tr><td>การติดตั้งและเผยแพร่</td><td>PowerShell 5.1, Git, GitHub, Vercel</td></tr>
+</table></div>
+
+<h2 data-toc="3.6 กลุ่มเป้าหมาย">3.6 กลุ่มเป้าหมาย</h2>
+<p>กลุ่มเป้าหมายของการประเมินความพึงพอใจ คือ ผู้ที่เพิ่งเริ่มออกกำลังกายหรือสนใจเริ่มออกกำลังกาย จำนวน ....... คน เลือกแบบเจาะจง (Purposive Sampling)</p>
+
+<h2 data-toc="3.7 วิธีการประเมินผล">3.7 วิธีการประเมินผล</h2>
+<p>การประเมินผลแบ่งเป็น 2 ส่วน ส่วนแรกคือการทดสอบการทำงาน (Functional Testing) ตามข้อกำหนดในตารางที่ 3.7 ด้วยการทดสอบอัตโนมัติบนเว็บเบราว์เซอร์ Chrome ร่วมกับการทดสอบด้วยมือ ส่วนที่สองคือการประเมินความพึงพอใจด้วยแบบสอบถามมาตราส่วนประมาณค่า 5 ระดับ (ภาคผนวก ข) แล้วนำมาคำนวณค่าเฉลี่ย (x̄) และส่วนเบี่ยงเบนมาตรฐาน (S.D.) โดยแปลผลตามเกณฑ์ในตารางที่ 3.9</p>
+<div class="tblk"><div class="tcap">ตารางที่ 3.9 เกณฑ์การแปลผลค่าเฉลี่ยความพึงพอใจ</div>
+<table class="t">
+  <thead><tr><th>ช่วงค่าเฉลี่ย</th><th>ระดับความพึงพอใจ</th></tr></thead>
+  <tr><td class="c">4.51–5.00</td><td class="c">มากที่สุด</td></tr>
+  <tr><td class="c">3.51–4.50</td><td class="c">มาก</td></tr>
+  <tr><td class="c">2.51–3.50</td><td class="c">ปานกลาง</td></tr>
+  <tr><td class="c">1.51–2.50</td><td class="c">น้อย</td></tr>
+  <tr><td class="c">1.00–1.50</td><td class="c">น้อยที่สุด</td></tr>
+</table></div>
+
+<h2 data-toc="3.8 แผนการดำเนินงาน">3.8 แผนการดำเนินงาน</h2>
+<div class="tblk"><div class="tcap">ตารางที่ 3.10 แผนการดำเนินงาน</div>
+<table class="t">
+  <thead><tr><th rowspan="2">ขั้นตอนการดำเนินงาน</th><th colspan="6">เดือนที่</th></tr>
+  <tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr></thead>
+  <tr><td>1. ศึกษาปัญหาและทฤษฎีที่เกี่ยวข้อง</td><td class="c">■</td><td></td><td></td><td></td><td></td><td></td></tr>
+  <tr><td>2. วิเคราะห์ความต้องการและออกแบบระบบ</td><td class="c">■</td><td class="c">■</td><td></td><td></td><td></td><td></td></tr>
+  <tr><td>3. พัฒนาระบบบันทึกและเครื่องคำนวณ</td><td></td><td class="c">■</td><td class="c">■</td><td></td><td></td><td></td></tr>
+  <tr><td>4. พัฒนาวิดีโอสอนท่าและการเชื่อมต่อนาฬิกา</td><td></td><td></td><td class="c">■</td><td class="c">■</td><td></td><td></td></tr>
+  <tr><td>5. ทดสอบและแก้ไขข้อบกพร่อง</td><td></td><td></td><td></td><td class="c">■</td><td class="c">■</td><td></td></tr>
+  <tr><td>6. ติดตั้งเผยแพร่และประเมินความพึงพอใจ</td><td></td><td></td><td></td><td></td><td class="c">■</td><td class="c">■</td></tr>
+  <tr><td>7. จัดทำเอกสารโครงการวิจัย</td><td></td><td></td><td></td><td></td><td class="c">■</td><td class="c">■</td></tr>
+</table></div>
+</section>
+
+<!-- ═══════════ บทที่ 4 ═══════════ -->
+<section class="chapter">
+<h1 class="chap" data-toc="บทที่ 4 ผลการดำเนินงาน"><span>บทที่ 4</span><span>ผลการดำเนินงาน</span></h1>
+<p>บทนี้นำเสนอผลการพัฒนาโปรแกรมออกกำลังกายสำหรับมือใหม่ ผลการทดสอบการทำงาน และผลการประเมินความพึงพอใจ ภาพหน้าจอในบทนี้ถ่ายจากโปรแกรมจริงบนคอมพิวเตอร์ โดยใส่ข้อมูลตัวอย่างไว้เพื่อแสดงการทำงาน</p>
+
+<h2 data-toc="4.1 ผลการพัฒนาโปรแกรม">4.1 ผลการพัฒนาโปรแกรม</h2>
+<h3 class="sub">4.1.1 หน้าภาพรวม</h3>
+<p>หน้าภาพรวมแสดงจำนวนครั้งที่ฝึกเวทเทรนนิ่ง Volume รวม นาทีคาร์ดิโอ และแคลอรี่ที่เผาผลาญ พร้อมกราฟ 7 วันล่าสุดที่แสดง Volume และนาทีคาร์ดิโอรายวัน กราฟสัดส่วนกลุ่มกล้ามเนื้อที่ฝึก และตารางบันทึกล่าสุด ด้านบนมีปุ่ม Export และ Import สำหรับสำรองข้อมูล ดังภาพที่ 4.1</p>
+<figure><img class="shot" src="img/dashboard.png" alt=""><figcaption><b>ภาพที่ 4.1</b> หน้าภาพรวม</figcaption></figure>
+<h3 class="sub">4.1.2 คลังท่าออกกำลังกาย</h3>
+<p>คลังท่าแสดงการ์ดของท่าออกกำลังกาย 30 ท่า กรองตามกลุ่มกล้ามเนื้อได้ แต่ละการ์ดบอกอุปกรณ์และกล้ามเนื้อที่ใช้ ดังภาพที่ 4.2 เมื่อกดการ์ด โปรแกรมเปิดหน้าต่างและเล่นวิดีโอสอนท่านั้นทันที พร้อมปุ่ม “+ บันทึกท่านี้” ที่พาไปยังฟอร์มบันทึกโดยเลือกท่าไว้ให้แล้ว</p>
+<figure><img class="shot" src="img/library.png" alt=""><figcaption><b>ภาพที่ 4.2</b> คลังท่าออกกำลังกาย</figcaption></figure>
+<h3 class="sub">4.1.3 การบันทึกเวทเทรนนิ่งและนาฬิกาพัก</h3>
+<p>ผู้ใช้เลือกท่า กรอกน้ำหนัก จำนวนครั้ง จำนวน set และ RIR แล้วกด “บันทึก Set” รายการจะแสดงในส่วนบันทึกวันนี้พร้อม Volume รวม ด้านขวาเป็นนาฬิกาพักที่เลือกเวลาได้ 4 ระดับ เมื่อฝึกครบผู้ใช้กด “บันทึก Session” ดังภาพที่ 4.3</p>
+<figure><img class="shot" src="img/weight.png" alt=""><figcaption><b>ภาพที่ 4.3</b> การบันทึกเวทเทรนนิ่งและนาฬิกาพัก</figcaption></figure>
+<h3 class="sub">4.1.4 การบันทึกคาร์ดิโอ</h3>
+<p>ผู้ใช้เลือกประเภทคาร์ดิโอ กรอกระยะเวลา ระยะทาง HR เฉลี่ย แคลอรี่ ระดับความเข้มข้น และวันที่ ด้านล่างมีเครื่องคำนวณ pace จากระยะทางและเวลา ดังภาพที่ 4.4</p>
+<figure><img class="shot" src="img/cardio.png" alt=""><figcaption><b>ภาพที่ 4.4</b> การบันทึกคาร์ดิโอ</figcaption></figure>
+<h3 class="sub">4.1.5 นาฬิกาจับเวลาและหัวใจสดจากนาฬิกา</h3>
+<p>แท็บจับเวลามี stopwatch พร้อมปุ่ม Lap และปุ่ม “บันทึกเป็นคาร์ดิโอ” ด้านล่างเป็นส่วนเชื่อมต่อนาฬิกาผ่าน Bluetooth เมื่อเชื่อมต่อแล้วจะแสดง HR ปัจจุบัน โซน ค่าเฉลี่ย และค่าสูงสุดระหว่างจับเวลา ดังภาพที่ 4.5 (ภาพแสดงสถานะก่อนเชื่อมต่อ)</p>
+<figure><img class="shot" src="img/stopwatch.png" alt=""><figcaption><b>ภาพที่ 4.5</b> นาฬิกาจับเวลาและส่วนเชื่อมต่อนาฬิกา</figcaption></figure>
+<h3 class="sub">4.1.6 โซนอัตราการเต้นของหัวใจ</h3>
+<p>ผู้ใช้กรอกอายุและ HR ขณะพัก โปรแกรมคำนวณ HR สูงสุดและช่วง HR ของทั้ง 5 โซน ภาพที่ 4.6 เป็นตัวอย่างของผู้ใช้อายุ 21 ปี HR ขณะพัก 65 bpm ได้ HR สูงสุด 199 bpm และ Zone 2 อยู่ที่ 145–159 bpm ซึ่งตรงกับการคำนวณด้วยสมการที่ 2.1 และ 2.2</p>
+<figure><img class="shot" src="img/zones.png" alt=""><figcaption><b>ภาพที่ 4.6</b> โซนอัตราการเต้นของหัวใจ</figcaption></figure>
+<h3 class="sub">4.1.7 ประวัติคาร์ดิโอ</h3>
+<p>แท็บประวัติแสดงรายการคาร์ดิโอทั้งหมด ลบรายการได้ และมีกราฟระยะเวลาและแคลอรี่ ดังภาพที่ 4.7</p>
+<figure><img class="shot" src="img/chistory.png" alt=""><figcaption><b>ภาพที่ 4.7</b> ประวัติและกราฟคาร์ดิโอ</figcaption></figure>
+<h3 class="sub">4.1.8 แผนออกกำลังกาย</h3>
+<p>หน้าแผนออกกำลังกายมีตารางรายสัปดาห์ที่ระบุท่า จำนวน set และจำนวนครั้งของแต่ละวัน และแผนโปรแกรมยอดนิยม 6 แบบพร้อมระดับความยากและจำนวนวันต่อสัปดาห์ แผนที่เหมาะกับผู้เริ่มต้นมีป้ายกำกับ “เริ่มต้น” ดังภาพที่ 4.8</p>
+<figure><img class="shot" src="img/plan.png" alt=""><figcaption><b>ภาพที่ 4.8</b> แผนออกกำลังกาย</figcaption></figure>
+<h3 class="sub">4.1.9 เครื่องคำนวณ</h3>
+<p>หน้าเครื่องคำนวณมี 4 แท็บ ภาพที่ 4.9 แสดงการคำนวณ BMR และ TDEE ของผู้ชายอายุ 21 ปี น้ำหนัก 65 กิโลกรัม ส่วนสูง 172 เซนติเมตร ระดับกิจกรรมปานกลาง ได้ BMR 1,665 kcal/วัน ซึ่งตรงกับสมการที่ 2.3 ภาพที่ 4.10 แสดงการแบ่งสารอาหารหลัก และภาพที่ 4.11 แสดงการประมาณ 1RM จากน้ำหนัก 40 กิโลกรัม 8 ครั้ง ได้ 50.7 กิโลกรัม (Epley) และ 49.7 กิโลกรัม (Brzycki)</p>
+<figure><img class="shot" src="img/calc.png" alt=""><figcaption><b>ภาพที่ 4.9</b> การคำนวณ BMR และ TDEE</figcaption></figure>
+<figure><img class="shot" src="img/macro.png" alt=""><figcaption><b>ภาพที่ 4.10</b> การคำนวณสารอาหารหลัก</figcaption></figure>
+<figure><img class="shot" src="img/orm.png" alt=""><figcaption><b>ภาพที่ 4.11</b> การประมาณ 1RM</figcaption></figure>
+
+<h2 data-toc="4.2 ผลการทดสอบการทำงานของระบบ">4.2 ผลการทดสอบการทำงานของระบบ</h2>
+<p>คณะผู้วิจัยทดสอบการทำงานด้วยการทดสอบอัตโนมัติบน Chrome แบบ headless ที่ควบคุมด้วย puppeteer-core ผ่านเว็บเซิร์ฟเวอร์ในเครื่อง โดยจำลองการกดและการกรอกข้อมูลเหมือนผู้ใช้จริง ผลการทดสอบชุดหลักผ่าน 31 จาก 31 กรณี ดังตารางที่ 4.1 ผลการทดสอบระบบวิดีโอสอนท่าดังตารางที่ 4.2 และผลการทดสอบการเชื่อมต่อนาฬิกาด้วยอุปกรณ์ Bluetooth จำลองดังตารางที่ 4.3</p>
+<div class="tblk"><div class="tcap">ตารางที่ 4.1 ผลการทดสอบการทำงานชุดหลัก</div>
+<table class="t">
+  <thead><tr><th style="width:6%">ที่</th><th>กรณีทดสอบ</th><th style="width:12%">ผล</th></tr></thead>
+  <tr><td class="c">1</td><td>ข้อมูลใน localStorage เสียหาย: โปรแกรมเปิดได้ สำรองข้อมูลเสียไว้ และแจ้งผู้ใช้</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">2</td><td>แปลงข้อมูลรุ่น 1 เป็นรุ่น 2: วันที่ถูกรูปแบบ ทุกรายการมีรหัส และมีสำเนาข้อมูลเดิม</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">3</td><td>กราฟ 7 วัน: วันนี้อยู่ขวาสุด และไม่นับรายการวันที่ในอนาคต</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">4</td><td>Chart.js โหลดจากไฟล์ในโปรเจกต์ (vendor)</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">5</td><td>ลบ session และลบรายการคาร์ดิโอได้ตรงรายการที่กด</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">6</td><td>ปฏิเสธค่าที่ไม่ถูกต้อง เช่น reps ติดลบ sets 9999 และเวลาคาร์ดิโอติดลบ ส่วนค่าปกติบันทึกได้</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">7</td><td>set ค้างจากเมื่อวาน: มีคำเตือน และ session ลงวันที่ของ set</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">8</td><td>นำเข้าไฟล์ที่ฝังสคริปต์อันตราย 10 จุด: ไม่มีสคริปต์ใดทำงาน</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">9</td><td>ส่งออกแล้วนำเข้ากลับได้ข้อมูลตรงกัน และไฟล์ผิดรูปแบบถูกปฏิเสธ</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">10</td><td>หน้าจอกว้าง 360 พิกเซล: ไม่มีการเลื่อนแนวนอน</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">11</td><td>กด Esc หรือคลิกพื้นหลังเพื่อปิดหน้าต่างได้</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">12</td><td>ไม่มีข้อมูลแล้วแสดงข้อความแทนรายการว่าง</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">13</td><td>Service Worker ติดตั้งได้ และแคชไฟล์ของแอปครบ</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">14</td><td>ป้ายกำกับทุกช่องผูกกับช่องกรอก และเมนูบอกหน้าปัจจุบัน</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">15</td><td>ไม่มีข้อผิดพลาด JavaScript ตลอดการทดสอบ</td><td class="c">ผ่าน</td></tr>
+  <tr><td colspan="2" style="text-align:right"><b>รวม (นับเป็นกรณีทดสอบย่อย)</b></td><td class="c"><b>31/31</b></td></tr>
+</table></div>
+<div class="tblk"><div class="tcap">ตารางที่ 4.2 ผลการทดสอบระบบวิดีโอสอนท่า</div>
+<table class="t">
+  <thead><tr><th style="width:6%">ที่</th><th>กรณีทดสอบ</th><th style="width:12%">ผล</th></tr></thead>
+  <tr><td class="c">1</td><td>กดการ์ดท่าแล้วเปิดหน้าต่างของท่านั้น</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">2</td><td>วิดีโอเล่นเองโดยไม่ต้องกดเล่น และมีเสียง</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">3</td><td>ปิดหน้าต่างแล้ววิดีโอหยุดและถูกลบ ไม่มีเสียงค้าง</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">4</td><td>เปิดท่าที่สองต่อ ได้วิดีโอของท่าใหม่ถูกต้อง</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">5</td><td>ปุ่ม “+ บันทึกท่านี้” เลือกท่าในฟอร์มและไปยังแท็บบันทึก</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">6</td><td>ออฟไลน์แล้วแสดงข้อความแทนวิดีโอ</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">7</td><td>เบราว์เซอร์ที่บล็อกเสียง: เล่นแบบปิดเสียงและแสดงปุ่มเปิดเสียง</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">8</td><td>หน้าจอกว้าง 360 พิกเซล: หน้าต่างวิดีโอไม่ล้นจอ</td><td class="c">ผ่าน</td></tr>
+  <tr><td colspan="2" style="text-align:right"><b>รวมกับชุดหลัก</b></td><td class="c"><b>42/42</b></td></tr>
+</table></div>
+<div class="tblk"><div class="tcap">ตารางที่ 4.3 ผลการทดสอบการเชื่อมต่อนาฬิกาด้วยอุปกรณ์ Bluetooth จำลอง</div>
+<table class="t">
+  <thead><tr><th style="width:6%">ที่</th><th>กรณีทดสอบ</th><th style="width:12%">ผล</th></tr></thead>
+  <tr><td class="c">1</td><td>เบราว์เซอร์ไม่มี Bluetooth: แสดงข้อความแนะนำ</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">2</td><td>ขอเชื่อมต่อเฉพาะอุปกรณ์ที่มี Heart Rate Service</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">3</td><td>อ่านค่า HR ได้ทั้งแบบ 8 บิตและ 16 บิต</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">4</td><td>คำนวณโซนถูกต้อง (อายุ 30 ปี HR ขณะพัก 60: 130 = Zone 1, 160 = Zone 3, 185 = Zone 5)</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">5</td><td>ค่าเฉลี่ยและค่าสูงสุดนับเฉพาะช่วงที่จับเวลา</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">6</td><td>“บันทึกเป็นคาร์ดิโอ” เติมเวลาและ HR เฉลี่ยลงฟอร์ม</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">7</td><td>สัญญาณหลุดแล้วเชื่อมใหม่เอง และกดตัดการเชื่อมต่อเองแล้วไม่เชื่อมใหม่</td><td class="c">ผ่าน</td></tr>
+</table></div>
+<p>นอกจากนี้ คณะผู้วิจัยทดสอบสคริปต์ติดตั้ง run.ps1 บน Windows พบว่าดาวน์โหลดโปรแกรมจาก GitHub และเปิดเว็บเซิร์ฟเวอร์ที่ http://localhost:8080 ได้ ไฟล์ที่ไม่มีอยู่ได้รหัส 404 และการขอไฟล์นอกโฟลเดอร์โปรแกรม (path traversal) ถูกปฏิเสธ</p>
+
+<h2 data-toc="4.3 ผลการประเมินความพึงพอใจ">4.3 ผลการประเมินความพึงพอใจ</h2>
+<p>ผลการประเมินความพึงพอใจของกลุ่มเป้าหมายจำนวน ....... คน ดังตารางที่ 4.4</p>
+<div class="tblk"><div class="tcap">ตารางที่ 4.4 ผลการประเมินความพึงพอใจของผู้ใช้งาน</div>
+<table class="t">
+  <thead><tr><th style="width:6%">ที่</th><th>รายการประเมิน</th><th style="width:10%">x̄</th><th style="width:10%">S.D.</th><th style="width:16%">ระดับ</th></tr></thead>
+  <tr><td colspan="5"><b>ด้านการออกแบบ</b></td></tr>
+  <tr><td class="c">1</td><td>ความสวยงามและความเหมาะสมของหน้าจอ</td><td class="c">.......</td><td class="c">.......</td><td class="c">.......</td></tr>
+  <tr><td class="c">2</td><td>ความชัดเจนของตัวอักษรและสี</td><td class="c">.......</td><td class="c">.......</td><td class="c">.......</td></tr>
+  <tr><td class="c">3</td><td>การจัดวางเมนูเข้าใจง่าย</td><td class="c">.......</td><td class="c">.......</td><td class="c">.......</td></tr>
+  <tr><td colspan="5"><b>ด้านการใช้งาน</b></td></tr>
+  <tr><td class="c">4</td><td>ความง่ายในการบันทึกเวทเทรนนิ่ง</td><td class="c">.......</td><td class="c">.......</td><td class="c">.......</td></tr>
+  <tr><td class="c">5</td><td>ความง่ายในการบันทึกคาร์ดิโอ</td><td class="c">.......</td><td class="c">.......</td><td class="c">.......</td></tr>
+  <tr><td class="c">6</td><td>ความเร็วในการตอบสนองของโปรแกรม</td><td class="c">.......</td><td class="c">.......</td><td class="c">.......</td></tr>
+  <tr><td colspan="5"><b>ด้านประโยชน์ต่อผู้เริ่มต้น</b></td></tr>
+  <tr><td class="c">7</td><td>วิดีโอสอนท่าช่วยให้เข้าใจท่าที่ถูกต้อง</td><td class="c">.......</td><td class="c">.......</td><td class="c">.......</td></tr>
+  <tr><td class="c">8</td><td>แผนออกกำลังกายช่วยในการวางแผนการฝึก</td><td class="c">.......</td><td class="c">.......</td><td class="c">.......</td></tr>
+  <tr><td class="c">9</td><td>สถิติและกราฟช่วยให้เห็นความก้าวหน้า</td><td class="c">.......</td><td class="c">.......</td><td class="c">.......</td></tr>
+  <tr><td class="c">10</td><td>เครื่องคำนวณมีประโยชน์ต่อการดูแลโภชนาการ</td><td class="c">.......</td><td class="c">.......</td><td class="c">.......</td></tr>
+  <tr><td colspan="2" style="text-align:right"><b>ค่าเฉลี่ยรวม</b></td><td class="c">.......</td><td class="c">.......</td><td class="c">.......</td></tr>
+</table></div>
+</section>
+
+<!-- ═══════════ บทที่ 5 ═══════════ -->
+<section class="chapter">
+<h1 class="chap" data-toc="บทที่ 5 สรุปผล อภิปรายผล และข้อเสนอแนะ"><span>บทที่ 5</span><span>สรุปผล อภิปรายผล และข้อเสนอแนะ</span></h1>
+
+<h2 data-toc="5.1 สรุปผล">5.1 สรุปผล</h2>
+<p>คณะผู้วิจัยพัฒนาโปรแกรมออกกำลังกายสำหรับมือใหม่ FitTrack Pro ในรูปแบบ Progressive Web App ได้ครบตามวัตถุประสงค์ ดังนี้</p>
+<ol>
+  <li>โปรแกรมใช้งานได้ทั้งบนคอมพิวเตอร์และโทรศัพท์มือถือ ติดตั้งลงหน้าจอโฮม และใช้งานออฟไลน์ได้ เผยแพร่ผ่าน GitHub และ Vercel และมีสคริปต์เปิดโปรแกรมด้วยคำสั่งเดียวบน Windows</li>
+  <li>โปรแกรมมีระบบบันทึกเวทเทรนนิ่งและคาร์ดิโอ คลังท่า 30 ท่าพร้อมวิดีโอสอน นาฬิกาพัก stopwatch โซนหัวใจ แผนการฝึก เครื่องคำนวณ 4 ชนิด และหน้าสรุปผลพร้อมกราฟ</li>
+  <li>โปรแกรมเชื่อมต่อนาฬิกาหรือสายคาดอกผ่าน Web Bluetooth เพื่อแสดงค่าหัวใจแบบสดและโซนปัจจุบัน และบันทึก HR เฉลี่ยลงคาร์ดิโอได้</li>
+  <li>ผลการทดสอบการทำงานผ่านครบ 42 จาก 42 กรณี และการเชื่อมต่อ Bluetooth ผ่านครบทุกกรณีกับอุปกรณ์จำลอง ผลการประเมินความพึงพอใจอยู่ในระดับ ....... (x̄ = ......., S.D. = .......)</li>
+</ol>
+
+<h2 data-toc="5.2 อภิปรายผล">5.2 อภิปรายผล</h2>
+<p>การพัฒนาเป็น Progressive Web App ทำให้ผู้ใช้เริ่มใช้งานได้ทันทีจากลิงก์โดยไม่ต้องสมัครสมาชิกหรือติดตั้งจากร้านค้าแอปพลิเคชัน ซึ่งช่วยลดอุปสรรคของผู้เริ่มต้น การเก็บข้อมูลไว้ในเครื่องของผู้ใช้ทำให้ข้อมูลสุขภาพไม่ถูกส่งออกไปภายนอก แต่ผู้ใช้ต้องสำรองข้อมูลเองด้วยฟังก์ชัน Export</p>
+<p>การใช้วิธีของ Karvonen ทำให้โซนหัวใจสอดคล้องกับระดับความฟิตของแต่ละคนมากกว่าการใช้ร้อยละของ HR สูงสุดเพียงอย่างเดียว และเมื่อใช้ร่วมกับค่าหัวใจสดจากนาฬิกา ผู้เริ่มต้นจึงควบคุมความหนักของการฝึกคาร์ดิโอได้ระหว่างฝึก ผลการคำนวณในโปรแกรมตรงกับการคำนวณด้วยสมการในบทที่ 2 ดังตัวอย่างในหัวข้อ 4.1.6 และ 4.1.9</p>
+<p>การทดสอบอัตโนมัติช่วยให้ตรวจพบและแก้ไขข้อบกพร่องสำคัญได้ก่อนเผยแพร่ เช่น การป้องกันสคริปต์อันตรายจากไฟล์นำเข้า การตรวจช่วงของค่าที่กรอก และการแปลงข้อมูลรุ่นเก่าโดยไม่สูญหาย และใช้ทดสอบซ้ำทุกครั้งที่เพิ่มฟังก์ชันใหม่ เพื่อยืนยันว่าฟังก์ชันเดิมยังทำงานถูกต้อง</p>
+
+<h2 data-toc="5.3 ข้อจำกัดของระบบ">5.3 ข้อจำกัดของระบบ</h2>
+<ol>
+  <li>ข้อมูลเก็บในเบราว์เซอร์ของแต่ละเครื่อง ไม่ซิงก์ข้ามอุปกรณ์อัตโนมัติ และหากผู้ใช้ล้างข้อมูลเบราว์เซอร์โดยไม่ได้สำรองไว้ ข้อมูลจะหาย</li>
+  <li>iPhone และ iPad ยังไม่รองรับ Web Bluetooth จึงรับค่าหัวใจสดจากนาฬิกาไม่ได้ และนาฬิกาบางรุ่นต้องเปิดโหมดส่งค่าหัวใจ (HR broadcast) ก่อน</li>
+  <li>การเชื่อมต่อ Bluetooth ทดสอบกับอุปกรณ์จำลอง ยังต้องทดสอบกับนาฬิกาหลายรุ่นเพิ่มเติม</li>
+  <li>วิดีโอสอนท่าต้องใช้อินเทอร์เน็ต และขึ้นอยู่กับเจ้าของวิดีโอบน YouTube</li>
+  <li>สคริปต์ติดตั้ง run.ps1 ใช้ได้เฉพาะ Windows และต้องเปิดหน้าต่าง PowerShell ไว้ระหว่างใช้งาน</li>
+  <li>ยังแก้ไขรายการในประวัติไม่ได้ ทำได้เฉพาะลบแล้วบันทึกใหม่</li>
+</ol>
+
+<h2 data-toc="5.4 ข้อเสนอแนะ">5.4 ข้อเสนอแนะ</h2>
+<ol>
+  <li>เพิ่มการซิงก์กิจกรรมจากนาฬิกาผ่าน Strava API ซึ่งคณะผู้วิจัยได้ร่างแผนไว้แล้ว เพื่อดึงข้อมูลกิจกรรมที่บันทึกบนนาฬิกาเข้าโปรแกรมโดยอัตโนมัติ</li>
+  <li>เพิ่มการสำรองข้อมูลบนคลาวด์ที่ผู้ใช้เลือกเปิดเอง เพื่อใช้ข้อมูลเดียวกันได้หลายอุปกรณ์</li>
+  <li>เพิ่มการบันทึกสถิติส่วนตัวสูงสุด (Personal Record) กราฟความก้าวหน้ารายท่า และการเติมค่าจากการฝึกครั้งก่อน</li>
+  <li>เพิ่มสูตร BMR แบบ Mifflin–St Jeor ให้ผู้ใช้เลือก</li>
+  <li>ทดสอบกับผู้ใช้กลุ่มใหญ่ขึ้นและนาฬิกาหลายยี่ห้อ เพื่อปรับปรุงการใช้งานจริง</li>
+</ol>
+</section>
+
+<!-- ═══════════ บรรณานุกรม ═══════════ -->
+<section class="chapter">
+<h1 class="chap" data-toc="บรรณานุกรม"><span>บรรณานุกรม</span></h1>
+<div class="refs" style="line-height:1.6">
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[1] American College of Sports Medicine. (2021). <i>ACSM's Guidelines for Exercise Testing and Prescription</i> (11th ed.). Philadelphia: Wolters Kluwer.</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[2] Karvonen, M. J., Kentala, E., &amp; Mustala, O. (1957). The effects of training on heart rate; a longitudinal study. <i>Annales Medicinae Experimentalis et Biologiae Fenniae, 35</i>(3), 307–315.</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[3] Harris, J. A., &amp; Benedict, F. G. (1918). A biometric study of human basal metabolism. <i>Proceedings of the National Academy of Sciences, 4</i>(12), 370–373.</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[4] Roza, A. M., &amp; Shizgal, H. M. (1984). The Harris Benedict equation reevaluated: resting energy requirements and the body cell mass. <i>The American Journal of Clinical Nutrition, 40</i>(1), 168–182.</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[5] Epley, B. (1985). <i>Poundage Chart</i>. Boyd Epley Workout. Lincoln, NE: Body Enterprises.</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[6] Brzycki, M. (1993). Strength testing—predicting a one-rep max from reps-to-fatigue. <i>Journal of Physical Education, Recreation &amp; Dance, 64</i>(1), 88–90.</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[7] WHO Expert Consultation. (2004). Appropriate body-mass index for Asian populations and its implications for policy and intervention strategies. <i>The Lancet, 363</i>(9403), 157–163.</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[8] World Health Organization. (2020). <i>WHO guidelines on physical activity and sedentary behaviour</i>. Geneva: World Health Organization.</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[9] Fox, S. M., Naughton, J. P., &amp; Haskell, W. L. (1971). Physical activity and the prevention of coronary heart disease. <i>Annals of Clinical Research, 3</i>(6), 404–432.</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[10] Mozilla. (n.d.). <i>Progressive web apps</i> และ <i>Web Storage API</i>. MDN Web Docs. สืบค้นจาก https://developer.mozilla.org/</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[11] W3C Web Bluetooth Community Group. (n.d.). <i>Web Bluetooth</i>. สืบค้นจาก https://webbluetoothcg.github.io/web-bluetooth/</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[12] Zourdos, M. C., Klemp, A., Dolan, C., Quiles, J. M., Schau, K. A., Jo, E., Helms, E., Esgro, B., Duncan, S., Garcia Merino, S., &amp; Blanco, R. (2016). Novel resistance training–specific rating of perceived exertion scale measuring repetitions in reserve. <i>Journal of Strength and Conditioning Research, 30</i>(1), 267–275.</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[13] Schoenfeld, B. J., Pope, Z. K., Benik, F. M., Hester, G. M., Sellers, J., Nooner, J. L., Schnaiter, J. A., Bond-Williams, K. E., Carter, A. S., Ross, C. L., Just, B. L., Henselmans, M., &amp; Krieger, J. W. (2016). Longer interset rest periods enhance muscle strength and hypertrophy in resistance-trained men. <i>Journal of Strength and Conditioning Research, 30</i>(7), 1805–1812.</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[14] Chart.js. (n.d.). <i>Chart.js documentation</i>. สืบค้นจาก https://www.chartjs.org/docs/</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[15] Google. (n.d.). <i>YouTube IFrame Player API reference</i>. สืบค้นจาก https://developers.google.com/youtube/iframe_api_reference</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[16] Bluetooth SIG. (2011). <i>Heart Rate Service Specification</i> (v1.0). สืบค้นจาก https://www.bluetooth.com/specifications/specs/</p>
+</div>
+</section>
+
+<!-- ═══════════ ภาคผนวก ก ═══════════ -->
+<section class="chapter">
+<h1 class="chap" data-toc="ภาคผนวก ก คู่มือการติดตั้งและการใช้งาน" style="margin-top:3in"><span>ภาคผนวก ก</span><span>คู่มือการติดตั้งและการใช้งาน</span></h1>
+</section>
+<section class="chapter">
+<h2>ก.1 การเปิดใช้งานผ่านเว็บ (ทุกอุปกรณ์)</h2>
+<ol>
+  <li>เปิดลิงก์ของโปรแกรมด้วย Google Chrome หรือ Microsoft Edge (บน iPhone ใช้ Safari)</li>
+  <li>เลือกเมนู “ติดตั้งแอป” หรือ “เพิ่มไปยังหน้าจอหลัก” เพื่อติดตั้งลงหน้าจอโฮม</li>
+  <li>หลังจากเปิดครั้งแรก โปรแกรมใช้งานแบบออฟไลน์ได้ ยกเว้นวิดีโอสอนท่า</li>
+</ol>
+<h2>ก.2 การติดตั้งและเปิดใช้งานบน Windows ด้วยคำสั่งเดียว</h2>
+<ol>
+  <li>กดปุ่ม Win + R พิมพ์ <code>powershell</code> แล้วกด Enter</li>
+  <li>คัดลอกคำสั่งต่อไปนี้ไปวาง แล้วกด Enter</li>
+</ol>
+<pre>irm https://raw.githubusercontent.com/karshi02/finnest/main/run.ps1 | iex</pre>
+<ol start="3">
+  <li>สคริปต์จะดาวน์โหลดโปรแกรมรุ่นล่าสุด เปิดเว็บเซิร์ฟเวอร์ที่ http://localhost:8080 และเปิดเว็บเบราว์เซอร์ให้อัตโนมัติ</li>
+  <li>เปิดหน้าต่าง PowerShell ทิ้งไว้ระหว่างใช้งาน และปิดหน้าต่างหรือกด Ctrl + C เมื่อเลิกใช้</li>
+  <li>ข้อมูลการออกกำลังกายผูกกับที่อยู่ http://localhost:8080 จึงต้องเปิดที่อยู่นี้ทุกครั้ง</li>
+</ol>
+<p class="ni">ผู้พัฒนาที่ดาวน์โหลดซอร์สโค้ดแล้ว ดับเบิลคลิกไฟล์ <code>start.bat</code> ได้ ไม่ควรเปิดไฟล์ index.html โดยตรง (file://) เพราะวิดีโอ Bluetooth และ Service Worker จะใช้งานไม่ได้</p>
+<h2>ก.3 การเชื่อมต่อนาฬิกาเพื่อดูค่าหัวใจ</h2>
+<ol>
+  <li>ใช้ Chrome บน Android หรือคอมพิวเตอร์ และเปิดโปรแกรมผ่าน https หรือ localhost</li>
+  <li>เปิดโหมดส่งค่าหัวใจบนนาฬิกา (เช่น Broadcast Heart Rate) หรือสวมสายคาดอก</li>
+  <li>ไปที่หน้าคาร์ดิโอ แท็บจับเวลา แล้วกด “เชื่อมต่อ” และเลือกอุปกรณ์จากรายการ</li>
+  <li>กดเริ่มจับเวลา เมื่อจบให้กด “บันทึกเป็นคาร์ดิโอ” เพื่อเติมเวลาและ HR เฉลี่ยลงฟอร์ม</li>
+</ol>
+<h2>ก.4 การสำรองและย้ายข้อมูล</h2>
+<ol>
+  <li>ที่หน้าภาพรวม กด “Export” เพื่อดาวน์โหลดไฟล์ JSON ของข้อมูลทั้งหมด</li>
+  <li>ที่เครื่องใหม่ กด “Import” แล้วเลือกไฟล์ที่ส่งออกไว้</li>
+</ol>
+</section>
+
+<!-- ═══════════ ภาคผนวก ข ═══════════ -->
+<section class="chapter">
+<h1 class="chap" data-toc="ภาคผนวก ข แบบประเมินความพึงพอใจ" style="margin-top:3in"><span>ภาคผนวก ข</span><span>แบบประเมินความพึงพอใจ</span></h1>
+</section>
+<section class="chapter">
+<p class="ni" style="text-align:center"><b>แบบประเมินความพึงพอใจต่อโปรแกรมออกกำลังกายสำหรับมือใหม่</b></p>
+<p class="ni"><b>ตอนที่ 1 ข้อมูลทั่วไปของผู้ตอบแบบประเมิน</b></p>
+<p class="ni">1. เพศ &nbsp; ☐ ชาย &nbsp; ☐ หญิง &nbsp; ☐ ไม่ระบุ<br>
+2. อายุ &nbsp; ☐ ต่ำกว่า 20 ปี &nbsp; ☐ 20–30 ปี &nbsp; ☐ 31–40 ปี &nbsp; ☐ มากกว่า 40 ปี<br>
+3. ประสบการณ์ออกกำลังกาย &nbsp; ☐ ยังไม่เคย &nbsp; ☐ น้อยกว่า 6 เดือน &nbsp; ☐ 6 เดือนขึ้นไป<br>
+4. อุปกรณ์ที่ใช้ทดลอง &nbsp; ☐ คอมพิวเตอร์ &nbsp; ☐ Android &nbsp; ☐ iPhone/iPad</p>
+<p class="ni"><b>ตอนที่ 2 ความพึงพอใจต่อโปรแกรม</b> (5 = มากที่สุด, 4 = มาก, 3 = ปานกลาง, 2 = น้อย, 1 = น้อยที่สุด)</p>
+<table class="t">
+  <tr><th style="width:6%">ที่</th><th>รายการประเมิน</th><th style="width:7%">5</th><th style="width:7%">4</th><th style="width:7%">3</th><th style="width:7%">2</th><th style="width:7%">1</th></tr>
+  <tr><td colspan="7"><b>ด้านการออกแบบ</b></td></tr>
+  <tr><td class="c">1</td><td>ความสวยงามและความเหมาะสมของหน้าจอ</td><td></td><td></td><td></td><td></td><td></td></tr>
+  <tr><td class="c">2</td><td>ความชัดเจนของตัวอักษรและสี</td><td></td><td></td><td></td><td></td><td></td></tr>
+  <tr><td class="c">3</td><td>การจัดวางเมนูเข้าใจง่าย</td><td></td><td></td><td></td><td></td><td></td></tr>
+  <tr><td colspan="7"><b>ด้านการใช้งาน</b></td></tr>
+  <tr><td class="c">4</td><td>ความง่ายในการบันทึกเวทเทรนนิ่ง</td><td></td><td></td><td></td><td></td><td></td></tr>
+  <tr><td class="c">5</td><td>ความง่ายในการบันทึกคาร์ดิโอ</td><td></td><td></td><td></td><td></td><td></td></tr>
+  <tr><td class="c">6</td><td>ความเร็วในการตอบสนองของโปรแกรม</td><td></td><td></td><td></td><td></td><td></td></tr>
+  <tr><td colspan="7"><b>ด้านประโยชน์ต่อผู้เริ่มต้น</b></td></tr>
+  <tr><td class="c">7</td><td>วิดีโอสอนท่าช่วยให้เข้าใจท่าที่ถูกต้อง</td><td></td><td></td><td></td><td></td><td></td></tr>
+  <tr><td class="c">8</td><td>แผนออกกำลังกายช่วยในการวางแผนการฝึก</td><td></td><td></td><td></td><td></td><td></td></tr>
+  <tr><td class="c">9</td><td>สถิติและกราฟช่วยให้เห็นความก้าวหน้า</td><td></td><td></td><td></td><td></td><td></td></tr>
+  <tr><td class="c">10</td><td>เครื่องคำนวณมีประโยชน์ต่อการดูแลโภชนาการ</td><td></td><td></td><td></td><td></td><td></td></tr>
+</table>
+<p class="ni"><b>ตอนที่ 3 ข้อเสนอแนะเพิ่มเติม</b><br>.....................................................................................................................................................................<br>.....................................................................................................................................................................</p>
+</section>
+
+<!-- ═══════════ ภาคผนวก ค ═══════════ -->
+<section class="chapter">
+<h1 class="chap" data-toc="ภาคผนวก ค ตัวอย่างโค้ดที่สำคัญ" style="margin-top:3in"><span>ภาคผนวก ค</span><span>ตัวอย่างโค้ดที่สำคัญ</span></h1>
+</section>
+<section class="chapter">
+<h2>ค.1 การคำนวณโซนหัวใจด้วยวิธีของ Karvonen</h2>
+<pre>function buildZones(age, rhr) {
+  if (!age || !rhr) return null;
+  const mhr = 220 - age;            // HR สูงสุด
+  if (rhr >= mhr) return null;
+  const hrr = mhr - rhr;            // Heart Rate Reserve
+  const at = pct => Math.round(hrr * pct + rhr);
+  return [
+    { name: 'Zone 1', label: 'เบามาก',  min: at(0.50), max: at(0.60) },
+    { name: 'Zone 2', label: 'เบา',     min: at(0.60), max: at(0.70) },
+    { name: 'Zone 3', label: 'ปานกลาง', min: at(0.70), max: at(0.80) },
+    { name: 'Zone 4', label: 'หนัก',    min: at(0.80), max: at(0.90) },
+    { name: 'Zone 5', label: 'สูงสุด',  min: at(0.90), max: mhr },
+  ];
+}</pre>
+<p class="ni" style="font-size:11pt">หมายเหตุ: ย่อรูปแบบการเขียนจากโค้ดจริงใน index.html เพื่อให้อ่านง่าย ผลการคำนวณเหมือนกัน</p>
+<h2>ค.2 การอ่านค่า Heart Rate Measurement จาก Bluetooth</h2>
+<pre>// บิตที่ 0 ของ flags = 1 แปลว่าค่าหัวใจเป็นเลข 16 บิต, = 0 แปลว่า 8 บิต
+function parseHeartRate(view) {
+  const flags = view.getUint8(0);
+  return (flags &amp; 0x01) ? view.getUint16(1, true) : view.getUint8(1);
+}
+
+const device = await navigator.bluetooth.requestDevice({
+  filters: [{ services: ['heart_rate'] }]
+});</pre>
+<h2>ค.3 การประมาณ 1RM</h2>
+<pre>const epley = r === 1 ? w : w * (1 + r / 30);
+const brzycki = w * 36 / (37 - r);
+const avg = r &lt;= 10 ? (epley + brzycki) / 2 : epley;   // Brzycki คลาดเคลื่อนเมื่อ reps สูง</pre>
+<h2>ค.4 เว็บเซิร์ฟเวอร์ในเครื่องของ run.ps1 (ส่วนป้องกัน path traversal)</h2>
+<pre>$rel = [Uri]::UnescapeDataString($ctx.Request.Url.AbsolutePath).TrimStart('/')
+if (-not $rel) { $rel = 'index.html' }
+$file = [IO.Path]::GetFullPath((Join-Path $root $rel))
+# Block path traversal outside the app folder
+if ($file.StartsWith($root, [StringComparison]::OrdinalIgnoreCase) -and
+    (Test-Path -LiteralPath $file -PathType Leaf)) {
+  $bytes = [IO.File]::ReadAllBytes($file)
+  $res.Headers['Cache-Control'] = 'no-cache'
+  $res.OutputStream.Write($bytes, 0, $bytes.Length)
+} else {
+  $res.StatusCode = 404
+}</pre>
+</section>
+
+<!-- ═══════════ ประวัติผู้วิจัย ═══════════ -->
+<section class="chapter">
+<h1 class="chap" data-toc="ประวัติผู้วิจัย"><span>ประวัติผู้วิจัย</span></h1>
+<table class="kv">
+  <tr><td style="width:1.6in"><b>ชื่อ–นามสกุล</b></td><td>ปฏิภาณทวี ศรีจันทร์ไชย</td></tr>
+  <tr><td><b>รหัสนักศึกษา</b></td><td>623121070119</td></tr>
+  <tr><td><b>วัน เดือน ปีเกิด</b></td><td>..........................................................</td></tr>
+  <tr><td><b>ที่อยู่</b></td><td>..........................................................</td></tr>
+  <tr><td><b>ประวัติการศึกษา</b></td><td>..........................................................<br>ปัจจุบัน กำลังศึกษาหลักสูตรวิศวกรรมศาสตรบัณฑิต สาขาวิชาวิศวกรรมคอมพิวเตอร์ คณะวิศวกรรมศาสตร์ มหาวิทยาลัยราชภัฏมหาสารคาม</td></tr>
+  <tr><td><b>อีเมล</b></td><td>..........................................................</td></tr>
+</table>
+<hr style="margin:1.2em 0;border:0;border-top:1px solid #999">
+<table class="kv">
+  <tr><td style="width:1.6in"><b>ชื่อ–นามสกุล</b></td><td>กิติชา ลาจ้อย</td></tr>
+  <tr><td><b>รหัสนักศึกษา</b></td><td>613121070105</td></tr>
+  <tr><td><b>วัน เดือน ปีเกิด</b></td><td>..........................................................</td></tr>
+  <tr><td><b>ที่อยู่</b></td><td>..........................................................</td></tr>
+  <tr><td><b>ประวัติการศึกษา</b></td><td>..........................................................<br>ปัจจุบัน กำลังศึกษาหลักสูตรวิศวกรรมศาสตรบัณฑิต สาขาวิชาวิศวกรรมคอมพิวเตอร์ คณะวิศวกรรมศาสตร์ มหาวิทยาลัยราชภัฏมหาสารคาม</td></tr>
+  <tr><td><b>อีเมล</b></td><td>..........................................................</td></tr>
+</table>
+<hr style="margin:1.2em 0;border:0;border-top:1px solid #999">
+<table class="kv">
+  <tr><td style="width:1.6in"><b>ชื่อ–นามสกุล</b></td><td>นายสุรภักดิ์ รักสกุล</td></tr>
+  <tr><td><b>รหัสนักศึกษา</b></td><td>643121070131</td></tr>
+  <tr><td><b>วัน เดือน ปีเกิด</b></td><td>..........................................................</td></tr>
+  <tr><td><b>ที่อยู่</b></td><td>..........................................................</td></tr>
+  <tr><td><b>ประวัติการศึกษา</b></td><td>..........................................................<br>ปัจจุบัน กำลังศึกษาหลักสูตรวิศวกรรมศาสตรบัณฑิต สาขาวิชาวิศวกรรมคอมพิวเตอร์ คณะวิศวกรรมศาสตร์ มหาวิทยาลัยราชภัฏมหาสารคาม</td></tr>
+  <tr><td><b>อีเมล</b></td><td>..........................................................</td></tr>
+</table>
+</section>
+
+</main>
+</body>
+</html>
