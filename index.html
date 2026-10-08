@@ -1570,7 +1570,7 @@ async function keepAwake(on) {
 }
 // wake lock ถูกปล่อยอัตโนมัติเมื่อสลับแอป ขอใหม่เมื่อกลับมาถ้ายังจับเวลาอยู่
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible' && timerRunning) keepAwake(true);
+  if (document.visibilityState === 'visible' && (timerRunning || (hrDevice && hrDevice.gatt.connected))) keepAwake(true);
 });
 function notifyTimerDone() {
   beep();
@@ -1730,7 +1730,10 @@ function swSaveAsCardio() {
 // LIVE HEART RATE (Web Bluetooth, Heart Rate Service 0x180D)
 // ════════════════════════════════════════════
 let hrDevice = null, hrChar = null, hrManualDisconnect = false, hrRetry = 0, hrLastValueAt = 0, hrWatchdog = null;
+let hrReconnectTimer = null, hrStallTimer = null;
 const HR_TIMEOUT_MS = 15000;
+const HR_MAX_RETRY = 30;
+const HR_DEVICE_KEY = 'fittrack-hr-device';   // จำนาฬิกาที่ใช้ล่าสุด (ชื่อ/id) ไว้เชื่อมใหม่หลังรีเฟรช
 let hrSession = { sum: 0, count: 0, max: 0 };
 const HR_NAME_PREFIXES = ['HUAWEI', 'Huawei', 'HONOR', 'Honor'];
 
@@ -1849,6 +1852,8 @@ async function connectHr(showAll = false) {
   hrDevice = device;
   hrDevice.addEventListener('gattserverdisconnected', onHrDisconnected);
   hrManualDisconnect = false;
+  clearTimeout(hrReconnectTimer); hrReconnectTimer = null;
+  hrRetry = 0;
   try {
     await startHrNotifications();
     document.getElementById('hr-showall-btn').style.display = 'none';
@@ -1883,6 +1888,16 @@ async function startHrNotifications() {
   hrLastValueAt = 0;
   setHrStatus(`เชื่อมต่อแล้ว: ${hrDevice.name || 'อุปกรณ์ HR'} — รอค่าหัวใจจากนาฬิกา...`, true);
   document.getElementById('hr-live').style.display = '';
+  try { localStorage.setItem(HR_DEVICE_KEY, JSON.stringify({ id: hrDevice.id, name: hrDevice.name || '' })); } catch (e) {}
+  keepAwake(true);   // จอดับแล้ว Bluetooth บนมือถือมักหลุด
+  // เชื่อมอยู่แต่ค่าหยุดมาเกิน 20 วินาที (นาฬิกาพักจอ/ออกจากหน้าส่ง HR): ตัดแล้วเชื่อมใหม่เอง
+  clearInterval(hrStallTimer);
+  hrStallTimer = setInterval(() => {
+    if (hrLastValueAt && Date.now() - hrLastValueAt > 20000 && hrDevice && hrDevice.gatt.connected) {
+      hrLastValueAt = 0;
+      hrDevice.gatt.disconnect();   // ไม่ใช่การตัดเอง → onHrDisconnected จะเชื่อมใหม่
+    }
+  }, 5000);
   // เชื่อมได้แต่ไม่มีค่าส่งมา: บอกผู้ใช้แทนที่จะแสดง -- เฉย ๆ
   clearTimeout(hrWatchdog);
   hrWatchdog = setTimeout(() => {
@@ -1923,22 +1938,65 @@ function renderHrZone(bpm) {
 }
 
 function onHrDisconnected() {
-  if (hrManualDisconnect) { setHrStatus('ตัดการเชื่อมต่อแล้ว', false); return; }
-  // หลุดเอง (ไกลเกิน/นาฬิกาหยุดส่ง): ลองเชื่อมใหม่ 3 ครั้ง
-  if (hrRetry < 3) {
-    hrRetry++;
-    setHrStatus(`สัญญาณหลุด — กำลังเชื่อมใหม่ (ครั้งที่ ${hrRetry}/3)...`, false);
-    setTimeout(() => startHrNotifications().catch(() => onHrDisconnected()), 1000 * hrRetry);
-  } else {
-    setHrStatus('สัญญาณหลุด เชื่อมใหม่ไม่สำเร็จ — กด “เชื่อมต่อ” อีกครั้ง', false);
+  clearTimeout(hrWatchdog);
+  clearInterval(hrStallTimer);
+  if (hrManualDisconnect) return;   // ตัดเอง: disconnectHr/connectHr ตั้งข้อความไว้แล้ว อย่าเขียนทับ
+  if (hrReconnectTimer) return;   // มีรอบเชื่อมใหม่รออยู่แล้ว (event ซ้ำ)
+  // หลุดเอง (ไกลเกิน/นาฬิกาพักจอ/หยุดส่ง): เชื่อมใหม่เรื่อย ๆ รอ 1, 2, 4, 8, 10 วินาที... ประมาณ 5 นาที
+  if (hrRetry >= HR_MAX_RETRY) {
+    setHrStatus('สัญญาณหลุดนานเกินไป — กด “เชื่อมต่อนาฬิกา” อีกครั้ง และเช็กว่าหน้า HR Data Broadcasts บนนาฬิกายังเปิดอยู่', false);
+    return;
   }
+  hrRetry++;
+  const wait = Math.min(10000, 1000 * 2 ** Math.min(hrRetry - 1, 4));
+  setHrStatus(`สัญญาณหลุด — กำลังเชื่อมใหม่อัตโนมัติ (ครั้งที่ ${hrRetry})... ค่าเฉลี่ยของรอบนี้ยังเก็บไว้`, false);
+  hrReconnectTimer = setTimeout(async () => {
+    hrReconnectTimer = null;
+    if (hrManualDisconnect || !hrDevice) return;
+    try {
+      await startHrNotifications();
+    } catch (e) {
+      try { hrDevice.gatt.disconnect(); } catch (e2) {}   // ยกเลิก connect ที่ค้าง
+      onHrDisconnected();
+    }
+  }, wait);
 }
 
 function disconnectHr() {
   hrManualDisconnect = true;
+  clearTimeout(hrReconnectTimer); hrReconnectTimer = null;
+  clearTimeout(hrWatchdog); clearInterval(hrStallTimer);
   if (hrDevice && hrDevice.gatt.connected) hrDevice.gatt.disconnect();
+  if (!timerRunning) keepAwake(false);
   setHrStatus('ตัดการเชื่อมต่อแล้ว', false);
 }
+
+// หลังรีเฟรช: เบราว์เซอร์ตัด Bluetooth ทุกครั้ง ถ้าเบราว์เซอร์รองรับ getDevices() จะเชื่อมนาฬิกาเดิมให้เอง
+// ถ้าไม่รองรับ (Chrome ส่วนใหญ่ตอนนี้) ต้องกดเชื่อมต่อใหม่ 1 ครั้ง จึงบอกชื่อนาฬิกาที่ใช้ล่าสุดไว้
+async function restoreHrDevice() {
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(HR_DEVICE_KEY)); } catch (e) {}
+  if (!saved || !('bluetooth' in navigator)) return;
+  if (navigator.bluetooth.getDevices) {
+    try {
+      const d = (await navigator.bluetooth.getDevices()).find(x => x.id === saved.id || (saved.name && x.name === saved.name));
+      if (d) {
+        hrDevice = d;
+        hrDevice.addEventListener('gattserverdisconnected', onHrDisconnected);
+        hrManualDisconnect = false;
+        hrRetry = 0;
+        await startHrNotifications();
+        return;
+      }
+    } catch (e) {}
+  }
+  setHrStatus(`ครั้งก่อนใช้ ${saved.name || 'นาฬิกา'} — กด “⌚ เชื่อมต่อนาฬิกา” เพื่อเชื่อมอีกครั้ง (เบราว์เซอร์ให้เลือกใหม่ทุกครั้งที่รีเฟรชหน้า)`, false);
+}
+
+// เตือนก่อนรีเฟรช/ปิดหน้า ขณะเชื่อมนาฬิกาอยู่ เพราะการเชื่อมต่อจะหลุด
+window.addEventListener('beforeunload', e => {
+  if (hrDevice && hrDevice.gatt.connected) { e.preventDefault(); e.returnValue = ''; }
+});
 
 // Heart Rate Zones (Karvonen)
 function buildZones(age, rhr) {
@@ -2388,6 +2446,7 @@ function setStravaStatus(msg) {
 document.addEventListener('DOMContentLoaded', () => {
   renderDashboard();
   setStravaStatus();
+  restoreHrDevice();
   handleStravaCallback().then(handled => {
     // ซิงก์อัตโนมัติตอนเปิดแอป ถ้าห่างจากรอบก่อนเกิน 15 นาที
     if (!handled && stravaAuth() && Date.now() - state.strava.lastSyncAt > 15 * 60000) syncStrava(false);
