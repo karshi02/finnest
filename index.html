@@ -51,7 +51,17 @@
     }
     .logo { font-size: 1.4rem; font-weight: 800; letter-spacing: 1px; }
     .logo span { color: #ffca28; }
-    nav { display: flex; gap: 6px; overflow-x: auto; }
+    nav { display: flex; gap: 6px; overflow-x: auto; min-width: 0; margin: 0 12px 0 auto; }
+    .watch-btn {
+      flex-shrink: 0; display: flex; align-items: center; gap: 6px;
+      background: #ffffff; color: #b71c1c; border: none; border-radius: 999px;
+      padding: 8px 16px; font-size: 0.9rem; font-weight: 800; cursor: pointer; white-space: nowrap;
+      box-shadow: 0 2px 8px #0006; transition: transform .15s;
+    }
+    .watch-btn:hover { transform: scale(1.05); }
+    .watch-btn.connected { background: #2e7d32; color: #fff; }
+    .watch-btn.connecting { background: #ffca28; color: #000; }
+    .watch-btn .wbpm { font-variant-numeric: tabular-nums; min-width: 2.2em; text-align: right; }
     nav button {
       background: transparent;
       border: 1px solid transparent;
@@ -105,6 +115,10 @@
       nav button { padding: 6px 10px; font-size: 0.78rem; }
       header { gap: 12px; padding: 0 12px; }
       .logo { font-size: 1.1rem; white-space: nowrap; }
+      /* มือถือ: แถวบน = โลโก้ + ปุ่มนาฬิกา, แถวล่าง = เมนูเลื่อนซ้ายขวา */
+      header { flex-wrap: wrap; height: auto; padding: 8px 12px 6px; row-gap: 6px; }
+      nav { order: 3; flex-basis: 100%; margin: 0; }
+      .watch-btn { padding: 7px 14px; font-size: 0.85rem; }
     }
 
     /* ── STAT BOXES ── */
@@ -303,6 +317,7 @@
     <button onclick="showPage('plan')">📋 แผนออกกำลังกาย</button>
     <button onclick="showPage('calc')">🧮 คำนวณ</button>
   </nav>
+  <button class="watch-btn" id="watch-btn" onclick="watchButton()" title="เชื่อมต่อนาฬิกาเพื่อดูหัวใจสด">⌚ <span class="wl" id="watch-label">เชื่อมนาฬิกา</span></button>
 </header>
 
 <main>
@@ -594,7 +609,7 @@
     <div class="card" id="hr-card">
       <div class="card-title flex-between" style="gap:10px;flex-wrap:wrap">
         <span><span class="icon">⌚</span> หัวใจสดจากนาฬิกา</span>
-        <button class="btn btn-secondary btn-sm" id="hr-connect-btn" onclick="toggleHrDevice()">เชื่อมต่อ</button>
+        <button class="btn btn-primary" id="hr-connect-btn" onclick="toggleHrDevice()">⌚ เชื่อมต่อนาฬิกา</button>
       </div>
       <div id="hr-status" class="text-muted" role="status">เชื่อมต่อนาฬิกาหรือสายคาดอกที่ส่ง HR ผ่าน Bluetooth ได้</div>
       <button class="btn btn-secondary btn-sm mt8" id="hr-showall-btn" style="display:none" onclick="connectHr(true)">แสดงอุปกรณ์ทั้งหมด</button>
@@ -1694,7 +1709,37 @@ function parseHeartRate(view) {
 
 function setHrStatus(text, connected) {
   document.getElementById('hr-status').textContent = text;
-  document.getElementById('hr-connect-btn').textContent = connected ? 'ตัดการเชื่อมต่อ' : 'เชื่อมต่อ';
+  document.getElementById('hr-connect-btn').textContent = connected ? 'ตัดการเชื่อมต่อ' : '⌚ เชื่อมต่อนาฬิกา';
+  updateWatchButton(connected ? 'connected' : (/^(กำลัง|เลือกอุปกรณ์จากรายการ)|กำลังเชื่อมใหม่/.test(text) ? 'connecting' : 'idle'));
+}
+
+// ปุ่มนาฬิกาบนแถบด้านบน: กดได้จากทุกหน้า และแสดงชีพจรสดเมื่อเชื่อมแล้ว
+function updateWatchButton(mode, bpm) {
+  const btn = document.getElementById('watch-btn');
+  const label = document.getElementById('watch-label');
+  btn.classList.toggle('connected', mode === 'connected');
+  btn.classList.toggle('connecting', mode === 'connecting');
+  if (mode === 'connected') {
+    btn.firstChild.textContent = '❤️ ';
+    label.className = 'wbpm';
+    label.textContent = bpm || label.dataset.bpm || '--';
+    if (bpm) label.dataset.bpm = bpm;
+    btn.title = 'ดูหัวใจสด / ตัดการเชื่อมต่อ';
+  } else {
+    btn.firstChild.textContent = '⌚ ';
+    label.className = 'wl';
+    label.textContent = mode === 'connecting' ? 'กำลังเชื่อม...' : 'เชื่อมนาฬิกา';
+    delete label.dataset.bpm;
+    btn.title = 'เชื่อมต่อนาฬิกาเพื่อดูหัวใจสด';
+  }
+}
+
+function watchButton() {
+  // ต้องเรียก requestDevice ในจังหวะที่ผู้ใช้กด จึงสลับหน้าแบบ sync ก่อน
+  showPage('cardio');
+  showCardioTab('stopwatch');
+  document.getElementById('hr-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  if (!(hrDevice && hrDevice.gatt.connected)) connectHr();
 }
 
 function resetHrSession() {
@@ -1768,6 +1813,7 @@ function onHrValue(e) {
   el.textContent = bpm;
   el.classList.remove('hr-beat'); void el.offsetWidth; el.classList.add('hr-beat');
   renderHrZone(bpm);
+  updateWatchButton('connected', bpm);
   if (swRunning) {
     hrSession.sum += bpm; hrSession.count++; hrSession.max = Math.max(hrSession.max, bpm);
     document.getElementById('hr-avg').textContent = Math.round(hrSession.sum / hrSession.count);
