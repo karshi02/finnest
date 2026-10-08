@@ -613,6 +613,7 @@
       </div>
       <div id="hr-status" class="text-muted" role="status">เชื่อมต่อนาฬิกาหรือสายคาดอกที่ส่ง HR ผ่าน Bluetooth ได้</div>
       <button class="btn btn-secondary btn-sm mt8" id="hr-showall-btn" style="display:none" onclick="connectHr(true)">แสดงอุปกรณ์ทั้งหมด</button>
+      <div id="hr-help" class="mt16" style="display:none;font-size:.88rem;line-height:1.7;border:1px solid var(--border);border-radius:10px;padding:12px 14px"></div>
       <div id="hr-live" style="display:none;text-align:center;margin-top:12px">
         <div class="hr-bpm"><span id="hr-bpm">--</span><span class="hr-unit">bpm</span></div>
         <div id="hr-zone" class="mt8"></div>
@@ -1753,8 +1754,41 @@ function toggleHrDevice() {
   else connectHr();
 }
 
+// ตรวจฝั่งเครื่องนี้ (เบราว์เซอร์/Bluetooth/https) และบอกวิธีเปิดส่ง HR บนนาฬิกา Huawei
+async function showHrHelp() {
+  const ua = navigator.userAgent;
+  const android = /Android/i.test(ua);
+  const checks = [];
+  const add = (ok, text) => checks.push(`<div>${ok ? '✅' : '❌'} ${text}</div>`);
+  const badBrowser = /HuaweiBrowser|HarmonyOS.*Browser|MiuiBrowser|FBAN|FBAV|Line\//i.test(ua);
+  add(!badBrowser && 'bluetooth' in navigator, badBrowser || !('bluetooth' in navigator)
+    ? 'เบราว์เซอร์นี้ใช้ Bluetooth ไม่ได้ — เปิดลิงก์นี้ด้วย <b>Google Chrome</b> (หรือ Edge บนคอม)'
+    : 'เบราว์เซอร์รองรับ Bluetooth');
+  add(window.isSecureContext, window.isSecureContext ? 'เปิดผ่าน https แล้ว' : 'ต้องเปิดผ่าน https:// หรือ localhost');
+  let btOn = null;
+  try { if (navigator.bluetooth && navigator.bluetooth.getAvailability) btOn = await navigator.bluetooth.getAvailability(); } catch (e) {}
+  if (btOn !== null) add(btOn, btOn ? 'เครื่องนี้มี Bluetooth และเปิดอยู่'
+    : (android ? 'Bluetooth ของมือถือปิดอยู่ — เปิด Bluetooth ก่อน' : 'คอมเครื่องนี้ไม่มี Bluetooth หรือปิดอยู่ — เปิดที่ Settings &gt; Bluetooth &amp; devices'));
+  const tips = android
+    ? '<li>มือถือ: เปิด <b>ตำแหน่ง (GPS)</b> ด้วย และให้สิทธิ์ Chrome “อุปกรณ์ใกล้เคียง” + “ตำแหน่ง” (ตั้งค่า &gt; แอป &gt; Chrome &gt; สิทธิ์)</li><li>ปิดแอป Huawei Health ชั่วคราว</li>'
+    : '<li>คอม: <b>อย่า</b> จับคู่นาฬิกาในหน้า Bluetooth ของ Windows ให้กดเชื่อมจากปุ่มในแอปนี้เท่านั้น</li>';
+  const el = document.getElementById('hr-help');
+  el.innerHTML = `<b>ตรวจเครื่องนี้</b>${checks.join('')}
+    <div class="mt8"><b>บนนาฬิกา Huawei (เช่น WATCH GT 6)</b></div>
+    <ol style="margin:4px 0 0 18px;padding:0">
+      <li>กดปุ่มด้านข้างเพื่อเปิดรายการแอป &gt; <b>ตั้งค่า</b></li>
+      <li>เลือก <b>HR Data Broadcasts</b> (ภาษาไทยอาจชื่อ “การกระจายข้อมูลอัตราการเต้นหัวใจ”) แล้วเปิด</li>
+      <li>ให้หน้าจอนาฬิกาค้างที่หน้านั้น แล้วกด <b>⌚ เชื่อมต่อนาฬิกา</b> อีกครั้ง</li>
+      <li>เลือก <b>HUAWEI WATCH ...</b> จากรายการ (ถ้าไม่เห็น กด “แสดงอุปกรณ์ทั้งหมด”)</li>
+      ${tips}
+    </ol>
+    <div class="text-muted mt8" style="font-size:.8rem">ถ้าในตั้งค่าของนาฬิกาไม่มีเมนู HR Data Broadcasts แปลว่ารุ่น/เวอร์ชันนั้นยังไม่ส่ง HR ให้แอปอื่น</div>`;
+  el.style.display = '';
+}
+
 async function connectHr(showAll = false) {
   if (!('bluetooth' in navigator)) {
+    showHrHelp();
     setHrStatus(window.isSecureContext
       ? 'เบราว์เซอร์นี้ไม่รองรับ Bluetooth — ใช้ Chrome บน Android หรือคอมพิวเตอร์ (iPhone ไม่รองรับ)'
       : 'ต้องเปิดแอปผ่าน https หรือ localhost จึงจะใช้ Bluetooth ได้', false);
@@ -1772,7 +1806,9 @@ async function connectHr(showAll = false) {
     if (e.name === 'NotFoundError') {
       setHrStatus('ไม่ได้เลือกอุปกรณ์ — ถ้าไม่เห็นนาฬิกา ให้เปิดโหมดส่ง HR บนนาฬิกาก่อน (Huawei: ตั้งค่า > HR Data Broadcasts) หรือกด “แสดงอุปกรณ์ทั้งหมด”', false);
       document.getElementById('hr-showall-btn').style.display = '';
+      showHrHelp();
     } else {
+      showHrHelp();
       setHrStatus('เปิดรายการอุปกรณ์ไม่สำเร็จ: ' + e.message + ' — ตรวจว่าเปิด Bluetooth และให้สิทธิ์ “อุปกรณ์ใกล้เคียง/ตำแหน่ง” กับ Chrome แล้ว', false);
     }
     return;
@@ -1784,7 +1820,9 @@ async function connectHr(showAll = false) {
   try {
     await startHrNotifications();
     document.getElementById('hr-showall-btn').style.display = 'none';
+    document.getElementById('hr-help').style.display = 'none';
   } catch (e) {
+    showHrHelp();
     hrManualDisconnect = true;   // ไม่ต้องพยายามเชื่อมใหม่กับอุปกรณ์ที่ไม่ส่ง HR
     if (hrDevice.gatt.connected) hrDevice.gatt.disconnect();
     setHrStatus(e.name === 'NotFoundError'
