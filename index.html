@@ -510,6 +510,27 @@
 
   <!-- TAB: LOG CARDIO -->
   <div id="ctab-log">
+    <div class="card" id="strava-card">
+      <div class="card-title flex-between" style="gap:10px;flex-wrap:wrap">
+        <span><span class="icon">🔗</span> ดึงจากนาฬิกาอัตโนมัติ (Strava)</span>
+        <span style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-orange" id="strava-connect-btn" onclick="connectStrava()">เชื่อมต่อ Strava</button>
+          <button class="btn btn-secondary btn-sm" id="strava-sync-btn" style="display:none" onclick="syncStrava(true)">⟳ ซิงก์ตอนนี้</button>
+          <button class="btn btn-danger btn-sm" id="strava-off-btn" style="display:none" onclick="disconnectStrava()">ยกเลิกการเชื่อมต่อ</button>
+        </span>
+      </div>
+      <div id="strava-status" class="text-muted" role="status"></div>
+      <details class="mt8 text-muted" style="font-size:.82rem">
+        <summary style="cursor:pointer">ตั้งค่าครั้งแรก (Huawei Watch)</summary>
+        <ol class="mt8" style="line-height:1.7;padding-left:18px">
+          <li>เปิดแอป <b>Huawei Health</b> บนมือถือ &gt; <b>ฉัน (Me)</b> &gt; <b>การจัดการความเป็นส่วนตัว (Privacy management)</b> &gt; <b>การแชร์ข้อมูลและการอนุญาต (Data sharing and authorization)</b> &gt; <b>Strava</b> แล้วล็อกอิน Strava</li>
+          <li>ออกกำลังกายด้วยนาฬิกาตามปกติ (กด Workout บนนาฬิกา) รอให้กิจกรรมขึ้นในแอป Strava</li>
+          <li>กลับมาที่นี่ กด <b>เชื่อมต่อ Strava</b> แล้วกดอนุญาต (ทำครั้งเดียว)</li>
+          <li>หลังจากนี้ทุกครั้งที่เปิดแอป กิจกรรมใหม่จะเข้ามาในประวัติคาร์ดิโอเอง พร้อมเวลา ระยะทาง HR เฉลี่ย และแคลอรี่</li>
+        </ol>
+        <div>กิจกรรมที่ทำก่อนเชื่อม Huawei Health กับ Strava จะไม่ถูกส่งไป Strava · ดึงย้อนหลังได้ 90 วัน · ไม่ดึงประเภท Weight Training</div>
+      </details>
+    </div>
     <div class="card">
       <div class="card-title"><span class="icon">➕</span> บันทึกคาร์ดิโอ</div>
       <div class="form-row">
@@ -975,6 +996,13 @@ function normalizeState(s) {
   const p = isObj(s.profile) ? s.profile : {};
   const age = parseInt(p.age, 10), rhr = parseInt(p.rhr, 10);
   s.profile = (age >= 10 && age <= 90 && rhr >= 30 && rhr <= 100) ? { age, rhr } : {};
+  // Strava: เวลาซิงก์ล่าสุด และ id ที่ผู้ใช้ลบแล้ว (ไม่ดึงกลับมาอีก)
+  const sv = isObj(s.strava) ? s.strava : {};
+  s.strava = {
+    lastSyncAt: Number(sv.lastSyncAt) || 0,
+    ignoredIds: (Array.isArray(sv.ignoredIds) ? sv.ignoredIds : []).map(String).filter(x => /^\d+$/.test(x)),
+  };
+  s.cardioLog.forEach(c => { if (c.stravaId != null && !/^\d+$/.test(String(c.stravaId))) delete c.stravaId; });
   return s;
 }
 
@@ -1051,7 +1079,7 @@ function importData(file) {
     }
     if (!confirm(`นำเข้า ${s.sessions.length} sessions และ ${s.cardioLog.length} คาร์ดิโอ?\nข้อมูลปัจจุบันจะถูกแทนที่`)) return;
     state = migrate(normalizeState({
-      sessions: s.sessions, cardioLog: s.cardioLog, todaySets: s.todaySets, profile: s.profile, schemaVersion: s.schemaVersion
+      sessions: s.sessions, cardioLog: s.cardioLog, todaySets: s.todaySets, profile: s.profile, strava: s.strava, schemaVersion: s.schemaVersion
     }));
     save();
     renderDashboard();
@@ -1598,6 +1626,9 @@ function logCardio() {
 
 function deleteCardio(id) {
   if (!confirm('ลบรายการนี้?')) return;
+  // รายการจาก Strava ที่ลบแล้ว จำไว้ไม่ให้ซิงก์กลับมาอีก
+  const gone = state.cardioLog.find(c => c.id === id);
+  if (gone && gone.stravaId && !state.strava.ignoredIds.includes(gone.stravaId)) state.strava.ignoredIds.push(gone.stravaId);
   state.cardioLog = state.cardioLog.filter(c => c.id !== id);
   save();
   renderCardioHistory();
@@ -1616,7 +1647,7 @@ function renderCardioHistory() {
     <tbody>${[...state.cardioLog].sort(byNewest).map(c => `
       <tr>
         <td>${esc(fmtDate(c.date))}</td>
-        <td>${esc(c.type)}${c.note ? `<div class="text-muted" style="font-size:.75rem">${esc(c.note)}</div>` : ''}</td>
+        <td>${esc(c.type)}${c.stravaId ? ` <a class="badge badge-orange" style="text-decoration:none" href="https://www.strava.com/activities/${encodeURIComponent(c.stravaId)}" target="_blank" rel="noopener">Strava ↗</a>` : ''}${c.note ? `<div class="text-muted" style="font-size:.75rem">${esc(c.note)}</div>` : ''}</td>
         <td>${esc(c.duration)} นาที</td>
         <td>${esc(c.distance || '-')} km</td>
         <td>${esc(c.hr || '-')} bpm</td>
@@ -2129,10 +2160,218 @@ function saveQuickLog() {
 }
 
 // ════════════════════════════════════════════
+// STRAVA SYNC (Huawei Health / นาฬิกาอื่น → Strava → FitTrack)
+// token อยู่ใน localStorage แยกคีย์ ไม่ติดไปกับไฟล์ Export
+// ════════════════════════════════════════════
+const STRAVA_KEY = 'fittrack-strava';
+const STRAVA_STATE_KEY = 'fittrack-strava-oauth';
+const STRAVA_API = '/api/strava';
+const STRAVA_TYPES = {
+  Run: 'วิ่ง', TrailRun: 'วิ่ง', VirtualRun: 'วิ่ง',
+  Ride: 'จักรยาน', VirtualRide: 'จักรยาน', MountainBikeRide: 'จักรยาน', GravelRide: 'จักรยาน', EBikeRide: 'จักรยาน',
+  Swim: 'ว่ายน้ำ', Walk: 'เดินเร็ว', Hike: 'เดินเร็ว', Rowing: 'Rowing', VirtualRow: 'Rowing',
+  Elliptical: 'Elliptical', HighIntensityIntervalTraining: 'HIIT', Badminton: 'แบดมินตัน', Soccer: 'ฟุตบอล',
+};
+let stravaBusy = false;
+
+function stravaAuth() {
+  try { return JSON.parse(localStorage.getItem(STRAVA_KEY)) || null; } catch (e) { return null; }
+}
+function setStravaAuth(a) {
+  try { a ? localStorage.setItem(STRAVA_KEY, JSON.stringify(a)) : localStorage.removeItem(STRAVA_KEY); } catch (e) {}
+}
+
+function stravaError(code) { const e = new Error(code); e.code = code; return e; }
+
+async function stravaToken(action, body) {
+  const r = await fetch(`${STRAVA_API}?action=${action}`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+  });
+  if (r.status === 503) throw stravaError('not_configured');
+  if (r.status === 429) throw stravaError('rate');
+  if (!r.ok) throw stravaError('auth');
+  return r.json();
+}
+
+async function stravaAccessToken(force) {
+  const a = stravaAuth();
+  if (!a) throw stravaError('auth');
+  if (!force && a.expiresAt * 1000 - 60000 > Date.now()) return a.accessToken;
+  const d = await stravaToken('refresh', { refresh_token: a.refreshToken });
+  setStravaAuth({ ...a, accessToken: d.access_token, refreshToken: d.refresh_token || a.refreshToken, expiresAt: d.expires_at });
+  return d.access_token;
+}
+
+async function stravaGet(path, params, retried) {
+  const token = await stravaAccessToken(retried);
+  const qs = new URLSearchParams({ action: 'api', path, ...params });
+  const r = await fetch(`${STRAVA_API}?${qs}`, { headers: { Authorization: 'Bearer ' + token } });
+  if (r.status === 401 && !retried) return stravaGet(path, params, true);
+  if (r.status === 401) throw stravaError('auth');
+  if (r.status === 429) throw stravaError('rate');
+  if (r.status === 503) throw stravaError('not_configured');
+  if (!r.ok) throw stravaError('http');
+  return r.json();
+}
+
+async function connectStrava() {
+  setStravaStatus('กำลังเปิดหน้า Strava...');
+  try {
+    const r = await fetch(`${STRAVA_API}?action=config`);
+    if (r.status === 503) throw stravaError('not_configured');
+    if (!r.ok) throw stravaError('http');
+    const { clientId } = await r.json();
+    const st = Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, '0')).join('');
+    localStorage.setItem(STRAVA_STATE_KEY, JSON.stringify({ st, at: Date.now() }));
+    const q = new URLSearchParams({
+      client_id: clientId, response_type: 'code', redirect_uri: location.origin + location.pathname,
+      approval_prompt: 'auto', scope: 'read,activity:read_all', state: st,
+    });
+    location.href = 'https://www.strava.com/oauth/authorize?' + q;
+  } catch (e) {
+    setStravaStatus(stravaMessage(e));
+  }
+}
+
+// กลับมาจากหน้า Strava พร้อม ?code= (หรือ ?error=)
+async function handleStravaCallback() {
+  const q = new URLSearchParams(location.search);
+  if (!q.has('code') && !q.has('error')) return false;
+  history.replaceState(null, '', location.pathname);
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(STRAVA_STATE_KEY)); } catch (e) {}
+  localStorage.removeItem(STRAVA_STATE_KEY);
+  showPage('cardio');
+  if (q.get('error')) { setStravaStatus('ยกเลิกการเชื่อมต่อ Strava'); return true; }
+  if (!saved || saved.st !== q.get('state') || Date.now() - saved.at > 15 * 60000) {
+    setStravaStatus('ลิงก์เชื่อมต่อหมดอายุหรือไม่ถูกต้อง — กด “เชื่อมต่อ Strava” อีกครั้ง');
+    return true;
+  }
+  if (!/activity:read/.test(q.get('scope') || '')) {
+    setStravaStatus('ต้องติ๊กอนุญาต “ดูกิจกรรม” ในหน้า Strava ด้วย — กดเชื่อมต่ออีกครั้ง');
+    return true;
+  }
+  try {
+    setStravaStatus('กำลังเชื่อมต่อ Strava...');
+    const d = await stravaToken('token', { code: q.get('code') });
+    const name = d.athlete ? [d.athlete.firstname, d.athlete.lastname].filter(Boolean).join(' ') : '';
+    setStravaAuth({ accessToken: d.access_token, refreshToken: d.refresh_token, expiresAt: d.expires_at, athleteName: name });
+    toast('เชื่อมต่อ Strava แล้ว');
+    await syncStrava(true);
+  } catch (e) {
+    setStravaStatus(stravaMessage(e));
+  }
+  return true;
+}
+
+function stravaIntensity(hr) {
+  const p = state.profile || {};
+  const zones = hr ? buildZones(p.age, p.rhr) : null;
+  if (!zones) return 'ปานกลาง';
+  const i = zones.findIndex(z => hr <= z.max);
+  return i === -1 || i === 4 ? 'สูงสุด' : i <= 1 ? 'เบา' : i === 2 ? 'ปานกลาง' : 'หนัก';
+}
+
+function mapStravaActivity(a) {
+  const sport = a.sport_type || a.type || '';
+  if (sport === 'WeightTraining') return null;   // ซ้ำกับ session เวทที่บันทึกในแอป
+  const ts = Date.parse(a.start_date);
+  const local = String(a.start_date_local || a.start_date || '').slice(0, 10);
+  if (!/^\d+$/.test(String(a.id)) || isNaN(ts) || !/^\d{4}-\d{2}-\d{2}$/.test(local)) return null;
+  const hr = a.has_heartrate && a.average_heartrate ? Math.min(230, Math.round(a.average_heartrate)) : 0;
+  return {
+    id: String(newId()), stravaId: String(a.id),
+    type: STRAVA_TYPES[sport] || String(sport).slice(0, 40) || 'คาร์ดิโอ',
+    duration: Math.min(1440, Math.max(1, Math.round((a.moving_time || a.elapsed_time || 60) / 60))),
+    distance: Math.min(1000, Math.round((a.distance || 0) / 10) / 100),
+    hr, hrMax: a.max_heartrate ? Math.round(a.max_heartrate) : 0,
+    kcal: 0, intensity: stravaIntensity(hr),
+    date: local, ts, note: String(a.name || '').slice(0, 200),
+  };
+}
+
+async function syncStrava(manual) {
+  if (stravaBusy || !stravaAuth()) return;
+  if (!navigator.onLine) { if (manual) setStravaStatus('ออฟไลน์อยู่ — ซิงก์ไม่ได้'); return; }
+  stravaBusy = true;
+  setStravaStatus('กำลังดึงกิจกรรมจาก Strava...');
+  try {
+    const st = state.strava;
+    // ย้อนหลัง 3 วันจากรอบก่อน เผื่อนาฬิกาซิงก์เข้า Strava ช้า (กันซ้ำด้วย stravaId)
+    const after = st.lastSyncAt ? Math.floor(st.lastSyncAt / 1000) - 3 * 86400 : Math.floor(Date.now() / 1000) - 90 * 86400;
+    const have = new Set(state.cardioLog.map(c => c.stravaId).filter(Boolean).concat(st.ignoredIds));
+    const added = [];
+    for (let page = 1; page <= 10; page++) {
+      const list = await stravaGet('/athlete/activities', { after: String(after), page: String(page), per_page: '100' });
+      if (!Array.isArray(list)) break;
+      list.forEach(a => {
+        const c = have.has(String(a.id)) ? null : mapStravaActivity(a);
+        if (c) { added.push(c); have.add(c.stravaId); }
+      });
+      if (list.length < 100) break;
+    }
+    // แคลอรี่ไม่มีในรายการสรุป ต้องถามทีละกิจกรรม (จำกัดรอบละ 20)
+    for (const c of added.slice(0, 20)) {
+      try { const d = await stravaGet('/activities/' + c.stravaId, {}); c.kcal = Math.min(20000, Math.round(d.calories || 0)); }
+      catch (e) { if (e.code === 'rate') break; }
+    }
+    state.cardioLog.push(...added);
+    st.lastSyncAt = Date.now();
+    save();
+    if (document.getElementById('page-cardio').classList.contains('active')) renderCardioHistory();
+    renderDashboard();
+    setStravaStatus();
+    if (manual || added.length) toast(added.length ? `ดึงจาก Strava ${added.length} รายการ` : 'ไม่มีกิจกรรมใหม่');
+  } catch (e) {
+    if (e.code === 'auth') setStravaAuth(null);
+    setStravaStatus(stravaMessage(e));
+  } finally {
+    stravaBusy = false;
+  }
+}
+
+async function disconnectStrava() {
+  if (!confirm('ยกเลิกการเชื่อมต่อ Strava? (กิจกรรมที่ดึงมาแล้วยังอยู่)')) return;
+  try {
+    const token = await stravaAccessToken();
+    await fetch(`${STRAVA_API}?action=deauthorize`, { method: 'POST', headers: { Authorization: 'Bearer ' + token } });
+  } catch (e) {}
+  setStravaAuth(null);
+  setStravaStatus('ยกเลิกการเชื่อมต่อ Strava แล้ว');
+}
+
+function stravaMessage(e) {
+  return {
+    not_configured: 'ระบบ Strava ยังไม่ได้ตั้งค่าบน server (ผู้ดูแลต้องใส่ STRAVA_CLIENT_ID / STRAVA_CLIENT_SECRET)',
+    auth: 'สิทธิ์ Strava หมดอายุหรือถูกยกเลิก — กด “เชื่อมต่อ Strava” อีกครั้ง',
+    rate: 'Strava ให้ดึงข้อมูลได้จำกัดต่อ 15 นาที — ลองใหม่ภายหลัง',
+  }[e.code] || 'เชื่อมต่อ Strava ไม่สำเร็จ — ตรวจอินเทอร์เน็ตแล้วลองใหม่';
+}
+
+function setStravaStatus(msg) {
+  const el = document.getElementById('strava-status');
+  if (!el) return;
+  const a = stravaAuth();
+  const last = state.strava.lastSyncAt
+    ? new Date(state.strava.lastSyncAt).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+  el.textContent = msg || (a
+    ? `เชื่อมต่อแล้ว${a.athleteName ? ': ' + a.athleteName : ''}${last ? ' · ซิงก์ล่าสุด ' + last : ''}`
+    : 'ยังไม่ได้เชื่อมต่อ — ดึงการออกกำลังกายจากนาฬิกา Huawei (ผ่าน Huawei Health → Strava) เข้าประวัติคาร์ดิโออัตโนมัติ');
+  document.getElementById('strava-connect-btn').style.display = a ? 'none' : '';
+  document.getElementById('strava-sync-btn').style.display = a ? '' : 'none';
+  document.getElementById('strava-off-btn').style.display = a ? '' : 'none';
+}
+
+// ════════════════════════════════════════════
 // INIT
 // ════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
   renderDashboard();
+  setStravaStatus();
+  handleStravaCallback().then(handled => {
+    // ซิงก์อัตโนมัติตอนเปิดแอป ถ้าห่างจากรอบก่อนเกิน 15 นาที
+    if (!handled && stravaAuth() && Date.now() - state.strava.lastSyncAt > 15 * 60000) syncStrava(false);
+  });
 
   // Modal: ปิดด้วย Esc หรือคลิกพื้นหลัง
   const modal = document.getElementById('log-modal');

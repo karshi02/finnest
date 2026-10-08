@@ -1,5 +1,5 @@
 // เปลี่ยนเลขทุกครั้งที่ deploy เพื่อล้างแคชเก่า
-const CACHE = 'fittrack-v5';
+const CACHE = 'fittrack-v6';
 const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './vendor/chart.umd.min.js'];
 
 self.addEventListener('install', e => {
@@ -18,6 +18,8 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   if (new URL(e.request.url).origin !== self.location.origin) return;
+  // API (Strava) ต้องสดเสมอ ห้ามเก็บแคช
+  if (new URL(e.request.url).pathname.startsWith('/api/')) return;
   e.respondWith(
     caches.match(e.request).then(cached => {
       const network = fetch(e.request).then(res => {
