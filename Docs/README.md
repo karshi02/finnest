@@ -16,3 +16,4 @@
 | 10 | 2026-10-06 | [FIX-REPORT-06.md](FIX-REPORT-06.md) | ย้ายไป karshi02/finnest, push สำเร็จ และตรวจแล้วว่าคำสั่งของลูกค้าดาวน์โหลดเวอร์ชันใหม่ได้ |
 | 11 | 2026-10-06 | [FIX-REPORT-07.md](FIX-REPORT-07.md) | Deploy ขึ้น Vercel (fitt-zeta.vercel.app, แบบชั่วคราว) และตั้งค่า Vercel CLI, plugin และ MCP |
 | 12 | 2026-10-07 | [BOOK-REPORT-01.md](BOOK-REPORT-01.md) | เล่มโครงงาน 5 บท [PROJECT-BOOK.pdf](PROJECT-BOOK.pdf) 51 หน้า ตามรูปแบบ มรภ.มหาสารคาม, ต้นฉบับใน `book/` และรายการช่องที่ต้องเติมก่อนส่ง |
+| 13 | 2026-10-08 | [FIX-REPORT-08.md](FIX-REPORT-08.md) | เชื่อมนาฬิกา Huawei (HR Data Broadcasts) บน Android: ค้นจากชื่อ, ปุ่มแสดงอุปกรณ์ทั้งหมด, ข้อความแนะนำ, ทดสอบจำลองผ่าน 10/10 และ deploy Vercel แล้ว |
