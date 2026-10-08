@@ -1,7 +1,7 @@
 # แผน: ซิงก์กิจกรรมจากสมาร์ทวอทช์ผ่าน Strava
 
 วันที่: 2026-10-05
-สถานะ: **ร่างแผน ยังไม่ได้ลงมือ**
+สถานะ: **ทำแล้ว** ใน [FIX-REPORT-11.md](FIX-REPORT-11.md) (ใช้ Vercel Function แทน Cloudflare Worker)
 ต่อจาก: [FIX-REPORT-04.md](FIX-REPORT-04.md) (HR สดผ่าน Bluetooth เสร็จแล้ว)
 
 ---

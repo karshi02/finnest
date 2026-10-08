@@ -19,3 +19,4 @@
 | 13 | 2026-10-08 | [FIX-REPORT-08.md](FIX-REPORT-08.md) | เชื่อมนาฬิกา Huawei (HR Data Broadcasts) บน Android: ค้นจากชื่อ, ปุ่มแสดงอุปกรณ์ทั้งหมด, ข้อความแนะนำ, ทดสอบจำลองผ่าน 10/10 และ deploy Vercel แล้ว |
 | 14 | 2026-10-08 | [FIX-REPORT-09.md](FIX-REPORT-09.md) | ปุ่ม "⌚ เชื่อมนาฬิกา" บนแถบด้านบน กดได้ทุกหน้า แสดงชีพจรสดเมื่อเชื่อมแล้ว, หัวเว็บมือถือ 2 แถว, ทดสอบ 20/20, deploy แล้ว |
 | 15 | 2026-10-08 | [FIX-REPORT-10.md](FIX-REPORT-10.md) | หา Huawei WATCH GT 6 ไม่เจอ: เชื่อมจาก MAC ไม่ได้ (ข้อจำกัด Web Bluetooth), เพิ่มกล่องตรวจเครื่อง + ขั้นตอนเปิด HR Data Broadcasts ในแอป, ทดสอบ 24/24 |
+| 16 | 2026-10-08 | [FIX-REPORT-11.md](FIX-REPORT-11.md) | ดึงการออกกำลังกายจาก Huawei Health ผ่าน Strava: Vercel Function `api/strava.js`, การ์ดเชื่อมต่อ/ซิงก์อัตโนมัติ, ทดสอบ 61/61 (รอเจ้าของสร้าง Strava API app และใส่คีย์ใน Vercel) |
