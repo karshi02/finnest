@@ -67,6 +67,12 @@
       background: #ffffff22; color: #fff; border: 1px solid #ffffff55; font-size: 1.05rem;
     }
     .prof-btn:hover { background: #ffffff33; }
+    .ch-stage { position: relative; width: 100%; max-width: 640px; margin: 12px auto 0; background: #000; border-radius: 12px; overflow: hidden; aspect-ratio: 4 / 3; }
+    .ch-stage video, .ch-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+    .ch-hud { position: absolute; left: 0; right: 0; top: 0; display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 14px; pointer-events: none; }
+    .ch-count { font-size: 4rem; font-weight: 900; color: #fff; text-shadow: 0 2px 8px #000; line-height: 1; font-variant-numeric: tabular-nums; }
+    .ch-timer { font-size: 1.1rem; font-weight: 700; color: #ffca28; text-shadow: 0 2px 6px #000; }
+    .ch-feedback { position: absolute; left: 0; right: 0; bottom: 0; padding: 10px 14px; background: #000a; color: #fff; font-weight: 700; text-align: center; }
     .auto-hint { font-size: .8rem; color: var(--text-muted); margin: 6px 0 10px; min-height: 1.2em; }
     nav button {
       background: transparent;
@@ -323,6 +329,7 @@
     <button onclick="showPage('cardio')">🏃 คาร์ดิโอ</button>
     <button onclick="showPage('plan')">📋 แผนออกกำลังกาย</button>
     <button onclick="showPage('calc')">🧮 คำนวณ</button>
+    <button onclick="showPage('challenge')">🏆 ชาเลนจ์</button>
   </nav>
   <button class="watch-btn" id="watch-btn" onclick="watchButton()" title="เชื่อมต่อนาฬิกาเพื่อดูหัวใจสด">⌚ <span class="wl" id="watch-label">เชื่อมนาฬิกา</span></button>
   <button class="prof-btn" onclick="openProfile()" title="โปรไฟล์ของฉัน" aria-label="โปรไฟล์ของฉัน">👤</button>
@@ -860,6 +867,52 @@
   </div>
 </div>
 
+<!-- ════════════════════════════════════════════
+     PAGE: CHALLENGE (นับท่าด้วยกล้อง)
+════════════════════════════════════════════ -->
+<div id="page-challenge" class="page">
+  <h1 style="font-size:1.5rem;margin-bottom:20px">🏆 ชาเลนจ์</h1>
+  <div class="card">
+    <div class="card-title"><span class="icon">📷</span> นับท่าด้วยกล้อง</div>
+    <div class="form-row">
+      <div><label for="ch-exercise">ท่า</label>
+        <select id="ch-exercise" onchange="updateChModes()">
+          <option value="pushup">💪 วิดพื้น</option><option value="squat">🦵 สควอท</option><option value="plank">🧱 แพลงก์</option>
+        </select></div>
+      <div><label for="ch-mode">แบบ</label><select id="ch-mode"></select></div>
+    </div>
+    <div class="flex-gap" style="margin-top:4px">
+      <button class="btn btn-primary" id="ch-start-btn" onclick="startChallenge()">📷 เริ่ม</button>
+      <button class="btn btn-danger" onclick="stopChallenge(true)">⏹ จบและบันทึก</button>
+    </div>
+    <div class="ch-stage" id="ch-stage" style="display:none">
+      <video id="ch-video" playsinline muted></video>
+      <canvas id="ch-canvas"></canvas>
+      <div class="ch-hud"><div class="ch-count" id="ch-count">0</div><div class="ch-timer" id="ch-timer"></div></div>
+      <div class="ch-feedback" id="ch-feedback" role="status"></div>
+    </div>
+    <details class="mt16 text-muted" style="font-size:.82rem">
+      <summary style="cursor:pointer">วิธีวางกล้องให้นับแม่น</summary>
+      <ul style="line-height:1.7;padding-left:18px;margin-top:6px">
+        <li>วางมือถือ/โน้ตบุ๊กไว้<b>ด้านข้าง</b>ลำตัว ห่างประมาณ 2 เมตร ให้เห็นตั้งแต่หัวถึงเท้า</li>
+        <li><b>วิดพื้น:</b> นับเมื่อศอกงอถึง 90° แล้วเหยียดกลับ ลำตัวต้องตรง (สะโพกไม่ตก/ไม่โด่ง)</li>
+        <li><b>สควอท:</b> นับเมื่อย่อจนเข่างอประมาณ 100° (ต้นขาเกือบขนานพื้น) แล้วยืนตรง</li>
+        <li><b>แพลงก์:</b> จับเวลาเฉพาะตอนลำตัวตรงและขนานพื้น</li>
+        <li>มีแสงพอ ใส่เสื้อผ้าที่ไม่กลืนกับพื้นหลัง</li>
+        <li>🔒 ภาพจากกล้องประมวลผลในเครื่องนี้เท่านั้น ไม่ถูกส่งหรือบันทึกที่ไหน (ต้องต่อเน็ตครั้งแรกเพื่อโหลดตัวจับท่าทาง)</li>
+      </ul>
+    </details>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="icon">🥇</span> สถิติส่วนตัว</div>
+    <div class="grid3" id="ch-pbs"></div>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="icon">📜</span> ประวัติชาเลนจ์</div>
+    <div id="ch-history"></div>
+  </div>
+</div>
+
 </main>
 
 <!-- ════════════════════════════════════════════
@@ -1039,6 +1092,10 @@ function normalizeState(s) {
     ignoredIds: (Array.isArray(sv.ignoredIds) ? sv.ignoredIds : []).map(String).filter(x => /^\d+$/.test(x)),
   };
   s.cardioLog.forEach(c => { if (c.stravaId != null && !/^\d+$/.test(String(c.stravaId))) delete c.stravaId; });
+  // ผลชาเลนจ์ (นับท่าด้วยกล้อง)
+  s.challengeLog = (Array.isArray(s.challengeLog) ? s.challengeLog : []).filter(e => isObj(e) && ['pushup', 'squat', 'plank'].includes(e.exercise))
+    .map(e => ({ ...e, id: String(e.id || newId()), value: Math.max(0, Number(e.value) || 0), seconds: Math.max(0, Number(e.seconds) || 0),
+      trace: Array.isArray(e.trace) ? e.trace.slice(0, 3000).map(Number) : [] }));
   return s;
 }
 
@@ -1115,7 +1172,7 @@ function importData(file) {
     }
     if (!confirm(`นำเข้า ${s.sessions.length} sessions และ ${s.cardioLog.length} คาร์ดิโอ?\nข้อมูลปัจจุบันจะถูกแทนที่`)) return;
     state = migrate(normalizeState({
-      sessions: s.sessions, cardioLog: s.cardioLog, todaySets: s.todaySets, profile: s.profile, strava: s.strava, schemaVersion: s.schemaVersion
+      sessions: s.sessions, cardioLog: s.cardioLog, todaySets: s.todaySets, profile: s.profile, strava: s.strava, challengeLog: s.challengeLog, schemaVersion: s.schemaVersion
     }));
     save();
     renderDashboard();
@@ -1132,7 +1189,7 @@ function showPage(id) {
   document.querySelectorAll('nav button').forEach(b => { b.classList.remove('active'); b.removeAttribute('aria-current'); });
   document.getElementById('page-' + id).classList.add('active');
   const btns = document.querySelectorAll('nav button');
-  const map = { dashboard:0, weight:1, cardio:2, plan:3, calc:4 };
+  const map = { dashboard:0, weight:1, cardio:2, plan:3, calc:4, challenge:5 };
   btns[map[id]].classList.add('active');
   btns[map[id]].setAttribute('aria-current', 'page');
   if (id === 'dashboard') renderDashboard();
@@ -1140,6 +1197,8 @@ function showPage(id) {
   if (id === 'cardio') renderCardio();
   if (id === 'plan') renderPlan();
   if (id === 'calc') { renderProfileForm(); prefillCalcs(); }
+  if (id === 'challenge') renderChallenge();
+  else if (poseRun || poseStream) stopChallenge(false);   // ออกจากหน้าแล้วปิดกล้อง
 }
 
 // ════════════════════════════════════════════
@@ -2693,6 +2752,297 @@ function prefillCalcs(force) {
 }
 
 // ════════════════════════════════════════════
+// CHALLENGE: นับท่าด้วยกล้อง (MediaPipe Pose Landmarker ในเบราว์เซอร์ ภาพไม่ออกจากเครื่อง)
+// ════════════════════════════════════════════
+const MP_VERSION = '1.1.1';
+const MP_BASE = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${MP_VERSION}`;
+const MP_MODEL = 'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task';
+const CH_EXERCISES = {
+  pushup: { name: 'วิดพื้น', unit: 'ครั้ง', modes: ['timed60', 'max'] },
+  squat:  { name: 'สควอท', unit: 'ครั้ง', modes: ['timed60', 'max'] },
+  plank:  { name: 'แพลงก์', unit: 'วินาที', modes: ['hold'] },
+};
+const CH_MODES = { timed60: 'มากสุดใน 60 วินาที', max: 'ทำได้มากสุด (ไม่จำกัดเวลา)', hold: 'ค้างได้นานสุด' };
+// จุดของ MediaPipe Pose: [ซ้าย, ขวา]
+const LM = { shoulder: [11, 12], elbow: [13, 14], wrist: [15, 16], hip: [23, 24], knee: [25, 26], ankle: [27, 28] };
+
+// มุม ABC (องศา) โดยปรับแกน x ตามสัดส่วนภาพ เพราะพิกัด MediaPipe เป็น 0–1 ทั้งสองแกน
+function poseAngle(a, b, c, aspect) {
+  const v1x = (a.x - b.x) * aspect, v1y = a.y - b.y, v2x = (c.x - b.x) * aspect, v2y = c.y - b.y;
+  const d = Math.hypot(v1x, v1y) * Math.hypot(v2x, v2y);
+  if (!d) return 180;
+  return Math.acos(Math.max(-1, Math.min(1, (v1x * v2x + v1y * v2y) / d))) * 180 / Math.PI;
+}
+// มุมของเส้น a→b เทียบแนวนอน (0 = ราบ, 90 = ตั้ง)
+function poseTilt(a, b, aspect) {
+  return Math.abs(Math.atan2(Math.abs(b.y - a.y), Math.abs((b.x - a.x) * aspect)) * 180 / Math.PI);
+}
+
+// เลือกด้านที่กล้องเห็นชัดกว่า แล้วคืนจุดของด้านนั้น (null = เห็นไม่พอ)
+function poseSide(lm, parts) {
+  let best = null;
+  [0, 1].forEach(i => {
+    const pts = {}; let vis = 0, okAll = true;
+    parts.forEach(p => {
+      const q = lm[LM[p][i]];
+      if (!q || (q.visibility != null && q.visibility < 0.5)) okAll = false;
+      pts[p] = q; vis += q ? (q.visibility ?? 1) : 0;
+    });
+    if (okAll && (!best || vis > best.vis)) best = { pts, vis };
+  });
+  return best && best.pts;
+}
+
+// ตัวนับครั้ง: ป้อนจุดร่างกายทีละเฟรม คืนจำนวนครั้ง/เวลาค้าง และข้อความแนะนำท่า
+// ทดสอบได้โดยไม่ต้องใช้กล้อง (ป้อนจุดสังเคราะห์)
+function createRepCounter(exercise) {
+  const st = { reps: 0, phase: 'wait', holdMs: 0, lastT: 0, ema: null, minAngle: 999, badForm: false, feedback: 'จัดท่าให้กล้องเห็นทั้งตัวจากด้านข้าง', angle: null };
+  const smooth = v => (st.ema = st.ema == null ? v : st.ema * 0.5 + v * 0.5);
+  function update(lm, tMs, aspect = 1) {
+    const dt = st.lastT ? Math.min(500, tMs - st.lastT) : 0;
+    st.lastT = tMs;
+    let counted = false;
+    if (exercise === 'pushup' || exercise === 'plank') {
+      const p = poseSide(lm || [], ['shoulder', 'elbow', 'wrist', 'hip', 'ankle']) || poseSide(lm || [], ['shoulder', 'elbow', 'wrist', 'hip', 'knee']);
+      if (!p) { st.feedback = 'มองไม่เห็นตัว — ถอยห่างให้เห็นไหล่ ศอก สะโพก และขา'; return { ...st, counted }; }
+      const foot = p.ankle || p.knee;
+      const elbow = smooth(poseAngle(p.shoulder, p.elbow, p.wrist, aspect));
+      const body = poseAngle(p.shoulder, p.hip, foot, aspect);
+      const flat = poseTilt(p.shoulder, foot, aspect) < 45;
+      st.angle = Math.round(elbow);
+      const bodyOk = body >= 150;
+      if (exercise === 'plank') {
+        const holding = flat && body >= 160;
+        if (holding) { st.holdMs += dt; st.phase = 'hold'; st.feedback = 'ดีมาก ค้างไว้'; }
+        else { st.phase = 'wait'; st.feedback = !flat ? 'ลงท่าแพลงก์ (ลำตัวขนานพื้น)' : (body < 160 ? 'ให้ลำตัวตรง สะโพกไม่ตก/ไม่โด่ง' : 'จัดท่า'); }
+        return { ...st, counted };
+      }
+      if (!flat) { st.phase = 'wait'; st.feedback = 'ลงท่าวิดพื้น (ลำตัวขนานพื้น)'; return { ...st, counted }; }
+      if (st.phase === 'wait') { if (elbow > 150) { st.phase = 'up'; st.feedback = 'พร้อม — ลงได้เลย'; } return { ...st, counted }; }
+      if (st.phase === 'up' && elbow < 140) { st.phase = 'going'; st.minAngle = elbow; st.badForm = false; }
+      if (st.phase === 'going' || st.phase === 'down') {
+        st.minAngle = Math.min(st.minAngle, elbow);
+        if (!bodyOk) { st.badForm = true; st.feedback = 'สะโพกตกหรือโด่ง — ให้ลำตัวตรง'; }
+        if (elbow <= 95) st.phase = 'down';
+        if (elbow > 155) {
+          if (st.phase === 'down' && !st.badForm) { st.reps++; counted = true; st.feedback = `${st.reps} ✔`; }
+          else if (!st.badForm) st.feedback = 'ลงให้ลึกกว่านี้ (ศอกงอถึง 90°)';
+          else st.feedback = 'ครั้งนี้ไม่นับ — ลำตัวไม่ตรง';
+          st.phase = 'up';
+        }
+      }
+      return { ...st, counted };
+    }
+    // squat: มุมเข่า สะโพก–เข่า–ข้อเท้า
+    const p = poseSide(lm || [], ['shoulder', 'hip', 'knee', 'ankle']);
+    if (!p) { st.feedback = 'มองไม่เห็นตัว — ถอยห่างให้เห็นตั้งแต่ไหล่ถึงข้อเท้า'; return { ...st, counted }; }
+    const knee = smooth(poseAngle(p.hip, p.knee, p.ankle, aspect));
+    const upright = poseTilt(p.hip, p.shoulder, aspect) > 30;
+    st.angle = Math.round(knee);
+    if (st.phase === 'wait') { if (knee > 160 && upright) { st.phase = 'up'; st.feedback = 'พร้อม — ย่อลงได้เลย'; } else st.feedback = 'ยืนตรงหันข้างให้กล้อง'; return { ...st, counted }; }
+    if (st.phase === 'up' && knee < 150) { st.phase = 'going'; st.minAngle = knee; st.badForm = false; }
+    if (st.phase === 'going' || st.phase === 'down') {
+      st.minAngle = Math.min(st.minAngle, knee);
+      if (!upright) { st.badForm = true; st.feedback = 'หลังก้มมากไป — อกตั้ง'; }
+      if (knee <= 100) st.phase = 'down';
+      if (knee > 160) {
+        if (st.phase === 'down' && !st.badForm) { st.reps++; counted = true; st.feedback = `${st.reps} ✔`; }
+        else if (!st.badForm) st.feedback = 'ย่อลงอีกนิด (ต้นขาขนานพื้น)';
+        else st.feedback = 'ครั้งนี้ไม่นับ — หลังก้มมากไป';
+        st.phase = 'up';
+      }
+    }
+    return { ...st, counted };
+  }
+  return { update, state: st };
+}
+
+// ── กล้อง + MediaPipe ──
+let poseLandmarker = null, poseStream = null, poseRaf = 0, poseRun = null;
+
+async function loadPoseLandmarker() {
+  if (poseLandmarker) return poseLandmarker;
+  const vision = await import(`${MP_BASE}/vision_bundle.mjs`);
+  const fileset = await vision.FilesetResolver.forVisionTasks(`${MP_BASE}/wasm`);
+  const make = delegate => vision.PoseLandmarker.createFromOptions(fileset, {
+    baseOptions: { modelAssetPath: MP_MODEL, delegate }, runningMode: 'VIDEO', numPoses: 1,
+  });
+  try { poseLandmarker = await make('GPU'); } catch (e) { poseLandmarker = await make('CPU'); }
+  window.__poseVision = vision;
+  return poseLandmarker;
+}
+
+function chTick(freq = 1200) {
+  if (!audioCtx) return;
+  try {
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.frequency.value = freq; o.connect(g); g.connect(audioCtx.destination);
+    g.gain.setValueAtTime(0.25, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+    o.start(); o.stop(audioCtx.currentTime + 0.12);
+  } catch (e) {}
+}
+
+function chSet(id, text) { const el = document.getElementById(id); if (el) el.textContent = text; }
+
+async function startChallenge() {
+  if (poseRun) return;
+  const exercise = document.getElementById('ch-exercise').value;
+  if (!document.getElementById('ch-mode').options.length) updateChModes();
+  const mode = document.getElementById('ch-mode').value || CH_EXERCISES[exercise].modes[0];
+  unlockAudio();
+  const stage = document.getElementById('ch-stage');
+  stage.style.display = '';
+  document.getElementById('ch-start-btn').disabled = true;
+  chSet('ch-feedback', 'กำลังเปิดกล้อง...');
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw Object.assign(new Error('nocam'), { name: 'NoCamera' });
+    poseStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }, audio: false });
+    const video = document.getElementById('ch-video');
+    video.srcObject = poseStream;
+    await video.play();
+    chSet('ch-feedback', 'กำลังโหลดตัวจับท่าทาง (ครั้งแรกใช้เวลาสักครู่)...');
+    await loadPoseLandmarker();
+  } catch (e) {
+    stopChallenge(false);
+    chSet('ch-feedback', e.name === 'NotAllowedError' ? 'ไม่ได้รับอนุญาตให้ใช้กล้อง — กดอนุญาตกล้องในเบราว์เซอร์แล้วลองใหม่'
+      : e.name === 'NoCamera' || e.name === 'NotFoundError' ? 'ไม่พบกล้องในเครื่องนี้'
+      : 'โหลดตัวจับท่าทางไม่สำเร็จ — ต้องต่ออินเทอร์เน็ตตอนใช้งานครั้งแรก');
+    return;
+  }
+  keepAwake(true);
+  // นับถอยหลัง 3 วินาทีให้ไปจัดท่า
+  for (let i = 3; i > 0; i--) { chSet('ch-count', String(i)); chSet('ch-feedback', 'เตรียมตัว... จัดท่าให้กล้องเห็นด้านข้าง'); chTick(800); await new Promise(r => setTimeout(r, 1000)); if (!poseStream) return; }
+  chTick(1600);
+  const counter = createRepCounter(exercise);
+  poseRun = { exercise, mode, counter, startTs: performance.now(), trace: [], lastTrace: 0, lastVideoTime: -1 };
+  chSet('ch-count', exercise === 'plank' ? '0.0' : '0');
+  poseLoop();
+}
+
+function poseLoop() {
+  if (!poseRun) return;
+  const video = document.getElementById('ch-video');
+  const canvas = document.getElementById('ch-canvas');
+  const now = performance.now();
+  const elapsed = (now - poseRun.startTs) / 1000;
+  if (video.readyState >= 2 && video.currentTime !== poseRun.lastVideoTime) {
+    poseRun.lastVideoTime = video.currentTime;
+    let lm = null;
+    try { const res = poseLandmarker.detectForVideo(video, now); lm = res.landmarks && res.landmarks[0]; } catch (e) {}
+    const aspect = video.videoWidth && video.videoHeight ? video.videoWidth / video.videoHeight : 4 / 3;
+    const r = poseRun.counter.update(lm, now, aspect);
+    if (r.counted) chTick();
+    chSet('ch-count', poseRun.exercise === 'plank' ? (r.holdMs / 1000).toFixed(1) : String(r.reps));
+    chSet('ch-feedback', r.feedback);
+    // เก็บร่องรอยมุม 10 ครั้ง/วินาที ไว้ตรวจความถูกต้องตอนส่งแข่ง (ไม่ใช่วิดีโอ)
+    if (now - poseRun.lastTrace >= 100 && poseRun.trace.length < 3000) { poseRun.trace.push(r.angle == null ? -1 : r.angle); poseRun.lastTrace = now; }
+    drawPose(canvas, video, lm);
+  }
+  if (poseRun.mode === 'timed60') {
+    const left = Math.max(0, 60 - elapsed);
+    chSet('ch-timer', `เหลือ ${Math.ceil(left)} วินาที`);
+    if (left <= 0) { stopChallenge(true); return; }
+  } else chSet('ch-timer', `${Math.floor(elapsed / 60)}:${String(Math.floor(elapsed % 60)).padStart(2, '0')}`);
+  poseRaf = requestAnimationFrame(poseLoop);
+}
+
+function drawPose(canvas, video, lm) {
+  const w = video.videoWidth || 640, h = video.videoHeight || 480;
+  if (canvas.width !== w) { canvas.width = w; canvas.height = h; }
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, w, h);
+  if (!lm) return;
+  const pairs = [[11, 13], [13, 15], [12, 14], [14, 16], [11, 12], [11, 23], [12, 24], [23, 24], [23, 25], [25, 27], [24, 26], [26, 28]];
+  ctx.lineWidth = 4; ctx.strokeStyle = '#4caf50'; ctx.fillStyle = '#ffca28';
+  pairs.forEach(([a, b]) => {
+    const p = lm[a], q = lm[b];
+    if (!p || !q || (p.visibility ?? 1) < 0.5 || (q.visibility ?? 1) < 0.5) return;
+    ctx.beginPath(); ctx.moveTo(p.x * w, p.y * h); ctx.lineTo(q.x * w, q.y * h); ctx.stroke();
+  });
+  [11, 12, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28].forEach(i => {
+    const p = lm[i]; if (!p || (p.visibility ?? 1) < 0.5) return;
+    ctx.beginPath(); ctx.arc(p.x * w, p.y * h, 5, 0, Math.PI * 2); ctx.fill();
+  });
+}
+
+function stopChallenge(finished) {
+  cancelAnimationFrame(poseRaf);
+  const run = poseRun;
+  poseRun = null;
+  if (poseStream) { poseStream.getTracks().forEach(t => t.stop()); poseStream = null; }
+  const video = document.getElementById('ch-video'); if (video) video.srcObject = null;
+  document.getElementById('ch-start-btn').disabled = false;
+  if (!timerRunning) keepAwake(false);
+  if (!run) { document.getElementById('ch-stage').style.display = 'none'; return; }
+  const seconds = Math.round((performance.now() - run.startTs) / 1000);
+  const s = run.counter.state;
+  const value = run.exercise === 'plank' ? Math.round(s.holdMs / 100) / 10 : s.reps;
+  if (finished !== false && value > 0) {
+    if (!state.challengeLog) state.challengeLog = [];
+    const entry = { id: String(newId()), exercise: run.exercise, mode: run.mode, value, seconds,
+      date: todayStr(), ts: Date.now(), trace: run.trace };
+    const prev = bestChallenge(run.exercise, run.mode);
+    state.challengeLog.push(entry);
+    if (state.challengeLog.length > 300) state.challengeLog.shift();
+    save();
+    const unit = CH_EXERCISES[run.exercise].unit;
+    const pb = !prev || value > prev.value;
+    chSet('ch-feedback', pb ? `🏆 สถิติใหม่! ${value} ${unit}` : `จบแล้ว: ${value} ${unit} (สถิติ ${prev.value})`);
+    toast(pb ? `🏆 สถิติใหม่ ${CH_EXERCISES[run.exercise].name} ${value} ${unit}` : `บันทึกแล้ว ${value} ${unit}`);
+    if (pb) beep();
+    onChallengeSaved(entry);
+  } else {
+    chSet('ch-feedback', 'หยุดแล้ว (ไม่ได้บันทึก เพราะยังไม่มีผล)');
+  }
+  renderChallenge();
+}
+
+function bestChallenge(exercise, mode) {
+  return (state.challengeLog || []).filter(e => e.exercise === exercise && e.mode === mode)
+    .reduce((b, e) => (!b || e.value > b.value ? e : b), null);
+}
+
+// จุดต่อสำหรับระบบแข่งขัน (P3+) — ตอนนี้ยังไม่มีอะไร
+function onChallengeSaved(entry) {}
+
+function updateChModes() {
+  const ex = document.getElementById('ch-exercise').value;
+  const sel = document.getElementById('ch-mode');
+  const keep = sel.value;
+  sel.innerHTML = CH_EXERCISES[ex].modes.map(m => `<option value="${m}">${CH_MODES[m]}</option>`).join('');
+  if (CH_EXERCISES[ex].modes.includes(keep)) sel.value = keep;
+}
+
+function deleteChallenge(id) {
+  if (!confirm('ลบผลนี้?')) return;
+  state.challengeLog = (state.challengeLog || []).filter(e => e.id !== id);
+  save();
+  renderChallenge();
+}
+
+function renderChallenge() {
+  const log = state.challengeLog || [];
+  const pbs = [];
+  Object.entries(CH_EXERCISES).forEach(([ex, d]) => d.modes.forEach(m => {
+    const b = bestChallenge(ex, m);
+    pbs.push(`<div class="stat-box"><div class="val" style="font-size:1.6rem">${b ? esc(b.value) : '-'}</div>
+      <div class="lbl">${esc(d.name)} · ${esc(CH_MODES[m])}${b ? `<br>${esc(fmtDate(b.date))}` : ''}</div></div>`);
+  }));
+  document.getElementById('ch-pbs').innerHTML = pbs.join('');
+  const el = document.getElementById('ch-history');
+  if (!log.length) { el.innerHTML = '<div class="empty-state">ยังไม่มีผล — ลองเริ่มชาเลนจ์แรกเลย</div>'; return; }
+  el.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>วันที่</th><th>ท่า</th><th>แบบ</th><th>ผล</th><th>เวลา</th><th></th></tr></thead>
+    <tbody>${[...log].sort((a, b) => b.ts - a.ts).slice(0, 50).map(e => `
+      <tr><td>${esc(fmtDate(e.date))}</td><td>${esc((CH_EXERCISES[e.exercise] || {}).name || e.exercise)}</td>
+      <td>${esc(CH_MODES[e.mode] || e.mode)}</td><td><strong>${esc(e.value)}</strong> ${esc((CH_EXERCISES[e.exercise] || {}).unit || '')}</td>
+      <td>${esc(e.seconds)} วิ</td>
+      <td><button class="btn btn-danger btn-sm" aria-label="ลบผล" data-id="${esc(e.id)}" onclick="deleteChallenge(this.dataset.id)">✕</button></td></tr>`).join('')}
+    </tbody></table></div>`;
+}
+
+// ════════════════════════════════════════════
 // INIT
 // ════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
@@ -2700,6 +3050,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setStravaStatus();
   restoreHrDevice();
   document.getElementById('auto-rest').checked = autoRestOn();
+  updateChModes();
   ['cardio-type', 'cardio-duration', 'cardio-distance', 'cardio-hr'].forEach(id => {
     document.getElementById(id).addEventListener('input', () => updateCardioAuto(id === 'cardio-hr'));
   });
