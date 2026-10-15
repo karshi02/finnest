@@ -316,6 +316,15 @@
     .video-msg { display: flex; align-items: center; justify-content: center; text-align: center; padding: 16px; color: var(--text-muted); font-size: 0.9rem; }
     .video-unmute { position: absolute; left: 12px; bottom: 12px; z-index: 2; }
     .ex-card:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+    .sc-check { display: block; font-size: .82rem; color: var(--text-muted); margin: 8px 0; line-height: 1.5; cursor: pointer; }
+    .sc-check input { width: auto; margin-right: 6px; vertical-align: middle; }
+    .sc-item { border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; background: var(--surface2); }
+    .sc-list { list-style: none; padding: 0; margin: 8px 0; }
+    .sc-list li { padding: 5px 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    ol.sc-list { list-style: decimal inside; }
+    ol.sc-list li { display: list-item; }
+    .sc-me-row { background: #1565c022; }
+    nav button.has-dot::after { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #ffca28; margin-left: 6px; vertical-align: middle; }
     .warn-box { background: #fb8c0022; border: 1px solid var(--orange); color: #ffa726; border-radius: 8px; padding: 8px 12px; margin-bottom: 10px; font-size: 0.85rem; }
   </style>
 </head>
@@ -330,6 +339,7 @@
     <button onclick="showPage('plan')">📋 แผนออกกำลังกาย</button>
     <button onclick="showPage('calc')">🧮 คำนวณ</button>
     <button onclick="showPage('challenge')">🏆 ชาเลนจ์</button>
+    <button onclick="showPage('social')">🥇 อันดับ</button>
   </nav>
   <button class="watch-btn" id="watch-btn" onclick="watchButton()" title="เชื่อมต่อนาฬิกาเพื่อดูหัวใจสด">⌚ <span class="wl" id="watch-label">เชื่อมนาฬิกา</span></button>
   <button class="prof-btn" onclick="openProfile()" title="โปรไฟล์ของฉัน" aria-label="โปรไฟล์ของฉัน">👤</button>
@@ -885,6 +895,8 @@
       <button class="btn btn-primary" id="ch-start-btn" onclick="startChallenge()">📷 เริ่ม</button>
       <button class="btn btn-danger" onclick="stopChallenge(true)">⏹ จบและบันทึก</button>
     </div>
+    <label class="sc-check"><input type="checkbox" id="ch-record" onchange="setScPref('video', this.checked)" /> 🎥 อัดวิดีโอเป็นหลักฐาน (ส่งขึ้นระบบเฉพาะผลที่ต้องตรวจ เช่น ติด 10 อันดับแรก)</label>
+    <div class="text-muted" id="ch-online-hint"></div>
     <div class="ch-stage" id="ch-stage" style="display:none">
       <video id="ch-video" playsinline muted></video>
       <canvas id="ch-canvas"></canvas>
@@ -899,7 +911,7 @@
         <li><b>สควอท:</b> นับเมื่อย่อจนเข่างอประมาณ 100° (ต้นขาเกือบขนานพื้น) แล้วยืนตรง</li>
         <li><b>แพลงก์:</b> จับเวลาเฉพาะตอนลำตัวตรงและขนานพื้น</li>
         <li>มีแสงพอ ใส่เสื้อผ้าที่ไม่กลืนกับพื้นหลัง</li>
-        <li>🔒 ภาพจากกล้องประมวลผลในเครื่องนี้เท่านั้น ไม่ถูกส่งหรือบันทึกที่ไหน (ต้องต่อเน็ตครั้งแรกเพื่อโหลดตัวจับท่าทาง)</li>
+        <li>🔒 ภาพจากกล้องประมวลผลในเครื่องนี้เท่านั้น (ต้องต่อเน็ตครั้งแรกเพื่อโหลดตัวจับท่าทาง) — ส่งขึ้นอันดับเฉพาะตัวเลขผลและกราฟมุมข้อต่อ วิดีโอส่งเฉพาะเมื่อติ๊ก "อัดวิดีโอ" และเก็บแบบส่วนตัว ผู้ดูแลเท่านั้นที่ดูได้</li>
       </ul>
     </details>
   </div>
@@ -910,6 +922,95 @@
   <div class="card">
     <div class="card-title"><span class="icon">📜</span> ประวัติชาเลนจ์</div>
     <div id="ch-history"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     PAGE: SOCIAL (บัญชี อันดับ การแข่งขัน)
+════════════════════════════════════════════ -->
+<div id="page-social" class="page">
+  <h1 style="font-size:1.5rem;margin-bottom:20px">🥇 อันดับและการแข่งขัน</h1>
+  <div class="warn-box" id="sc-offline" style="display:none">ส่วนนี้ต้องต่ออินเทอร์เน็ต และใช้ได้บนเว็บที่ deploy แล้วเท่านั้น</div>
+
+  <!-- บัญชี -->
+  <div class="card" id="sc-account">
+    <div class="card-title"><span class="icon">👤</span> บัญชีผู้ใช้</div>
+    <div id="sc-auth-box">
+      <div class="tabs" role="tablist">
+        <button class="tab-btn active" id="sc-tab-login" onclick="scAuthTab('login')">เข้าสู่ระบบ</button>
+        <button class="tab-btn" id="sc-tab-signup" onclick="scAuthTab('signup')">สมัครใหม่</button>
+      </div>
+      <form id="sc-auth-form" onsubmit="event.preventDefault(); scAuthSubmit()">
+        <div class="form-row">
+          <div><label for="sc-username">ชื่อผู้ใช้</label><input id="sc-username" autocomplete="username" maxlength="20" placeholder="a-z 0-9 _" /></div>
+          <div><label for="sc-password">รหัสผ่าน</label><input id="sc-password" type="password" autocomplete="current-password" maxlength="72" placeholder="อย่างน้อย 8 ตัว" /></div>
+        </div>
+        <div id="sc-signup-extra" style="display:none">
+          <div class="form-row">
+            <div><label for="sc-display">ชื่อที่แสดงในอันดับ</label><input id="sc-display" maxlength="24" placeholder="ชื่อเล่น" /></div>
+            <div><label for="sc-sex">เพศ (ใช้แยกอันดับ)</label>
+              <select id="sc-sex"><option value="">ไม่ระบุ</option><option value="male">ชาย</option><option value="female">หญิง</option><option value="other">อื่น ๆ</option></select></div>
+            <div><label for="sc-age">ช่วงอายุ</label>
+              <select id="sc-age" onchange="scGuardianToggle()"><option value="">ไม่ระบุ</option><option value="u18">ต่ำกว่า 18</option><option value="18-24">18–24</option><option value="25-34">25–34</option><option value="35-44">35–44</option><option value="45+">45 ขึ้นไป</option></select></div>
+          </div>
+          <label class="sc-check"><input type="checkbox" id="sc-consent" /> ยินยอมให้เก็บชื่อผู้ใช้ ชื่อที่แสดง เพศ ช่วงอายุ และผลการแข่ง เพื่อจัดอันดับ (ตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล) — ลบบัญชีและข้อมูลทั้งหมดได้ทุกเมื่อ ไม่เก็บอีเมลหรือเบอร์โทร</label>
+          <label class="sc-check" id="sc-guardian-row" style="display:none"><input type="checkbox" id="sc-guardian" /> ผู้ปกครองรับทราบและยินยอมให้ใช้งาน (อายุต่ำกว่า 18 ปี)</label>
+        </div>
+        <button class="btn btn-primary mt16" id="sc-auth-btn" type="submit">เข้าสู่ระบบ</button>
+        <div class="auto-hint" id="sc-auth-msg" role="status"></div>
+      </form>
+    </div>
+    <div id="sc-me-box" style="display:none"></div>
+  </div>
+
+  <!-- อันดับ -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📊</span> ตารางอันดับ</div>
+    <div class="form-row">
+      <div><label for="sb-exercise">รายการ</label>
+        <select id="sb-exercise" onchange="sbModes(); loadBoard()">
+          <option value="pushup">💪 วิดพื้น</option><option value="squat">🦵 สควอท</option><option value="plank">🧱 แพลงก์</option>
+          <option value="cardio_min">🏃 คาร์ดิโอ (นาที/สัปดาห์)</option><option value="distance_km">📏 ระยะทาง (กม./สัปดาห์)</option>
+        </select></div>
+      <div><label for="sb-mode">แบบ</label><select id="sb-mode" onchange="loadBoard()"></select></div>
+      <div><label for="sb-period">ช่วงเวลา</label>
+        <select id="sb-period" onchange="loadBoard()"><option value="week">สัปดาห์นี้</option><option value="month">เดือนนี้</option><option value="all">ตลอดกาล</option></select></div>
+    </div>
+    <div class="form-row">
+      <div><label for="sb-scope">ใคร</label>
+        <select id="sb-scope" onchange="loadBoard()"><option value="all">ทุกคน</option><option value="friends">เพื่อน</option><option value="team">ทีมของฉัน</option></select></div>
+      <div><label for="sb-sex">เพศ</label>
+        <select id="sb-sex" onchange="loadBoard()"><option value="">ทั้งหมด</option><option value="male">ชาย</option><option value="female">หญิง</option></select></div>
+      <div><label for="sb-age">อายุ</label>
+        <select id="sb-age" onchange="loadBoard()"><option value="">ทั้งหมด</option><option value="u18">ต่ำกว่า 18</option><option value="18-24">18–24</option><option value="25-34">25–34</option><option value="35-44">35–44</option><option value="45+">45+</option></select></div>
+    </div>
+    <div class="flex-gap" id="sb-strava-row" style="display:none;margin-bottom:10px">
+      <button class="btn btn-orange btn-sm" onclick="stravaToBoard()">🟧 ส่งคาร์ดิโอสัปดาห์นี้จาก Strava</button>
+      <span class="text-muted">นับเฉพาะกิจกรรมที่บันทึกจากอุปกรณ์ (ไม่นับที่พิมพ์เอง)</span>
+    </div>
+    <div id="sb-table"><div class="empty-state">กำลังโหลด...</div></div>
+  </div>
+
+  <!-- การแข่งขัน -->
+  <div class="card">
+    <div class="card-title"><span class="icon">⚔️</span> การแข่งขัน</div>
+    <div id="sc-comp-actions"></div>
+    <div id="sc-challenges"><div class="empty-state">กำลังโหลด...</div></div>
+  </div>
+
+  <!-- ผู้ดูแล -->
+  <div class="card" id="sc-admin" style="display:none">
+    <div class="card-title"><span class="icon">🛡️</span> ผู้ดูแล: ตรวจผลและรายงาน</div>
+    <details style="margin-bottom:12px"><summary style="cursor:pointer;font-weight:600">➕ สร้างอีเวนต์</summary>
+      <div class="form-row mt16">
+        <div><label for="ev-title">ชื่ออีเวนต์</label><input id="ev-title" maxlength="80" placeholder="เช่น วิดพื้นประจำเดือน" /></div>
+        <div><label for="ev-exercise">ท่า/แบบ</label><select id="ev-exercise" class="sc-kind"></select></div>
+        <div><label for="ev-start">เริ่ม</label><input id="ev-start" type="datetime-local" /></div>
+        <div><label for="ev-end">จบ</label><input id="ev-end" type="datetime-local" /></div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="scEventCreate()">สร้าง</button>
+    </details>
+    <div id="sc-admin-queue"></div>
   </div>
 </div>
 
@@ -1189,7 +1290,7 @@ function showPage(id) {
   document.querySelectorAll('nav button').forEach(b => { b.classList.remove('active'); b.removeAttribute('aria-current'); });
   document.getElementById('page-' + id).classList.add('active');
   const btns = document.querySelectorAll('nav button');
-  const map = { dashboard:0, weight:1, cardio:2, plan:3, calc:4, challenge:5 };
+  const map = { dashboard:0, weight:1, cardio:2, plan:3, calc:4, challenge:5, social:6 };
   btns[map[id]].classList.add('active');
   btns[map[id]].setAttribute('aria-current', 'page');
   if (id === 'dashboard') renderDashboard();
@@ -1197,6 +1298,7 @@ function showPage(id) {
   if (id === 'cardio') renderCardio();
   if (id === 'plan') renderPlan();
   if (id === 'calc') { renderProfileForm(); prefillCalcs(); }
+  if (id === 'social') renderSocial();
   if (id === 'challenge') renderChallenge();
   else if (poseRun || poseStream) stopChallenge(false);   // ออกจากหน้าแล้วปิดกล้อง
 }
@@ -2916,6 +3018,7 @@ async function startChallenge() {
   chTick(1600);
   const counter = createRepCounter(exercise);
   poseRun = { exercise, mode, counter, startTs: performance.now(), trace: [], lastTrace: 0, lastVideoTime: -1 };
+  if (document.getElementById('ch-record').checked) poseRun.rec = recStart(poseStream);
   chSet('ch-count', exercise === 'plank' ? '0.0' : '0');
   poseLoop();
 }
@@ -2970,6 +3073,7 @@ function stopChallenge(finished) {
   cancelAnimationFrame(poseRaf);
   const run = poseRun;
   poseRun = null;
+  const videoP = run && run.rec ? recStop(run.rec) : null;   // ต้องหยุดอัดก่อนปิดกล้อง
   if (poseStream) { poseStream.getTracks().forEach(t => t.stop()); poseStream = null; }
   const video = document.getElementById('ch-video'); if (video) video.srcObject = null;
   document.getElementById('ch-start-btn').disabled = false;
@@ -2991,7 +3095,7 @@ function stopChallenge(finished) {
     chSet('ch-feedback', pb ? `🏆 สถิติใหม่! ${value} ${unit}` : `จบแล้ว: ${value} ${unit} (สถิติ ${prev.value})`);
     toast(pb ? `🏆 สถิติใหม่ ${CH_EXERCISES[run.exercise].name} ${value} ${unit}` : `บันทึกแล้ว ${value} ${unit}`);
     if (pb) beep();
-    onChallengeSaved(entry);
+    onChallengeSaved(entry, videoP);
   } else {
     chSet('ch-feedback', 'หยุดแล้ว (ไม่ได้บันทึก เพราะยังไม่มีผล)');
   }
@@ -3002,9 +3106,6 @@ function bestChallenge(exercise, mode) {
   return (state.challengeLog || []).filter(e => e.exercise === exercise && e.mode === mode)
     .reduce((b, e) => (!b || e.value > b.value ? e : b), null);
 }
-
-// จุดต่อสำหรับระบบแข่งขัน (P3+) — ตอนนี้ยังไม่มีอะไร
-function onChallengeSaved(entry) {}
 
 function updateChModes() {
   const ex = document.getElementById('ch-exercise').value;
@@ -3021,7 +3122,17 @@ function deleteChallenge(id) {
   renderChallenge();
 }
 
+function chRemoteCell(e) {
+  const r = e.remote;
+  if (r && r.id) return r.status === 'ok' ? '<span title="อยู่ในอันดับ">✅</span>' : r.status === 'rejected' ? '<span title="ไม่ผ่านการตรวจ">❌</span>'
+    : `<span title="${esc((r.flags || []).map(f => SC_FLAGS[f] || f).join(', ') || 'รอตรวจ')}">⏳</span>`;
+  if (!scSession()) return '<span class="text-muted">-</span>';
+  return `<button class="btn btn-sm btn-secondary" title="${esc(r && r.error || 'ส่งผลนี้เข้าอันดับ')}" data-id="${esc(e.id)}" onclick="scResubmit(this.dataset.id)">📤</button>`;
+}
+
 function renderChallenge() {
+  document.getElementById('ch-record').checked = scPref().video;
+  chSet('ch-online-hint', scSession() ? (scPref().auto ? '📤 ผลจะส่งเข้าอันดับอัตโนมัติ' : 'ปิดส่งอัตโนมัติอยู่ — กด 📤 ในประวัติเพื่อส่งเอง') : 'เข้าสู่ระบบในหน้า "🥇 อันดับ" เพื่อส่งผลเข้าอันดับและแข่งกับเพื่อน');
   const log = state.challengeLog || [];
   const pbs = [];
   Object.entries(CH_EXERCISES).forEach(([ex, d]) => d.modes.forEach(m => {
@@ -3033,13 +3144,516 @@ function renderChallenge() {
   const el = document.getElementById('ch-history');
   if (!log.length) { el.innerHTML = '<div class="empty-state">ยังไม่มีผล — ลองเริ่มชาเลนจ์แรกเลย</div>'; return; }
   el.innerHTML = `<div class="table-wrap"><table>
-    <thead><tr><th>วันที่</th><th>ท่า</th><th>แบบ</th><th>ผล</th><th>เวลา</th><th></th></tr></thead>
+    <thead><tr><th>วันที่</th><th>ท่า</th><th>แบบ</th><th>ผล</th><th>เวลา</th><th>อันดับ</th><th></th></tr></thead>
     <tbody>${[...log].sort((a, b) => b.ts - a.ts).slice(0, 50).map(e => `
       <tr><td>${esc(fmtDate(e.date))}</td><td>${esc((CH_EXERCISES[e.exercise] || {}).name || e.exercise)}</td>
       <td>${esc(CH_MODES[e.mode] || e.mode)}</td><td><strong>${esc(e.value)}</strong> ${esc((CH_EXERCISES[e.exercise] || {}).unit || '')}</td>
       <td>${esc(e.seconds)} วิ</td>
+      <td>${chRemoteCell(e)}</td>
       <td><button class="btn btn-danger btn-sm" aria-label="ลบผล" data-id="${esc(e.id)}" onclick="deleteChallenge(this.dataset.id)">✕</button></td></tr>`).join('')}
     </tbody></table></div>`;
+}
+
+// ════════════════════════════════════════════
+// SOCIAL: บัญชี อันดับ การแข่งขัน (คุยกับ /api/social เท่านั้น)
+// ════════════════════════════════════════════
+const SOCIAL_API = '/api/social';
+const SOCIAL_KEY = 'fittrack-social';     // token เข้าสู่ระบบ (ไม่รวมในไฟล์ส่งออก)
+const SC_PREF_KEY = 'fittrack-sc-pref';   // { auto, video }
+const SC_SEEN_KEY = 'fittrack-sc-seen';   // id การแข่งที่ดูผลแล้ว
+const SC_UNITS = { pushup: 'ครั้ง', squat: 'ครั้ง', plank: 'วินาที', cardio_min: 'นาที', distance_km: 'กม.' };
+const SC_FLAGS = { trace_short: 'ร่องรอยท่าทางสั้นเกิน', trace_mismatch: 'จำนวนไม่ตรงกับท่าทางที่จับได้', high_value: 'ผลสูงผิดปกติ',
+  jump: 'ดีขึ้นแบบก้าวกระโดด', top10_no_proof: 'ติด 10 อันดับแรกแต่ไม่มีวิดีโอ', reported: 'ถูกรายงาน' };
+const SC_STATUS = { open: 'รอคู่แข่ง', active: 'กำลังแข่ง', closed: 'จบแล้ว', declined: 'ถูกปฏิเสธ' };
+let scMe = null, scAuthMode = 'login', scLastChallenges = [];
+
+function scSession() { try { return JSON.parse(localStorage.getItem(SOCIAL_KEY)) || null; } catch (e) { return null; } }
+function setScSession(s) { try { s ? localStorage.setItem(SOCIAL_KEY, JSON.stringify(s)) : localStorage.removeItem(SOCIAL_KEY); } catch (e) {} if (!s) scMe = null; }
+function scPref() { try { return { auto: true, video: false, ...JSON.parse(localStorage.getItem(SC_PREF_KEY) || '{}') }; } catch (e) { return { auto: true, video: false }; } }
+function setScPref(k, v) { try { localStorage.setItem(SC_PREF_KEY, JSON.stringify({ ...scPref(), [k]: v })); } catch (e) {} }
+function scErr(status, msg) { const e = new Error(msg); e.status = status; return e; }
+const scUnit = ex => SC_UNITS[ex] || '';
+const scKindName = (ex, mode) => `${(CH_EXERCISES[ex] || {}).name || ex} · ${CH_MODES[mode] || mode}`;
+
+async function scRefresh() {
+  const s = scSession();
+  if (!s || !s.refresh_token) return null;
+  try {
+    const r = await fetch(`${SOCIAL_API}?action=refresh`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refresh_token: s.refresh_token }) });
+    if (r.status === 401) { setScSession(null); return null; }
+    if (!r.ok) return null;
+    const d = await r.json();
+    setScSession({ ...s, ...d });
+    return d.access_token;
+  } catch (e) { return null; }
+}
+
+async function scApi(action, { body, query } = {}, retried) {
+  const s = scSession();
+  let token = s && s.access_token;
+  if (token && !retried && s.expires_at * 1000 - 60000 < Date.now()) token = (await scRefresh()) || token;
+  let r;
+  try {
+    r = await fetch(`${SOCIAL_API}?${new URLSearchParams({ action, ...(query || {}) })}`, {
+      method: body !== undefined ? 'POST' : 'GET',
+      headers: { ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}), ...(token ? { Authorization: 'Bearer ' + token } : {}) },
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    });
+  } catch (e) { throw scErr('offline', 'ต่ออินเทอร์เน็ตไม่ได้'); }
+  if (r.status === 401 && token && !retried) {
+    const t = await scRefresh();
+    if (t) return scApi(action, { body, query }, true);
+  }
+  const d = await r.json().catch(() => null);
+  if (r.status === 401 && token) { setScSession(null); renderScAccount(); }
+  if (!d) throw scErr('offline', 'ระบบออนไลน์ใช้ไม่ได้ในตอนนี้');
+  if (r.status === 503) throw scErr('not_configured', 'ระบบออนไลน์ยังไม่เปิดใช้');
+  if (!r.ok) throw scErr(r.status, d.error || `ผิดพลาด (${r.status})`);
+  return d;
+}
+
+function scOffline(e) {
+  const box = document.getElementById('sc-offline');
+  if (box) box.style.display = e && (e.status === 'offline' || e.status === 'not_configured') ? '' : 'none';
+}
+
+async function renderSocial() {
+  sbModes();
+  scFillKindSelects();
+  renderScAccount();
+  if (scSession() && !scMe) await scLoadMe();
+  loadBoard();
+  loadChallenges();
+}
+
+// ── บัญชี ──
+function scAuthTab(mode) {
+  scAuthMode = mode;
+  document.getElementById('sc-tab-login').classList.toggle('active', mode === 'login');
+  document.getElementById('sc-tab-signup').classList.toggle('active', mode === 'signup');
+  document.getElementById('sc-signup-extra').style.display = mode === 'signup' ? '' : 'none';
+  document.getElementById('sc-password').autocomplete = mode === 'signup' ? 'new-password' : 'current-password';
+  document.getElementById('sc-auth-btn').textContent = mode === 'signup' ? 'สมัครและเข้าสู่ระบบ' : 'เข้าสู่ระบบ';
+  chSet('sc-auth-msg', '');
+}
+function scGuardianToggle() {
+  document.getElementById('sc-guardian-row').style.display = document.getElementById('sc-age').value === 'u18' ? '' : 'none';
+}
+
+async function scAuthSubmit() {
+  const v = id => document.getElementById(id).value;
+  const username = v('sc-username').trim().toLowerCase();
+  const password = v('sc-password');
+  if (!/^[a-z0-9_]{3,20}$/.test(username)) return chSet('sc-auth-msg', 'ชื่อผู้ใช้ต้องเป็น a-z, 0-9, _ ยาว 3–20 ตัว');
+  if (password.length < 8) return chSet('sc-auth-msg', 'รหัสผ่านต้องยาวอย่างน้อย 8 ตัว');
+  const body = { username, password };
+  if (scAuthMode === 'signup') {
+    Object.assign(body, { display_name: v('sc-display').trim() || username, sex: v('sc-sex') || null, age_group: v('sc-age') || null,
+      consent: document.getElementById('sc-consent').checked, guardian_consent: document.getElementById('sc-guardian').checked });
+    if (!body.consent) return chSet('sc-auth-msg', 'ต้องติ๊กยินยอมการเก็บข้อมูลก่อนสมัคร');
+    if (body.age_group === 'u18' && !body.guardian_consent) return chSet('sc-auth-msg', 'อายุต่ำกว่า 18 ปีต้องให้ผู้ปกครองยินยอมก่อน');
+  }
+  const btn = document.getElementById('sc-auth-btn');
+  btn.disabled = true; chSet('sc-auth-msg', 'กำลังส่ง...');
+  try {
+    const d = await scApi(scAuthMode, { body });
+    setScSession({ ...d, username });
+    document.getElementById('sc-password').value = '';
+    await scLoadMe();
+    toast(scAuthMode === 'signup' ? '🎉 สมัครสำเร็จ ยินดีต้อนรับ!' : '✅ เข้าสู่ระบบแล้ว');
+    renderSocial();
+  } catch (e) { scOffline(e); chSet('sc-auth-msg', e.message); }
+  btn.disabled = false;
+}
+
+async function scLoadMe() {
+  try { scMe = await scApi('me', { body: {} }); } catch (e) { scOffline(e); if (e.status === 401) scMe = null; }
+  renderScAccount();
+  return scMe;
+}
+
+function renderScAccount() {
+  const logged = !!scSession();
+  document.getElementById('sc-auth-box').style.display = logged ? 'none' : '';
+  const box = document.getElementById('sc-me-box');
+  box.style.display = logged ? '' : 'none';
+  document.getElementById('sc-admin').style.display = scMe && scMe.profile.admin ? '' : 'none';
+  if (!logged) { box.innerHTML = ''; return; }
+  if (!scMe) { box.innerHTML = '<div class="text-muted">กำลังโหลดข้อมูลบัญชี...</div>'; return; }
+  const p = scMe.profile;
+  const sexName = { male: 'ชาย', female: 'หญิง', other: 'อื่น ๆ' }[p.sex] || 'ไม่ระบุเพศ';
+  const pref = scPref();
+  const t = scMe.team;
+  box.innerHTML = `
+    <div class="flex-between" style="flex-wrap:wrap;gap:8px">
+      <div><div style="font-size:1.2rem;font-weight:800">${esc(p.display_name)}</div>
+        <div class="text-muted">@${esc(p.username)} · ${esc(sexName)} · ${esc(p.age_group || 'ไม่ระบุอายุ')}${p.admin ? ' · <span class="badge badge-blue">ผู้ดูแล</span>' : ''}${p.banned ? ' · <span class="badge badge-red">ถูกระงับ</span>' : ''}</div></div>
+      <button class="btn btn-sm" style="background:var(--surface2);color:var(--text)" onclick="scLogout()">ออกจากระบบ</button>
+    </div>
+    <div class="mt16">${scMe.badges.length ? scMe.badges.map(b => `<span class="badge badge-orange" style="margin:0 4px 4px 0" title="${esc(fmtDate(b.earned_at.slice(0, 10)))}">🏅 ${esc(b.name)}</span>`).join('') : '<span class="text-muted">ยังไม่มีเหรียญ — ส่งผลชาเลนจ์ครั้งแรกเพื่อรับเหรียญแรก</span>'}</div>
+    <label class="sc-check mt16"><input type="checkbox" id="sc-auto" ${pref.auto ? 'checked' : ''} onchange="setScPref('auto', this.checked)" /> ส่งผลชาเลนจ์เข้าอันดับอัตโนมัติ</label>
+    <div class="grid2 mt16">
+      <div>
+        <div style="font-weight:700;margin-bottom:6px">👥 เพื่อน (${scMe.friends.length})</div>
+        <div class="text-muted" style="margin-bottom:6px">รหัสเพื่อนของคุณ: <strong style="color:var(--text);letter-spacing:1px">${esc(p.friend_code)}</strong>
+          <button class="btn btn-sm btn-secondary" data-t="${esc(p.friend_code)}" onclick="scCopy(this.dataset.t)">คัดลอก</button></div>
+        <div class="flex-gap"><input id="sc-friend-code" maxlength="12" placeholder="รหัสเพื่อน" style="max-width:160px" /><button class="btn btn-sm btn-primary" onclick="scFriendAdd()">เพิ่ม</button></div>
+        <ul class="sc-list">${scMe.friends.map(f => `<li>${esc(f.display_name)} <span class="text-muted">@${esc(f.username)}</span>
+          <button class="btn btn-sm btn-danger" aria-label="ลบเพื่อน" data-id="${esc(f.id)}" onclick="scFriendRemove(this.dataset.id)">✕</button></li>`).join('')}</ul>
+      </div>
+      <div>
+        <div style="font-weight:700;margin-bottom:6px">🛡️ ทีม</div>
+        ${t ? `<div><strong>${esc(t.name)}</strong> <span class="text-muted">(${t.members.length} คน)</span></div>
+          <div class="text-muted" style="margin:4px 0">รหัสชวนเข้าทีม: <strong style="color:var(--text);letter-spacing:1px">${esc(t.invite_code)}</strong>
+            <button class="btn btn-sm btn-secondary" data-t="${esc(t.invite_code)}" onclick="scCopy(this.dataset.t)">คัดลอก</button></div>
+          <ul class="sc-list">${t.members.map(m => `<li>${esc(m.display_name)} <span class="text-muted">@${esc(m.username)}</span></li>`).join('')}</ul>
+          <button class="btn btn-sm btn-danger" onclick="scTeamLeave()">ออกจากทีม</button>`
+        : `<div class="flex-gap" style="margin-bottom:8px"><input id="sc-team-name" maxlength="30" placeholder="ชื่อทีมใหม่" style="max-width:180px" /><button class="btn btn-sm btn-primary" onclick="scTeamCreate()">สร้างทีม</button></div>
+          <div class="flex-gap"><input id="sc-team-code" maxlength="12" placeholder="รหัสทีม" style="max-width:180px" /><button class="btn btn-sm btn-secondary" onclick="scTeamJoin()">เข้าร่วม</button></div>`}
+      </div>
+    </div>
+    <details class="mt16"><summary style="cursor:pointer;font-weight:600">⚙️ แก้ไขข้อมูล / ลบบัญชี</summary>
+      <div class="form-row mt16">
+        <div><label for="sc-edit-name">ชื่อที่แสดง</label><input id="sc-edit-name" maxlength="24" value="${esc(p.display_name)}" /></div>
+        <div><label for="sc-edit-sex">เพศ</label><select id="sc-edit-sex">${[['', 'ไม่ระบุ'], ['male', 'ชาย'], ['female', 'หญิง'], ['other', 'อื่น ๆ']].map(([v, n]) => `<option value="${v}" ${(p.sex || '') === v ? 'selected' : ''}>${n}</option>`).join('')}</select></div>
+        <div><label for="sc-edit-age">ช่วงอายุ</label><select id="sc-edit-age">${[['', 'ไม่ระบุ'], ['u18', 'ต่ำกว่า 18'], ['18-24', '18–24'], ['25-34', '25–34'], ['35-44', '35–44'], ['45+', '45+']].map(([v, n]) => `<option value="${v}" ${(p.age_group || '') === v ? 'selected' : ''}>${n}</option>`).join('')}</select></div>
+      </div>
+      <div class="flex-gap"><button class="btn btn-sm btn-primary" onclick="scProfileSave()">บันทึก</button>
+        <button class="btn btn-sm btn-danger" onclick="scDeleteAccount()">🗑️ ลบบัญชีและข้อมูลทั้งหมด</button></div>
+    </details>`;
+}
+
+async function scAction(action, body, okMsg, reload = true) {
+  try {
+    const d = await scApi(action, { body: body || {} });
+    if (okMsg) toast(okMsg);
+    if (reload) { await scLoadMe(); loadChallenges(); }
+    return d;
+  } catch (e) { scOffline(e); toast('⚠️ ' + e.message); return null; }
+}
+function scCopy(text) {
+  (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(() => toast('คัดลอกแล้ว: ' + text), () => prompt('คัดลอกรหัสนี้', text));
+}
+function scFriendAdd() { const c = document.getElementById('sc-friend-code').value.trim(); if (c) scAction('friend_add', { code: c }, '👥 เพิ่มเพื่อนแล้ว'); }
+function scFriendRemove(id) { if (confirm('ลบเพื่อนคนนี้?')) scAction('friend_remove', { id }, 'ลบเพื่อนแล้ว'); }
+function scTeamCreate() { const n = document.getElementById('sc-team-name').value.trim(); if (n) scAction('team_create', { name: n }, '🛡️ สร้างทีมแล้ว ส่งรหัสชวนให้เพื่อนได้เลย'); }
+function scTeamJoin() { const c = document.getElementById('sc-team-code').value.trim(); if (c) scAction('team_join', { code: c }, '🛡️ เข้าร่วมทีมแล้ว'); }
+function scTeamLeave() { if (confirm('ออกจากทีม? (ถ้าเป็นคนสุดท้าย ทีมจะถูกลบ)')) scAction('team_leave', {}, 'ออกจากทีมแล้ว'); }
+function scProfileSave() {
+  const v = id => document.getElementById(id).value;
+  const body = { display_name: v('sc-edit-name'), sex: v('sc-edit-sex') || null, age_group: v('sc-edit-age') || null };
+  if (body.age_group === 'u18' && !confirm('ผู้ปกครองรับทราบและยินยอมให้ใช้งานแล้วใช่ไหม?')) return;
+  body.guardian_consent = body.age_group === 'u18';
+  scAction('profile_update', body, '✅ บันทึกข้อมูลแล้ว').then(() => loadBoard());
+}
+async function scLogout() {
+  await scApi('logout', { body: {} }).catch(() => {});
+  setScSession(null);
+  toast('ออกจากระบบแล้ว');
+  renderSocial();
+}
+async function scDeleteAccount() {
+  if (!scMe) return;
+  const u = prompt(`ลบบัญชี ผลการแข่ง ทีม เพื่อน และวิดีโอทั้งหมดถาวร (กู้คืนไม่ได้)\nข้อมูลออกกำลังกายในเครื่องนี้ยังอยู่\n\nพิมพ์ชื่อผู้ใช้ "${scMe.profile.username}" เพื่อยืนยัน`);
+  if (u === null) return;
+  const d = await scAction('delete_account', { confirm: u.trim().toLowerCase() }, null, false);
+  if (d) { setScSession(null); (state.challengeLog || []).forEach(e => delete e.remote); save(); toast('ลบบัญชีแล้ว'); renderSocial(); }
+}
+
+// ── ตารางอันดับ ──
+function sbModes() {
+  const ex = document.getElementById('sb-exercise').value;
+  const sel = document.getElementById('sb-mode');
+  const cardio = !CH_EXERCISES[ex];
+  const keep = sel.value;
+  sel.innerHTML = cardio ? '<option value="week">รวมทั้งสัปดาห์</option>' : CH_EXERCISES[ex].modes.map(m => `<option value="${m}">${CH_MODES[m]}</option>`).join('');
+  if (!cardio && CH_EXERCISES[ex].modes.includes(keep)) sel.value = keep;
+  sel.disabled = cardio;
+  document.getElementById('sb-period').disabled = cardio;
+  document.getElementById('sb-strava-row').style.display = cardio ? '' : 'none';
+}
+
+let sbSeq = 0;
+async function loadBoard() {
+  const v = id => document.getElementById(id).value;
+  const ex = v('sb-exercise');
+  const el = document.getElementById('sb-table');
+  const query = { exercise: ex, mode: v('sb-mode'), period: v('sb-period'), scope: v('sb-scope') };
+  if (v('sb-sex')) query.sex = v('sb-sex');
+  if (v('sb-age')) query.age = v('sb-age');
+  if (query.scope !== 'all' && !scSession()) { el.innerHTML = '<div class="empty-state">เข้าสู่ระบบเพื่อดูอันดับเพื่อนและทีม</div>'; return; }
+  const seq = ++sbSeq;
+  el.innerHTML = '<div class="empty-state">กำลังโหลด...</div>';
+  let d;
+  try { d = await scApi('board', { query }); scOffline(null); }
+  catch (e) { if (seq === sbSeq) { scOffline(e); el.innerHTML = `<div class="empty-state">${esc(e.message)}</div>`; } return; }
+  if (seq !== sbSeq) return;   // ผู้ใช้เปลี่ยนตัวกรองระหว่างโหลด
+  if (!d.rows.length) { el.innerHTML = '<div class="empty-state">ยังไม่มีใครในอันดับนี้ — เป็นคนแรกเลย!</div>'; return; }
+  const medal = r => (r === 1 ? '🥇' : r === 2 ? '🥈' : r === 3 ? '🥉' : r);
+  const logged = !!scSession();
+  el.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>#</th><th>ชื่อ</th><th>ทีม</th><th>ผล</th><th>เมื่อ</th><th></th></tr></thead>
+    <tbody>${d.rows.map(r => `<tr${r.me ? ' class="sc-me-row"' : ''}>
+      <td style="font-weight:800">${medal(Number(r.rank))}</td>
+      <td>${esc(r.display_name)}${r.me ? ' <span class="badge badge-blue">ฉัน</span>' : ''}${r.proof ? ' <span title="มีวิดีโอหลักฐาน">🎥</span>' : ''}</td>
+      <td class="text-muted">${esc(r.team || '-')}</td>
+      <td><strong>${esc(r.value)}</strong> ${esc(scUnit(ex))}</td>
+      <td class="text-muted">${esc(new Date(r.at).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }))}</td>
+      <td>${logged && !r.me && r.entry_id ? `<button class="btn btn-sm" style="background:var(--surface2);color:var(--text-muted)" title="รายงานผลที่น่าสงสัย" data-id="${esc(r.entry_id)}" onclick="scReport(this.dataset.id)">🚩</button>` : ''}</td>
+    </tr>`).join('')}</tbody></table></div>
+    <div class="text-muted mt16">นับเฉพาะผลที่ผ่านการตรวจ · ผลที่ดีที่สุดของแต่ละคน${ex === 'cardio_min' || ex === 'distance_km' ? ' · ตัดรอบทุกวันจันทร์' : ''}</div>`;
+}
+
+async function scReport(entryId) {
+  const reason = prompt('เหตุผลที่คิดว่าผลนี้ไม่ถูกต้อง (เช่น ท่าไม่ถูก ตัวเลขเกินจริง)');
+  if (!reason || reason.trim().length < 2) return;
+  await scAction('report', { entry_id: Number(entryId), reason: reason.trim() }, '🚩 ส่งรายงานแล้ว ผู้ดูแลจะตรวจสอบ', false);
+}
+
+async function stravaToBoard() {
+  if (!scSession()) return toast('เข้าสู่ระบบก่อน');
+  if (!stravaAuth()) return toast('เชื่อม Strava ก่อน (หน้าคาร์ดิโอ)');
+  try {
+    const token = await stravaAccessToken();
+    const d = await scApi('strava_submit', { body: { access_token: token } });
+    toast(`🟧 ส่งแล้ว: ${d.minutes} นาที · ${d.km} กม. (${d.activities} กิจกรรม)`);
+    loadBoard();
+  } catch (e) { toast('⚠️ ' + (e.code ? 'เชื่อม Strava ไม่สำเร็จ' : e.message)); }
+}
+
+// ── การแข่งขัน ──
+const SC_KINDS = Object.entries(CH_EXERCISES).flatMap(([ex, d]) => d.modes.map(m => [ex + ':' + m, scKindName(ex, m)]));
+function scFillKindSelects() {
+  document.querySelectorAll('.sc-kind').forEach(sel => { if (!sel.options.length) sel.innerHTML = SC_KINDS.map(([v, n]) => `<option value="${v}">${esc(n)}</option>`).join(''); });
+}
+const scKind = id => { const [exercise, mode] = document.getElementById(id).value.split(':'); return { exercise, mode }; };
+
+function renderCompActions() {
+  const el = document.getElementById('sc-comp-actions');
+  if (!scSession()) { el.innerHTML = '<div class="text-muted" style="margin-bottom:12px">เข้าสู่ระบบเพื่อท้าดวลหรือแข่งแบบทีม</div>'; return; }
+  el.innerHTML = `<div class="grid3" style="margin-bottom:16px">
+    <div class="sc-item"><div style="font-weight:700;margin-bottom:6px">⚔️ ท้าดวล 1:1</div>
+      <select id="dc-kind" class="sc-kind"></select>
+      <button class="btn btn-sm btn-primary mt16" onclick="scDuelCreate()">สร้างรหัสท้าดวล</button>
+      <div class="text-muted" style="margin-top:6px">ส่งรหัสให้เพื่อน รับแล้วแข่งกัน 24 ชม. ผลที่ดีที่สุดชนะ</div></div>
+    <div class="sc-item"><div style="font-weight:700;margin-bottom:6px">🤝 รับคำท้า</div>
+      <input id="dc-code" maxlength="12" placeholder="รหัสท้าดวล" />
+      <div class="flex-gap mt16"><button class="btn btn-sm btn-green" onclick="scDuelAnswer(true)">รับคำท้า</button><button class="btn btn-sm btn-danger" onclick="scDuelAnswer(false)">ปฏิเสธ</button></div></div>
+    <div class="sc-item"><div style="font-weight:700;margin-bottom:6px">🛡️ ทีม vs ทีม</div>
+      <select id="tc-kind" class="sc-kind"></select>
+      <div class="flex-gap mt16"><input id="tc-code" maxlength="12" placeholder="รหัสทีมคู่แข่ง" style="flex:1;min-width:110px" />
+        <select id="tc-days" style="width:auto"><option value="3">3 วัน</option><option value="7" selected>7 วัน</option><option value="14">14 วัน</option></select></div>
+      <button class="btn btn-sm btn-primary mt16" onclick="scTeamChallenge()">เริ่มแข่ง</button>
+      <div class="text-muted" style="margin-top:6px">คะแนนทีม = ผลรวมผลที่ดีที่สุดของสมาชิกแต่ละคน</div></div>
+  </div>`;
+  scFillKindSelects();
+}
+async function scDuelCreate() {
+  const d = await scAction('duel_create', scKind('dc-kind'), null);
+  if (d) { toast('⚔️ สร้างคำท้าแล้ว รหัส ' + d.invite_code); scCopy(d.invite_code); }
+}
+function scDuelAnswer(accept) {
+  const code = document.getElementById('dc-code').value.trim();
+  if (code) scAction(accept ? 'duel_accept' : 'duel_decline', { code }, accept ? '⚔️ รับคำท้าแล้ว — เริ่มนับ 24 ชม. ไปทำชาเลนจ์ได้เลย' : 'ปฏิเสธคำท้าแล้ว');
+}
+function scTeamChallenge() {
+  const code = document.getElementById('tc-code').value.trim();
+  if (code) scAction('team_challenge_create', { ...scKind('tc-kind'), code, days: Number(document.getElementById('tc-days').value) }, '🛡️ เริ่มการแข่งแบบทีมแล้ว');
+}
+function scEventJoin(id) { scAction('event_join', { id: Number(id) }, '🎉 เข้าร่วมอีเวนต์แล้ว ผลชาเลนจ์ต่อจากนี้จะนับเข้าอีเวนต์'); }
+function scGoChallenge(exercise, mode) {
+  showPage('challenge');
+  document.getElementById('ch-exercise').value = exercise; updateChModes();
+  document.getElementById('ch-mode').value = mode;
+  document.getElementById('ch-start-btn').focus();
+}
+
+function scLeft(iso) {
+  const ms = new Date(iso) - Date.now();
+  if (ms <= 0) return 'หมดเวลา';
+  const h = Math.floor(ms / 3600e3);
+  return h >= 48 ? `อีก ${Math.floor(h / 24)} วัน` : h >= 1 ? `อีก ${h} ชม.` : `อีก ${Math.max(1, Math.round(ms / 60000))} นาที`;
+}
+
+async function loadChallenges() {
+  renderCompActions();
+  const el = document.getElementById('sc-challenges');
+  let d;
+  try { d = await scApi('challenges'); }
+  catch (e) { el.innerHTML = `<div class="empty-state">${esc(e.message)}</div>`; return; }
+  scLastChallenges = d.challenges;
+  scNotifyResults(d.challenges);
+  if (!d.challenges.length) { el.innerHTML = '<div class="empty-state">ยังไม่มีการแข่งขัน — ลองท้าดวลเพื่อนดูสิ</div>'; return; }
+  const myId = scMe && scMe.profile.id;
+  const kindIcon = { event: '🎪 อีเวนต์', duel: '⚔️ ดวล', team: '🛡️ ทีม' };
+  el.innerHTML = d.challenges.map(c => {
+    const unit = scUnit(c.exercise);
+    const live = c.status === 'active' && new Date(c.starts_at) <= new Date();
+    let body = '';
+    if (c.kind === 'event') {
+      body = c.top.length ? `<ol class="sc-list">${c.top.map(r => `<li${r.me ? ' class="sc-me-row"' : ''}>${esc(r.display_name)} — <strong>${esc(r.value)}</strong> ${esc(unit)}</li>`).join('')}</ol>` : '<div class="text-muted">ยังไม่มีผล</div>';
+    } else if (c.kind === 'duel') {
+      const s = id => (c.scores.find(x => x.user_id === id) || {}).value;
+      const side = u => u ? `${esc(u.display_name)}${u.id === myId ? ' (ฉัน)' : ''}: <strong>${s(u.id) != null ? esc(s(u.id)) + ' ' + esc(unit) : '-'}</strong>` : '<span class="text-muted">รอคนรับคำท้า</span>';
+      body = `<div>${side(c.creator)} &nbsp;vs&nbsp; ${side(c.opponent)}</div>`;
+      if (c.invite_code) body += `<div class="text-muted" style="margin-top:6px">รหัสท้าดวล: <strong style="color:var(--text);letter-spacing:1px">${esc(c.invite_code)}</strong>
+        <button class="btn btn-sm btn-secondary" data-t="${esc(c.invite_code)}" onclick="scCopy(this.dataset.t)">คัดลอก</button></div>`;
+      if (c.status === 'closed' && c.scores.length) {
+        const win = c.scores.length === 1 || c.scores[0].value > c.scores[1].value ? c.scores[0] : null;
+        body += `<div style="margin-top:6px;font-weight:700">${win ? '🏆 ผู้ชนะ: ' + esc(win.display_name) : '🤝 เสมอ'}</div>`;
+      }
+    } else {
+      const [a, b] = c.teams;
+      body = c.teams.map(t => `<div>${esc(t.team)}: <strong>${esc(t.score)}</strong> ${esc(unit)} <span class="text-muted">(${esc(t.members)} คนส่งผล)</span></div>`).join('');
+      if (c.status === 'closed' && a && b) body += `<div style="margin-top:6px;font-weight:700">${a.score === b.score ? '🤝 เสมอ' : '🏆 ทีมชนะ: ' + esc(a.score > b.score ? a.team : b.team)}</div>`;
+    }
+    const actions = [];
+    if (c.kind === 'event' && live && scSession() && !c.joined) actions.push(`<button class="btn btn-sm btn-green" data-id="${c.id}" onclick="scEventJoin(this.dataset.id)">เข้าร่วม</button>`);
+    if (live && (c.kind !== 'event' || c.joined)) actions.push(`<button class="btn btn-sm btn-primary" data-ex="${esc(c.exercise)}" data-mode="${esc(c.mode)}" onclick="scGoChallenge(this.dataset.ex, this.dataset.mode)">📷 ไปทำชาเลนจ์</button>`);
+    const badge = c.status === 'active' ? (live ? 'badge-green' : 'badge-blue') : c.status === 'open' ? 'badge-orange' : 'badge-red';
+    return `<div class="sc-item">
+      <div class="flex-between" style="flex-wrap:wrap;gap:6px"><div><strong>${esc(c.title)}</strong> <span class="text-muted">${kindIcon[c.kind]} · ${esc(scKindName(c.exercise, c.mode))}</span></div>
+        <span class="badge ${badge}">${esc(c.status === 'active' && !live ? 'ยังไม่เริ่ม' : SC_STATUS[c.status])}${c.status === 'active' && live ? ' · ' + esc(scLeft(c.ends_at)) : ''}</span></div>
+      <div style="margin-top:8px">${body}</div>
+      ${actions.length ? `<div class="flex-gap mt16">${actions.join('')}</div>` : ''}
+    </div>`;
+  }).join('');
+  if (scMe && scMe.profile.admin) loadAdmin();
+}
+
+// แจ้งเตือนในแอป: ผลการแข่งที่จบแล้วซึ่งเรามีส่วนร่วมและยังไม่เคยเห็น
+function scNotifyResults(list) {
+  let seen; try { seen = JSON.parse(localStorage.getItem(SC_SEEN_KEY) || '[]'); } catch (e) { seen = []; }
+  const myId = scMe && scMe.profile.id;
+  const mine = list.filter(c => c.status === 'closed' && !seen.includes(c.id) && myId &&
+    (c.kind === 'team' || (c.kind === 'duel' && c.opponent && (c.creator.id === myId || c.opponent.id === myId)) || (c.kind === 'event' && c.joined)));
+  const nav = document.querySelectorAll('nav button')[6];
+  if (nav) nav.classList.toggle('has-dot', mine.length > 0);
+  if (!mine.length) return;
+  const onPage = document.getElementById('page-social').classList.contains('active');
+  if (!onPage) { toast(`🏁 ผลการแข่งออกแล้ว ${mine.length} รายการ — ดูที่หน้าอันดับ`); return; }
+  mine.forEach(c => {
+    let msg = `🏁 ${c.title} จบแล้ว`;
+    if (c.kind === 'duel' && c.scores.length) {
+      const win = c.scores.length === 1 || c.scores[0].value > c.scores[1].value ? c.scores[0] : null;
+      msg += win ? (win.user_id === myId ? ' — คุณชนะ! 🏆' : ' — คุณแพ้ ครั้งหน้าเอาใหม่') : ' — เสมอ';
+    }
+    toast(msg);
+  });
+  try { localStorage.setItem(SC_SEEN_KEY, JSON.stringify([...seen, ...mine.map(c => c.id)].slice(-200))); } catch (e) {}
+  if (nav) nav.classList.remove('has-dot');
+}
+
+// ── ส่งผลชาเลนจ์เข้าอันดับ (เรียกจาก stopChallenge) ──
+async function onChallengeSaved(entry, videoP) {
+  if (!scSession() || !scPref().auto) return;
+  await scSubmitEntry(entry, videoP);
+}
+
+async function scSubmitEntry(entry, videoP) {
+  let d;
+  try {
+    d = await scApi('submit', { body: { exercise: entry.exercise, mode: entry.mode, value: entry.value, seconds: entry.seconds, trace: entry.trace } });
+  } catch (e) {
+    entry.remote = { error: e.message }; save(); renderChallenge();
+    toast('⚠️ ส่งเข้าอันดับไม่สำเร็จ: ' + e.message);
+    return null;
+  }
+  entry.remote = { id: d.id, status: d.status, flags: d.flags };
+  save();
+  d.badges.forEach(b => toast('🏅 ได้เหรียญใหม่: ' + b.name));
+  if (d.status === 'ok') toast(`📤 ส่งเข้าอันดับแล้ว${d.challenges ? ` (นับใน ${d.challenges} การแข่ง)` : ''}`);
+  // ผลที่ต้องตรวจ: แนบวิดีโอถ้าอัดไว้ ช่วยให้ผู้ดูแลอนุมัติได้
+  const blob = videoP ? await videoP.catch(() => null) : null;
+  if (d.status === 'review' && blob && blob.size > 0 && blob.size < 25 * 1024 * 1024) {
+    try {
+      const type = blob.type.startsWith('video/mp4') ? 'video/mp4' : 'video/webm';
+      const u = await scApi('proof_url', { body: { entry_id: d.id, type } });
+      const up = await fetch(u.url, { method: 'PUT', headers: { 'Content-Type': type }, body: blob });
+      if (!up.ok) throw new Error('upload ' + up.status);
+      const p = await scApi('proof_done', { body: { entry_id: d.id, path: u.path } });
+      entry.remote.status = p.status; entry.remote.proof = true; save();
+      toast(p.status === 'ok' ? '🎥 แนบวิดีโอแล้ว ผลขึ้นอันดับเรียบร้อย' : '🎥 แนบวิดีโอแล้ว รอผู้ดูแลตรวจ');
+    } catch (e) { toast('⚠️ อัปโหลดวิดีโอไม่สำเร็จ ผลรอผู้ดูแลตรวจ'); }
+  } else if (d.status === 'review') {
+    const why = d.flags.map(f => SC_FLAGS[f] || f).join(', ');
+    toast(d.needsProof ? '⏳ ผลนี้ติด 10 อันดับแรก ต้องมีวิดีโอหลักฐาน — เปิด "อัดวิดีโอ" แล้วทำใหม่ หรือรอผู้ดูแลตรวจ' : `⏳ ส่งแล้ว รอผู้ดูแลตรวจ (${why})`);
+  }
+  renderChallenge();
+  return d;
+}
+
+function scResubmit(id) {
+  const e = (state.challengeLog || []).find(x => x.id === id);
+  if (!e) return;
+  if (!scSession()) { toast('เข้าสู่ระบบในหน้า "อันดับ" ก่อน'); return; }
+  scSubmitEntry(e, null);
+}
+
+// ── อัดวิดีโอหลักฐาน (เลือกเปิดเอง) ──
+function recStart(stream) {
+  if (!window.MediaRecorder) return null;
+  const type = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm', 'video/mp4'].find(t => MediaRecorder.isTypeSupported(t));
+  if (!type) return null;
+  try {
+    const rec = new MediaRecorder(stream, { mimeType: type, videoBitsPerSecond: 300000 });   // ~2.3 MB/นาที
+    rec.chunks = [];
+    rec.ondataavailable = e => { if (e.data && e.data.size) rec.chunks.push(e.data); };
+    rec.start(1000);
+    return rec;
+  } catch (e) { return null; }
+}
+function recStop(rec) {
+  return new Promise(resolve => {
+    const done = () => resolve(new Blob(rec.chunks, { type: (rec.mimeType || 'video/webm').split(';')[0] }));
+    if (rec.state === 'inactive') return done();
+    rec.onstop = done;
+    try { rec.stop(); } catch (e) { done(); }
+  });
+}
+
+// ── ผู้ดูแล ──
+function scTraceSvg(trace) {
+  if (!trace || !trace.length) return '';
+  const step = Math.max(1, Math.floor(trace.length / 300));
+  const pts = trace.filter((_, i) => i % step === 0).map((a, i) => `${i},${a < 0 ? 180 : 180 - a}`).join(' ');
+  return `<svg viewBox="0 0 ${Math.ceil(trace.length / step)} 180" preserveAspectRatio="none" style="width:100%;height:60px;background:var(--surface);border-radius:6px" aria-label="กราฟมุมข้อต่อ"><polyline points="${pts}" fill="none" stroke="#42a5f5" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`;
+}
+
+async function loadAdmin() {
+  const el = document.getElementById('sc-admin-queue');
+  let d;
+  try { d = await scApi('admin_queue', { body: {} }); } catch (e) { el.innerHTML = `<div class="empty-state">${esc(e.message)}</div>`; return; }
+  const entries = d.entries.map(e => `<div class="sc-item">
+    <div class="flex-between" style="flex-wrap:wrap;gap:6px"><div><strong>${esc(e.user ? e.user.display_name : '?')}</strong> <span class="text-muted">@${esc(e.user ? e.user.username : '')}</span>
+      — ${esc(scKindName(e.exercise, e.mode))}: <strong>${esc(e.value)}</strong> ${esc(scUnit(e.exercise))} ใน ${esc(e.seconds)} วิ</div>
+      <span class="text-muted">${esc(new Date(e.created_at).toLocaleString('th-TH'))}</span></div>
+    <div style="margin:6px 0">${(e.flags || []).map(f => `<span class="badge badge-orange" style="margin-right:4px">${esc(SC_FLAGS[f] || f)}</span>`).join('')}</div>
+    ${scTraceSvg(e.trace)}
+    ${e.proof_url ? `<details><summary style="cursor:pointer">🎥 ดูวิดีโอ</summary><video controls preload="none" src="${esc(e.proof_url)}" style="width:100%;max-width:480px;border-radius:8px;margin-top:6px"></video></details>` : '<div class="text-muted">ไม่มีวิดีโอ</div>'}
+    <div class="flex-gap mt16">
+      <button class="btn btn-sm btn-green" data-id="${e.id}" onclick="scAdminReview(this.dataset.id, 'ok')">✅ อนุมัติ</button>
+      <button class="btn btn-sm btn-danger" data-id="${e.id}" onclick="scAdminReview(this.dataset.id, 'rejected')">❌ ไม่อนุมัติ</button>
+      ${e.user && !e.user.banned ? `<button class="btn btn-sm" style="background:#000;color:#fff" data-id="${esc(e.user_id)}" data-name="${esc(e.user.username)}" onclick="scAdminBan(this.dataset.id, this.dataset.name)">⛔ ระงับบัญชี</button>` : ''}
+    </div></div>`).join('');
+  const reports = d.reports.map(r => `<li>ผล #${esc(r.entry_id)}: “${esc(r.reason)}” <span class="text-muted">โดย ${esc(r.reporter ? r.reporter.display_name : '?')}</span>
+    <button class="btn btn-sm btn-secondary" data-id="${r.id}" onclick="scAdminResolve(this.dataset.id)">ปิดเรื่อง</button></li>`).join('');
+  el.innerHTML = `<div style="font-weight:700;margin-bottom:8px">ผลรอตรวจ (${d.entries.length})</div>${entries || '<div class="text-muted">ไม่มีผลรอตรวจ</div>'}
+    <div style="font-weight:700;margin:16px 0 8px">รายงานจากผู้ใช้ (${d.reports.length})</div>${reports ? `<ul class="sc-list">${reports}</ul>` : '<div class="text-muted">ไม่มีรายงาน</div>'}`;
+}
+async function scAdminReview(id, decision) { if (await scAction('admin_review', { entry_id: Number(id), decision }, decision === 'ok' ? 'อนุมัติแล้ว' : 'ไม่อนุมัติแล้ว', false)) { loadAdmin(); loadBoard(); } }
+async function scAdminResolve(id) { if (await scAction('admin_resolve_report', { id: Number(id) }, 'ปิดเรื่องแล้ว', false)) loadAdmin(); }
+async function scAdminBan(id, name) {
+  if (!confirm(`ระงับบัญชี @${name}? ผลทั้งหมดของบัญชีนี้จะหายจากอันดับ`)) return;
+  if (await scAction('admin_ban', { user_id: id, banned: true }, 'ระงับบัญชีแล้ว', false)) { loadAdmin(); loadBoard(); }
+}
+async function scEventCreate() {
+  const v = id => document.getElementById(id).value;
+  const [exercise, mode] = v('ev-exercise').split(':');
+  if (!v('ev-title').trim() || !v('ev-end')) return toast('กรอกชื่อและวันจบ');
+  const body = { title: v('ev-title').trim(), exercise, mode, ends_at: new Date(v('ev-end')).toISOString() };
+  if (v('ev-start')) body.starts_at = new Date(v('ev-start')).toISOString();
+  if (await scAction('event_create', body, '🎪 สร้างอีเวนต์แล้ว', false)) { document.getElementById('ev-title').value = ''; loadChallenges(); }
 }
 
 // ════════════════════════════════════════════
@@ -3049,6 +3663,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderDashboard();
   setStravaStatus();
   restoreHrDevice();
+  if (scSession() && location.protocol !== 'file:') scLoadMe().then(me => me && scApi('challenges').then(d => scNotifyResults(d.challenges))).catch(() => {});
   document.getElementById('auto-rest').checked = autoRestOn();
   updateChModes();
   ['cardio-type', 'cardio-duration', 'cardio-distance', 'cardio-hr'].forEach(id => {
