@@ -635,6 +635,10 @@
       <div id="hr-status" class="text-muted" role="status">เชื่อมต่อนาฬิกาหรือสายคาดอกที่ส่ง HR ผ่าน Bluetooth ได้</div>
       <button class="btn btn-secondary btn-sm mt8" id="hr-showall-btn" style="display:none" onclick="connectHr(true)">แสดงอุปกรณ์ทั้งหมด</button>
       <div id="hr-help" class="mt16" style="display:none;font-size:.88rem;line-height:1.7;border:1px solid var(--border);border-radius:10px;padding:12px 14px"></div>
+      <details class="mt8 text-muted" style="font-size:.8rem">
+        <summary style="cursor:pointer">บันทึกการเชื่อมต่อ (ถ่ายรูปส่งให้ผู้พัฒนาเมื่อมีปัญหา)</summary>
+        <pre id="hr-debug-log" style="white-space:pre-wrap;max-height:260px;overflow:auto;margin-top:8px;font-size:.75rem">ยังไม่มีข้อมูล</pre>
+      </details>
       <div id="hr-live" style="display:none;text-align:center;margin-top:12px">
         <div class="hr-bpm"><span id="hr-bpm">--</span><span class="hr-unit">bpm</span></div>
         <div id="hr-zone" class="mt8"></div>
@@ -1730,7 +1734,7 @@ function swSaveAsCardio() {
 // LIVE HEART RATE (Web Bluetooth, Heart Rate Service 0x180D)
 // ════════════════════════════════════════════
 let hrDevice = null, hrChar = null, hrManualDisconnect = false, hrRetry = 0, hrLastValueAt = 0, hrWatchdog = null;
-let hrReconnectTimer = null, hrStallTimer = null;
+let hrReconnectTimer = null, hrStallTimer = null, hrPollTimer = null, hrRawCount = 0, hrZeroCount = 0;
 const HR_TIMEOUT_MS = 15000;
 const HR_MAX_RETRY = 30;
 const HR_DEVICE_KEY = 'fittrack-hr-device';   // จำนาฬิกาที่ใช้ล่าสุด (ชื่อ/id) ไว้เชื่อมใหม่หลังรีเฟรช
@@ -1838,6 +1842,7 @@ async function connectHr(showAll = false) {
       : { filters: [{ services: ['heart_rate'] }, ...HR_NAME_PREFIXES.map(namePrefix => ({ namePrefix }))],
           optionalServices: ['heart_rate'] });
   } catch (e) {
+    hrLog('เลือกอุปกรณ์: ' + e.name + ' ' + e.message);
     if (e.name === 'NotFoundError') {
       setHrStatus('ไม่ได้เลือกอุปกรณ์ — ถ้าไม่เห็นนาฬิกา ให้เปิดโหมดส่ง HR บนนาฬิกาก่อน (Huawei: ตั้งค่า > HR Data Broadcasts) หรือกด “แสดงอุปกรณ์ทั้งหมด”', false);
       document.getElementById('hr-showall-btn').style.display = '';
@@ -1878,14 +1883,24 @@ function hrTimeout(promise, ms) {
 
 async function startHrNotifications() {
   setHrStatus(`กำลังเชื่อมต่อ ${hrDevice.name || 'อุปกรณ์'}...`, false);
-  const server = await hrTimeout(hrDevice.gatt.connect(), HR_TIMEOUT_MS);
-  const service = await hrTimeout(server.getPrimaryService('heart_rate'), HR_TIMEOUT_MS);
+  clearInterval(hrPollTimer);
+  hrLog(`เชื่อมต่อ ${hrDevice.name || '?'} (id ${hrDevice.id || '?'})`);
+  const step = async (label, promise) => {
+    try { const r = await hrTimeout(promise, HR_TIMEOUT_MS); hrLog(label + ': สำเร็จ'); return r; }
+    catch (e) { hrLog(`${label}: ${e.name} ${e.message}`); throw e; }
+  };
+  const server = await step('connect', hrDevice.gatt.connect());
+  const service = await step('หา service heart_rate', server.getPrimaryService('heart_rate'));
   if (hrChar) hrChar.removeEventListener('characteristicvaluechanged', onHrValue);
-  hrChar = await hrTimeout(service.getCharacteristic('heart_rate_measurement'), HR_TIMEOUT_MS);
+  hrChar = await step('หา heart_rate_measurement', service.getCharacteristic('heart_rate_measurement'));
+  const pr = hrChar.properties || {};
+  hrLog(`คุณสมบัติ: notify=${!!pr.notify} indicate=${!!pr.indicate} read=${!!pr.read}`);
   hrChar.addEventListener('characteristicvaluechanged', onHrValue);
-  await hrTimeout(hrChar.startNotifications(), HR_TIMEOUT_MS);
+  await step('startNotifications', hrChar.startNotifications());
   hrRetry = 0;
   hrLastValueAt = 0;
+  hrRawCount = 0;
+  hrZeroCount = 0;
   setHrStatus(`เชื่อมต่อแล้ว: ${hrDevice.name || 'อุปกรณ์ HR'} — รอค่าหัวใจจากนาฬิกา...`, true);
   document.getElementById('hr-live').style.display = '';
   try { localStorage.setItem(HR_DEVICE_KEY, JSON.stringify({ id: hrDevice.id, name: hrDevice.name || '' })); } catch (e) {}
@@ -1900,17 +1915,51 @@ async function startHrNotifications() {
   }, 5000);
   // เชื่อมได้แต่ไม่มีค่าส่งมา: บอกผู้ใช้แทนที่จะแสดง -- เฉย ๆ
   clearTimeout(hrWatchdog);
+  // 6 วินาทีแรกไม่มี notification เลย: ลองอ่านค่าเองทุก 1 วินาที (บางเครื่องไม่ส่ง notify)
+  setTimeout(() => {
+    if (!hrRawCount && hrChar && pr.read && hrDevice && hrDevice.gatt.connected) {
+      hrLog('ไม่มี notification ใน 6 วินาที — เปลี่ยนเป็นอ่านค่าเองทุก 1 วินาที');
+      const ch = hrChar;
+      clearInterval(hrPollTimer);
+      hrPollTimer = setInterval(() => {
+        if (!hrDevice || !hrDevice.gatt.connected) { clearInterval(hrPollTimer); return; }
+        ch.readValue().then(v => onHrValue({ target: { value: v } }, 'read'))
+          .catch(e => hrLog('readValue: ' + e.name + ' ' + e.message));
+      }, 1000);
+    }
+  }, 6000);
   hrWatchdog = setTimeout(() => {
     if (!hrLastValueAt && hrDevice && hrDevice.gatt.connected) {
-      setHrStatus(`เชื่อมกับ ${hrDevice.name || 'นาฬิกา'} แล้ว แต่ยังไม่มีค่าหัวใจส่งมา — สวมนาฬิกาให้แนบข้อมือ และเปิดหน้า HR Data Broadcasts บนนาฬิกาค้างไว้`, true);
+      setHrStatus(hrRawCount
+        ? `${hrDevice.name || 'นาฬิกา'} ส่งค่ามาแต่เป็น 0 (${hrZeroCount} ครั้ง) — นาฬิกายังวัดชีพจรไม่ได้: สวมให้แนบข้อมือ ไม่หลวม และเปิดหน้า HR Data Broadcasts ค้างไว้`
+        : `เชื่อมกับ ${hrDevice.name || 'นาฬิกา'} แล้ว แต่นาฬิกาไม่ส่งค่าเลย — บนนาฬิกาต้องเปิด ตั้งค่า > HR Data Broadcasts และให้จออยู่หน้านั้น`, true);
+      hrLog(hrRawCount ? `12 วินาที: ได้ค่า ${hrRawCount} ครั้ง เป็น 0 ทั้งหมด` : '12 วินาที: ไม่ได้รับค่าเลย');
       showHrHelp();
     }
   }, 12000);
 }
 
-function onHrValue(e) {
-  const bpm = parseHeartRate(e.target.value);
-  if (!bpm) return;   // 0 = ยังไม่ได้สัมผัสผิว
+// บันทึกการทำงานล่าสุด ให้ผู้ใช้เปิดดู/ถ่ายรูปส่งมาเวลามีปัญหา
+const hrLogLines = [];
+function hrLog(msg) {
+  const t = new Date().toLocaleTimeString('th-TH', { hour12: false });
+  hrLogLines.push(`${t}  ${msg}`);
+  if (hrLogLines.length > 60) hrLogLines.shift();
+  const el = document.getElementById('hr-debug-log');
+  if (el) el.textContent = hrLogLines.join('\n');
+}
+
+function hrHex(view) {
+  return Array.from(new Uint8Array(view.buffer, view.byteOffset, view.byteLength), b => b.toString(16).padStart(2, '0')).join(' ');
+}
+
+function onHrValue(e, via) {
+  const view = e.target.value;
+  let bpm = 0;
+  try { bpm = parseHeartRate(view); } catch (err) { hrLog('อ่านค่าไม่ได้: ' + hrHex(view)); return; }
+  hrRawCount++;
+  if (hrRawCount <= 5 || hrRawCount % 30 === 0) hrLog(`ค่า #${hrRawCount}${via ? ' (' + via + ')' : ''}: [${hrHex(view)}] = ${bpm} bpm`);
+  if (!bpm) { hrZeroCount++; return; }   // 0 = นาฬิกายังวัดไม่ได้ (ไม่แนบผิว)
   if (!hrLastValueAt) setHrStatus(`เชื่อมต่อแล้ว: ${hrDevice.name || 'อุปกรณ์ HR'} — HR จะถูกนับเฉลี่ยเฉพาะตอน Stopwatch เดินอยู่`, true);
   hrLastValueAt = Date.now();
   const el = document.getElementById('hr-bpm');
@@ -1940,6 +1989,8 @@ function renderHrZone(bpm) {
 function onHrDisconnected() {
   clearTimeout(hrWatchdog);
   clearInterval(hrStallTimer);
+  clearInterval(hrPollTimer);
+  hrLog(hrManualDisconnect ? 'ตัดการเชื่อมต่อ (ผู้ใช้กด)' : 'สัญญาณหลุด');
   if (hrManualDisconnect) return;   // ตัดเอง: disconnectHr/connectHr ตั้งข้อความไว้แล้ว อย่าเขียนทับ
   if (hrReconnectTimer) return;   // มีรอบเชื่อมใหม่รออยู่แล้ว (event ซ้ำ)
   // หลุดเอง (ไกลเกิน/นาฬิกาพักจอ/หยุดส่ง): เชื่อมใหม่เรื่อย ๆ รอ 1, 2, 4, 8, 10 วินาที... ประมาณ 5 นาที
@@ -1965,7 +2016,7 @@ function onHrDisconnected() {
 function disconnectHr() {
   hrManualDisconnect = true;
   clearTimeout(hrReconnectTimer); hrReconnectTimer = null;
-  clearTimeout(hrWatchdog); clearInterval(hrStallTimer);
+  clearTimeout(hrWatchdog); clearInterval(hrStallTimer); clearInterval(hrPollTimer);
   if (hrDevice && hrDevice.gatt.connected) hrDevice.gatt.disconnect();
   if (!timerRunning) keepAwake(false);
   setHrStatus('ตัดการเชื่อมต่อแล้ว', false);
