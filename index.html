@@ -62,6 +62,12 @@
     .watch-btn.connected { background: #2e7d32; color: #fff; }
     .watch-btn.connecting { background: #ffca28; color: #000; }
     .watch-btn .wbpm { font-variant-numeric: tabular-nums; min-width: 2.2em; text-align: right; }
+    .prof-btn {
+      flex-shrink: 0; margin-left: 8px; width: 38px; height: 38px; border-radius: 999px; cursor: pointer;
+      background: #ffffff22; color: #fff; border: 1px solid #ffffff55; font-size: 1.05rem;
+    }
+    .prof-btn:hover { background: #ffffff33; }
+    .auto-hint { font-size: .8rem; color: var(--text-muted); margin: 6px 0 10px; min-height: 1.2em; }
     nav button {
       background: transparent;
       border: 1px solid transparent;
@@ -118,6 +124,7 @@
       /* มือถือ: แถวบน = โลโก้ + ปุ่มนาฬิกา, แถวล่าง = เมนูเลื่อนซ้ายขวา */
       header { flex-wrap: wrap; height: auto; padding: 8px 12px 6px; row-gap: 6px; }
       nav { order: 3; flex-basis: 100%; margin: 0; }
+      .watch-btn { margin-left: auto; }
       .watch-btn { padding: 7px 14px; font-size: 0.85rem; }
     }
 
@@ -318,6 +325,7 @@
     <button onclick="showPage('calc')">🧮 คำนวณ</button>
   </nav>
   <button class="watch-btn" id="watch-btn" onclick="watchButton()" title="เชื่อมต่อนาฬิกาเพื่อดูหัวใจสด">⌚ <span class="wl" id="watch-label">เชื่อมนาฬิกา</span></button>
+  <button class="prof-btn" onclick="openProfile()" title="โปรไฟล์ของฉัน" aria-label="โปรไฟล์ของฉัน">👤</button>
 </header>
 
 <main>
@@ -462,6 +470,9 @@
           <button class="btn btn-green" onclick="startTimer()" id="btn-start">▶ เริ่ม</button>
           <button class="btn btn-danger" onclick="resetTimer()">↺ รีเซ็ต</button>
         </div>
+        <label class="text-muted" style="font-size:.8rem;display:flex;gap:6px;justify-content:center;align-items:center;margin-top:10px;cursor:pointer">
+          <input type="checkbox" id="auto-rest" onchange="setAutoRest(this.checked)" style="width:auto"> เริ่มนาฬิกาพักเองหลังบันทึก Set
+        </label>
         <div style="margin-top:16px">
           <div class="progress-wrap">
             <div class="progress-fill" id="timer-progress" style="width:100%;background:var(--green)"></div>
@@ -565,9 +576,10 @@
         </div>
         <div>
           <label for="cardio-kcal">แคลอรี่ (kcal)</label>
-          <input type="number" id="cardio-kcal" placeholder="300" min="0" />
+          <input type="number" id="cardio-kcal" placeholder="เว้นว่าง = คำนวณให้" min="0" />
         </div>
       </div>
+      <div class="auto-hint" id="cardio-auto-hint" role="status"></div>
       <div class="form-row">
         <div>
           <label for="cardio-intensity">ระดับความเข้มข้น</label>
@@ -719,6 +731,20 @@
 ═════════════════════════════════════════════ -->
 <div id="page-calc" class="page">
   <h1 style="font-size:1.5rem;margin-bottom:20px">🧮 เครื่องคำนวณ</h1>
+  <div class="card" id="profile-card">
+    <div class="card-title"><span class="icon">👤</span> โปรไฟล์ของฉัน</div>
+    <div class="text-muted" style="font-size:.82rem;margin:-6px 0 12px">กรอกครั้งเดียว ใช้คำนวณแคลอรี่เวท/คาร์ดิโอ โซนหัวใจ และเติมเครื่องคำนวณด้านล่างให้เอง</div>
+    <div class="form-row">
+      <div><label for="prof-sex">เพศ</label>
+        <select id="prof-sex"><option value="">-- เลือก --</option><option value="male">ชาย</option><option value="female">หญิง</option></select></div>
+      <div><label for="prof-age">อายุ (ปี)</label><input type="number" id="prof-age" min="10" max="90" placeholder="25" /></div>
+      <div><label for="prof-weight">น้ำหนัก (kg)</label><input type="number" id="prof-weight" min="30" max="300" step="0.1" placeholder="65" /></div>
+      <div><label for="prof-height">ส่วนสูง (cm)</label><input type="number" id="prof-height" min="100" max="250" placeholder="170" /></div>
+      <div><label for="prof-rhr">HR ขณะพัก (ไม่บังคับ)</label><input type="number" id="prof-rhr" min="30" max="100" placeholder="65" /></div>
+    </div>
+    <button class="btn btn-primary" onclick="saveProfile()">💾 บันทึกโปรไฟล์</button>
+    <div id="profile-status" class="auto-hint"></div>
+  </div>
   <div class="tabs">
     <button class="tab-btn active" onclick="showCalcTab('bmr')">BMR/TDEE</button>
     <button class="tab-btn" onclick="showCalcTab('bmi')">BMI</button>
@@ -998,8 +1024,14 @@ function normalizeState(s) {
   });
   // โปรไฟล์สำหรับโซนหัวใจ: เก็บเฉพาะตัวเลขในช่วงที่ใช้ได้
   const p = isObj(s.profile) ? s.profile : {};
-  const age = parseInt(p.age, 10), rhr = parseInt(p.rhr, 10);
-  s.profile = (age >= 10 && age <= 90 && rhr >= 30 && rhr <= 100) ? { age, rhr } : {};
+  // ตรวจทีละช่อง: ค่าที่อยู่นอกช่วงถูกทิ้ง ช่องอื่นยังอยู่
+  const inRange = (v, lo, hi, int) => { const n = int ? parseInt(v, 10) : parseFloat(v); return n >= lo && n <= hi ? n : undefined; };
+  const prof = {
+    sex: p.sex === 'male' || p.sex === 'female' ? p.sex : undefined,
+    age: inRange(p.age, 10, 90, true), rhr: inRange(p.rhr, 30, 100, true),
+    weight: inRange(p.weight, 30, 300), height: inRange(p.height, 100, 250),
+  };
+  s.profile = Object.fromEntries(Object.entries(prof).filter(([, v]) => v !== undefined));
   // Strava: เวลาซิงก์ล่าสุด และ id ที่ผู้ใช้ลบแล้ว (ไม่ดึงกลับมาอีก)
   const sv = isObj(s.strava) ? s.strava : {};
   s.strava = {
@@ -1107,6 +1139,7 @@ function showPage(id) {
   if (id === 'weight') renderWeight();
   if (id === 'cardio') renderCardio();
   if (id === 'plan') renderPlan();
+  if (id === 'calc') { renderProfileForm(); prefillCalcs(); }
 }
 
 // ════════════════════════════════════════════
@@ -1155,7 +1188,7 @@ function renderRecentLog() {
         <td>${esc(fmtDate(item.date))}</td>
         <td>${item.kind === 'weight' ? '🏋️ เวทเทรนนิ่ง' : '🏃 คาร์ดิโอ'}</td>
         <td>${item.kind === 'weight' ? `Volume: ${(Number(item.volume) || 0).toLocaleString()} kg` : `${esc(item.type)} ${esc(item.duration)} นาที${item.distance ? ' · ' + esc(item.distance) + ' km' : ''}`}</td>
-        <td><span class="badge badge-orange">${esc(item.kcal || item.cals || 0)} kcal</span></td>
+        <td><span class="badge badge-orange">${item.kcalEst || item.calsEst ? '≈' : ''}${esc(item.kcal || item.cals || 0)} kcal</span></td>
       </tr>`).join('')}
     </tbody></table></div>`;
 }
@@ -1386,7 +1419,8 @@ function addWeightSet() {
   document.getElementById('log-reps').value = '';
   document.getElementById('log-sets').value = '';
   document.getElementById('log-note').value = '';
-  toast(`เพิ่ม ${sets} set แล้ว`);
+  if (autoRestOn() && !timerRunning) { resetTimer(); startTimer(); toast(`เพิ่ม ${sets} set แล้ว — เริ่มนาฬิกาพัก`); }
+  else toast(`เพิ่ม ${sets} set แล้ว`);
 }
 
 function setVolume(sets) {
@@ -1439,7 +1473,8 @@ function saveSession() {
   if (!state.todaySets.length) { alert('ไม่มี set'); return; }
   const ts = pendingSetsTs();
   const muscles = [...new Set(state.todaySets.map(s => s.muscle))];
-  state.sessions.push({ id: newId(), date: localDateStr(new Date(ts)), ts, sets: [...state.todaySets], volume: setVolume(state.todaySets), muscles, cals: 0 });
+  const cals = estimateSessionKcal(state.todaySets);
+  state.sessions.push({ id: newId(), date: localDateStr(new Date(ts)), ts, sets: [...state.todaySets], volume: setVolume(state.todaySets), muscles, cals, calsEst: cals > 0 });
   state.todaySets = [];
   save();
   renderSetLog();
@@ -1621,9 +1656,13 @@ function logCardio() {
   const note = document.getElementById('cardio-note').value;
   if (duration === null) { alert('กรุณากรอกระยะเวลา (1–1440 นาที)'); return; }
   if (distance === null || hr === null || kcal === null) { alert('ค่าที่กรอกไม่ถูกต้อง: ระยะทาง 0–1000 km, HR 30–230 bpm, แคลอรี่ 0–20000'); return; }
-  state.cardioLog.push({ id: newId(), type, duration, distance, hr, kcal, intensity, date, note, ts: Date.now() });
+  // เว้นช่องแคลอรี่ว่าง: คำนวณจาก HR/ประเภท + โปรไฟล์ (ติดป้าย ≈)
+  const kcalEst = document.getElementById('cardio-kcal').value === '';
+  const kcalVal = kcalEst ? estimateCardioKcal(type, duration, hr) : kcal;
+  state.cardioLog.push({ id: newId(), type, duration, distance, hr, kcal: kcalVal, kcalEst: kcalEst && kcalVal > 0, intensity, date, note, ts: Date.now() });
   save();
   ['cardio-duration','cardio-distance','cardio-hr','cardio-kcal','cardio-note'].forEach(id => { document.getElementById(id).value = ''; });
+  updateCardioAuto();
   renderCardioHistory();
   toast('บันทึกสำเร็จ! 🏃');
 }
@@ -1647,15 +1686,16 @@ function renderCardioHistory() {
     return;
   }
   el.innerHTML = `<div class="table-wrap"><table>
-    <thead><tr><th>วันที่</th><th>ประเภท</th><th>เวลา</th><th>ระยะ</th><th>HR</th><th>kcal</th><th>ระดับ</th><th></th></tr></thead>
+    <thead><tr><th>วันที่</th><th>ประเภท</th><th>เวลา</th><th>ระยะ</th><th>Pace</th><th>HR</th><th>kcal</th><th>ระดับ</th><th></th></tr></thead>
     <tbody>${[...state.cardioLog].sort(byNewest).map(c => `
       <tr>
         <td>${esc(fmtDate(c.date))}</td>
         <td>${esc(c.type)}${c.stravaId ? ` <a class="badge badge-orange" style="text-decoration:none" href="https://www.strava.com/activities/${encodeURIComponent(c.stravaId)}" target="_blank" rel="noopener">Strava ↗</a>` : ''}${c.note ? `<div class="text-muted" style="font-size:.75rem">${esc(c.note)}</div>` : ''}</td>
         <td>${esc(c.duration)} นาที</td>
         <td>${esc(c.distance || '-')} km</td>
+        <td>${esc(paceText(c.type, c.duration, c.distance))}</td>
         <td>${esc(c.hr || '-')} bpm</td>
-        <td><span class="badge badge-orange">${esc(c.kcal || 0)}</span></td>
+        <td><span class="badge badge-orange" ${c.kcalEst ? 'title="ค่าประมาณ"' : ''}>${c.kcalEst ? '≈' : ''}${esc(c.kcal || 0)}</span></td>
         <td><span class="badge ${c.intensity==='เบา'?'badge-green':c.intensity==='หนัก'?'badge-red':'badge-blue'}">${esc(c.intensity)}</span></td>
         <td><button class="btn btn-danger btn-sm" aria-label="ลบรายการ" data-id="${esc(c.id)}" onclick="deleteCardio(this.dataset.id)">✕</button></td>
       </tr>`).join('')}
@@ -1727,6 +1767,7 @@ function swSaveAsCardio() {
   document.getElementById('cardio-duration').value = Math.max(1, Math.round(secs / 60));
   if (hrSession.count) document.getElementById('cardio-hr').value = Math.round(hrSession.sum / hrSession.count);
   document.getElementById('cardio-date').value = todayStr();
+  updateCardioAuto(true);
   toast('เติมข้อมูลแล้ว — ตรวจแล้วกด 💾 บันทึก');
 }
 
@@ -2276,11 +2317,14 @@ function saveQuickLog() {
   if (dur === null) { alert('กรุณากรอกระยะเวลา (1–1440 นาที)'); return; }
   if (cals === null) { alert('แคลอรี่ต้องอยู่ระหว่าง 0–20000'); return; }
   const ts = Date.now();
+  const est = document.getElementById('modal-cals').value === '';
   if (type === 'cardio' || type === 'both') {
-    state.cardioLog.push({ id: newId(), type:'ออกกำลังกาย', duration:dur, kcal:cals, date, note, intensity:'ปานกลาง', ts });
+    const k = est ? estimateCardioKcal('ออกกำลังกาย', dur, 0) : cals;
+    state.cardioLog.push({ id: newId(), type:'ออกกำลังกาย', duration:dur, kcal:k, kcalEst: est && k > 0, date, note, intensity:'ปานกลาง', ts });
   }
   if (type === 'weight' || type === 'both') {
-    state.sessions.push({ id: newId(), date, ts, sets:[], volume:0, muscles:[], cals: type === 'both' ? 0 : cals, note });
+    const k = type === 'both' ? 0 : (est ? kcalFromMet(3.5, dur) : cals);
+    state.sessions.push({ id: newId(), date, ts, sets:[], volume:0, muscles:[], cals: k, calsEst: est && k > 0, note });
   }
   save();
   closeLogModal();
@@ -2394,11 +2438,7 @@ async function handleStravaCallback() {
 }
 
 function stravaIntensity(hr) {
-  const p = state.profile || {};
-  const zones = hr ? buildZones(p.age, p.rhr) : null;
-  if (!zones) return 'ปานกลาง';
-  const i = zones.findIndex(z => hr <= z.max);
-  return i === -1 || i === 4 ? 'สูงสุด' : i <= 1 ? 'เบา' : i === 2 ? 'ปานกลาง' : 'หนัก';
+  return hrIntensity(hr) || 'ปานกลาง';
 }
 
 function mapStravaActivity(a) {
@@ -2444,6 +2484,7 @@ async function syncStrava(manual) {
       try { const d = await stravaGet('/activities/' + c.stravaId, {}); c.kcal = Math.min(20000, Math.round(d.calories || 0)); }
       catch (e) { if (e.code === 'rate') break; }
     }
+    added.forEach(c => { if (!c.kcal) { c.kcal = estimateCardioKcal(c.type, c.duration, c.hr); c.kcalEst = c.kcal > 0; } });
     state.cardioLog.push(...added);
     st.lastSyncAt = Date.now();
     save();
@@ -2492,12 +2533,177 @@ function setStravaStatus(msg) {
 }
 
 // ════════════════════════════════════════════
+// AUTO CALC: โปรไฟล์, แคลอรี่ประมาณ, pace, ระดับความเข้มจาก HR, นาฬิกาพักอัตโนมัติ
+// ════════════════════════════════════════════
+// MET เฉลี่ยต่อประเภท (Compendium of Physical Activities) ใช้เมื่อไม่มี HR
+const CARDIO_MET = {
+  'วิ่ง': 9.8, 'จักรยาน': 7.5, 'ว่ายน้ำ': 7, 'เดินเร็ว': 4.3, 'เชือกกระโดด': 11,
+  'Elliptical': 5, 'Rowing': 7, 'HIIT': 8, 'แบดมินตัน': 5.5, 'ฟุตบอล': 7,
+};
+
+function kcalFromMet(met, minutes) {
+  const w = (state.profile || {}).weight;
+  return w && minutes > 0 ? Math.round(met * w * minutes / 60) : 0;
+}
+
+// มี HR ≥ 90 + เพศ/อายุ/น้ำหนัก: Keytel et al. (2005) ไม่งั้นใช้ MET × น้ำหนัก × เวลา
+function estimateCardioKcal(type, minutes, hr) {
+  const p = state.profile || {};
+  if (!p.weight || !(minutes > 0)) return 0;
+  if (hr >= 90 && p.age && p.sex) {
+    const perMin = p.sex === 'male'
+      ? (-55.0969 + 0.6309 * hr + 0.1988 * p.weight + 0.2017 * p.age) / 4.184
+      : (-20.4022 + 0.4472 * hr - 0.1263 * p.weight + 0.074 * p.age) / 4.184;
+    if (perMin > 0) return Math.min(20000, Math.round(perMin * minutes));
+  }
+  return Math.min(20000, kcalFromMet(CARDIO_MET[type] || 6, minutes));
+}
+
+// เวท: MET 3.5 (ปานกลาง) หรือ 6 (หนัก เมื่อ RIR เฉลี่ย ≤ 1) × ระยะเวลาจาก set แรกถึง set สุดท้าย + 2 นาที
+function estimateSessionKcal(sets) {
+  if (!sets || !sets.length) return 0;
+  const ts = sets.map(x => Number(x.ts)).filter(Boolean);
+  let minutes = ts.length >= 2 ? (Math.max(...ts) - Math.min(...ts)) / 60000 + 2 : 0;
+  if (minutes < sets.length * 1.5) minutes = sets.length * 2.5;   // set ที่บันทึกพร้อมกันหลายตัว
+  minutes = Math.min(180, Math.max(5, minutes));
+  const rirs = sets.map(x => x.rir).filter(r => r !== null && r !== undefined && r !== '' && !isNaN(r)).map(Number);
+  const heavy = rirs.length && rirs.reduce((a, b) => a + b, 0) / rirs.length <= 1;
+  return kcalFromMet(heavy ? 6 : 3.5, minutes);
+}
+
+function paceText(type, minutes, km) {
+  if (!(minutes > 0) || !(km > 0)) return '-';
+  if (type === 'จักรยาน') return (km / (minutes / 60)).toFixed(1) + ' km/h';
+  const per = minutes / km;
+  let m = Math.floor(per), sec = Math.round((per - m) * 60);
+  if (sec === 60) { m++; sec = 0; }
+  return `${m}:${String(sec).padStart(2, '0')} /km`;
+}
+
+// ระดับความเข้มจาก HR + โซน Karvonen (ใช้ทั้งฟอร์มและรายการจาก Strava)
+function hrIntensity(hr) {
+  const p = state.profile || {};
+  const zones = hr ? buildZones(p.age, p.rhr) : null;
+  if (!zones) return null;
+  const i = zones.findIndex(z => hr <= z.max);
+  return i === -1 || i === 4 ? 'สูงสุด' : i <= 1 ? 'เบา' : i === 2 ? 'ปานกลาง' : 'หนัก';
+}
+
+// แสดง pace / แคลอรี่ประมาณ / ระดับจาก HR ระหว่างกรอกฟอร์มคาร์ดิโอ
+function updateCardioAuto(fromHr) {
+  const v = id => parseFloat(document.getElementById(id).value) || 0;
+  const type = document.getElementById('cardio-type').value;
+  const dur = v('cardio-duration'), dist = v('cardio-distance'), hr = v('cardio-hr');
+  const parts = [];
+  const pace = paceText(type, dur, dist);
+  if (pace !== '-') parts.push((type === 'จักรยาน' ? 'ความเร็ว ' : 'Pace ') + pace);
+  const lvl = hrIntensity(hr);
+  if (lvl && fromHr) document.getElementById('cardio-intensity').value = lvl;
+  if (lvl) parts.push('ระดับจาก HR: ' + lvl);
+  const p = state.profile || {};
+  const kcalBox = document.getElementById('cardio-kcal');
+  const est = estimateCardioKcal(type, dur, hr);
+  kcalBox.placeholder = est ? `≈ ${est} (เว้นว่าง = ใช้ค่านี้)` : 'เว้นว่าง = คำนวณให้';
+  if (est && kcalBox.value === '') parts.push(`แคลอรี่ ≈ ${est} kcal`);
+  if (dur && !p.weight) parts.push('ใส่น้ำหนักใน 👤 โปรไฟล์ เพื่อคำนวณแคลอรี่');
+  else if (hr && !lvl) parts.push('ใส่อายุ + HR พักใน 👤 โปรไฟล์ เพื่อจัดระดับจาก HR');
+  document.getElementById('cardio-auto-hint').textContent = parts.join(' · ');
+}
+
+const AUTO_REST_KEY = 'fittrack-autorest';
+function autoRestOn() {
+  try { return localStorage.getItem(AUTO_REST_KEY) !== '0'; } catch (e) { return true; }
+}
+function setAutoRest(on) {
+  try { localStorage.setItem(AUTO_REST_KEY, on ? '1' : '0'); } catch (e) {}
+}
+
+function openProfile() {
+  showPage('calc');
+  const card = document.getElementById('profile-card');
+  card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const empty = ['prof-sex', 'prof-age', 'prof-weight', 'prof-height'].find(id => !document.getElementById(id).value);
+  if (empty) document.getElementById(empty).focus({ preventScroll: true });
+}
+
+function renderProfileForm() {
+  const p = state.profile || {};
+  [['prof-sex', 'sex'], ['prof-age', 'age'], ['prof-weight', 'weight'], ['prof-height', 'height'], ['prof-rhr', 'rhr']]
+    .forEach(([id, k]) => { document.getElementById(id).value = p[k] != null ? p[k] : ''; });
+  const missing = ['sex', 'age', 'weight', 'height'].filter(k => p[k] == null).length;
+  document.getElementById('profile-status').textContent = missing
+    ? 'ยังกรอกไม่ครบ — แคลอรี่อัตโนมัติต้องมีอย่างน้อยน้ำหนัก (ถ้ามีเพศ+อายุด้วยจะแม่นขึ้นเมื่อมี HR)'
+    : 'บันทึกแล้ว — แอปใช้ค่านี้คำนวณแคลอรี่และเติมเครื่องคำนวณให้อัตโนมัติ';
+}
+
+function saveProfile() {
+  const sex = document.getElementById('prof-sex').value;
+  const age = num('prof-age', { min: 10, max: 90, int: true });
+  const weight = num('prof-weight', { min: 30, max: 300 });
+  const height = num('prof-height', { min: 100, max: 250 });
+  const rhr = num('prof-rhr', { min: 30, max: 100, int: true });
+  const bad = [['prof-age', age, 'อายุ 10–90'], ['prof-weight', weight, 'น้ำหนัก 30–300 kg'],
+    ['prof-height', height, 'ส่วนสูง 100–250 cm'], ['prof-rhr', rhr, 'HR พัก 30–100']]
+    .filter(([id, val]) => document.getElementById(id).value !== '' && val === null).map(x => x[2]);
+  if (bad.length) { alert('ค่าไม่ถูกต้อง: ' + bad.join(', ')); return; }
+  const next = { ...state.profile };
+  if (sex) next.sex = sex; else delete next.sex;
+  [['age', age], ['weight', weight], ['height', height], ['rhr', rhr]].forEach(([k, val]) => { if (val === null) delete next[k]; else next[k] = val; });
+  const hadWeight = !!(state.profile || {}).weight;
+  state.profile = next;
+  save();
+  renderProfileForm();
+  prefillCalcs(true);
+  toast('บันทึกโปรไฟล์แล้ว');
+  // ครั้งแรกที่มีน้ำหนัก: เสนอคำนวณแคลอรี่ย้อนหลังให้รายการเก่าที่เป็น 0
+  if (!hadWeight && next.weight) backfillKcal();
+}
+
+function backfillKcal() {
+  const sess = state.sessions.filter(x => !x.cals && x.sets && x.sets.length);
+  const cardio = state.cardioLog.filter(c => !c.kcal && c.duration);
+  if (!sess.length && !cardio.length) return;
+  if (!confirm(`คำนวณแคลอรี่ย้อนหลัง (ค่าประมาณ ≈) ให้ ${sess.length} session เวท และ ${cardio.length} รายการคาร์ดิโอ ที่ยังเป็น 0 ไหม?`)) return;
+  sess.forEach(x => { x.cals = estimateSessionKcal(x.sets); x.calsEst = x.cals > 0; });
+  cardio.forEach(c => { c.kcal = estimateCardioKcal(c.type, c.duration, c.hr); c.kcalEst = c.kcal > 0; });
+  save();
+  renderDashboard();
+  toast('คำนวณแคลอรี่ย้อนหลังแล้ว');
+}
+
+// เติมเครื่องคำนวณจากโปรไฟล์ (ไม่ทับช่องที่ผู้ใช้พิมพ์เอง ยกเว้น force) แล้วคำนวณให้เลย
+function prefillCalcs(force) {
+  const p = state.profile || {};
+  const fill = (id, val) => {
+    const el = document.getElementById(id);
+    if (val != null && val !== '' && (force || el.value === '')) el.value = val;
+  };
+  fill('bmr-gender', p.sex); fill('bmr-age', p.age); fill('bmr-weight', p.weight); fill('bmr-height', p.height);
+  fill('bmi-weight', p.weight); fill('bmi-height', p.height); fill('macro-weight', p.weight);
+  if (p.sex && p.age && p.weight && p.height) {
+    const bmr = p.sex === 'male'
+      ? 88.362 + 13.397 * p.weight + 4.799 * p.height - 5.677 * p.age
+      : 447.593 + 9.247 * p.weight + 3.098 * p.height - 4.330 * p.age;
+    const act = parseFloat(document.getElementById('bmr-activity').value) || 1.55;
+    fill('macro-kcal', Math.round(bmr * act));
+    calcBMR();
+  }
+  if (p.weight && p.height) calcBMI();
+  if (document.getElementById('macro-kcal').value && document.getElementById('macro-weight').value) calcMacro();
+}
+
+// ════════════════════════════════════════════
 // INIT
 // ════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
   renderDashboard();
   setStravaStatus();
   restoreHrDevice();
+  document.getElementById('auto-rest').checked = autoRestOn();
+  ['cardio-type', 'cardio-duration', 'cardio-distance', 'cardio-hr'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => updateCardioAuto(id === 'cardio-hr'));
+  });
+  document.getElementById('cardio-kcal').addEventListener('input', () => updateCardioAuto());
   handleStravaCallback().then(handled => {
     // ซิงก์อัตโนมัติตอนเปิดแอป ถ้าห่างจากรอบก่อนเกิน 15 นาที
     if (!handled && stravaAuth() && Date.now() - state.strava.lastSyncAt > 15 * 60000) syncStrava(false);
