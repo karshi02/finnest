@@ -1,2 +1,5 @@
 backup-*.json
 fittrack-backup-*.json
+
+.vercel
+.env*

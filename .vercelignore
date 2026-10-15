@@ -4,3 +4,5 @@ start.bat
 README.md
 .gitattributes
 .gitignore
+.env*
+supabase
