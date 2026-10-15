@@ -2858,7 +2858,11 @@ function prefillCalcs(force) {
 // ════════════════════════════════════════════
 const MP_VERSION = '1.1.1';
 const MP_BASE = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${MP_VERSION}`;
-const MP_MODEL = 'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task';
+// full แม่นกว่า lite ชัดเจน (ใช้กับ GPU) ถ้าเครื่องไม่มี GPU ใช้ lite เพื่อให้ยังลื่น
+const MP_MODELS = {
+  full: 'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_full/float16/1/pose_landmarker_full.task',
+  lite: 'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task',
+};
 const CH_EXERCISES = {
   pushup: { name: 'วิดพื้น', unit: 'ครั้ง', modes: ['timed60', 'max'] },
   squat:  { name: 'สควอท', unit: 'ครั้ง', modes: ['timed60', 'max'] },
@@ -2881,80 +2885,114 @@ function poseTilt(a, b, aspect) {
 }
 
 // เลือกด้านที่กล้องเห็นชัดกว่า แล้วคืนจุดของด้านนั้น (null = เห็นไม่พอ)
-function poseSide(lm, parts) {
-  let best = null;
-  [0, 1].forEach(i => {
+// เลือกด้านของร่างกายที่กล้องเห็นชัดกว่า แต่ยึดด้านเดิมไว้ถ้าอีกด้านไม่ได้ชัดกว่าชัดเจน
+// (สลับด้านไปมาทุกเฟรมทำให้มุมกระโดดและนับพลาด)
+const POSE_MIN_VIS = 0.3;
+function poseSide(lm, parts, prefer) {
+  const sides = [0, 1].map(i => {
     const pts = {}; let vis = 0, okAll = true;
     parts.forEach(p => {
       const q = lm[LM[p][i]];
-      if (!q || (q.visibility != null && q.visibility < 0.5)) okAll = false;
+      if (!q || (q.visibility != null && q.visibility < POSE_MIN_VIS)) okAll = false;
       pts[p] = q; vis += q ? (q.visibility ?? 1) : 0;
     });
-    if (okAll && (!best || vis > best.vis)) best = { pts, vis };
+    return okAll ? { pts, vis, side: i } : null;
   });
-  return best && best.pts;
+  let best = sides.filter(Boolean).sort((a, b) => b.vis - a.vis)[0];
+  if (best && prefer != null && sides[prefer] && best.side !== prefer && best.vis - sides[prefer].vis < 0.15 * parts.length) best = sides[prefer];
+  return best ? { ...best.pts, side: best.side } : null;
 }
 
+// เกณฑ์มุม (ใช้ร่วมกับ server: api/_lib/anticheat.js ตั้งหลวมกว่านี้เล็กน้อย)
+const REP_RULES = {
+  pushup: { start: 150, going: 140, down: 100, up: 150, body: 150 },
+  squat:  { start: 160, going: 150, down: 100, up: 160, startNeedsOk: true },   // ต้องยืนอกตั้งก่อนเริ่ม
+};
+const POSE_GRACE_MS = { lost: 1000, offPose: 600, badForm: 300 };
+
 // ตัวนับครั้ง: ป้อนจุดร่างกายทีละเฟรม คืนจำนวนครั้ง/เวลาค้าง และข้อความแนะนำท่า
+// ทนสัญญาณรบกวน: เฟรมเดียวที่จุดหาย/ลำตัวเอียง/ท่าเพี้ยน จะไม่รีเซ็ตหรือตัดสิทธิ์ทั้งครั้ง
 // ทดสอบได้โดยไม่ต้องใช้กล้อง (ป้อนจุดสังเคราะห์)
 function createRepCounter(exercise) {
-  const st = { reps: 0, phase: 'wait', holdMs: 0, lastT: 0, ema: null, minAngle: 999, badForm: false, feedback: 'จัดท่าให้กล้องเห็นทั้งตัวจากด้านข้าง', angle: null };
-  const smooth = v => (st.ema = st.ema == null ? v : st.ema * 0.5 + v * 0.5);
-  function update(lm, tMs, aspect = 1) {
-    const dt = st.lastT ? Math.min(500, tMs - st.lastT) : 0;
-    st.lastT = tMs;
-    let counted = false;
-    if (exercise === 'pushup' || exercise === 'plank') {
-      const p = poseSide(lm || [], ['shoulder', 'elbow', 'wrist', 'hip', 'ankle']) || poseSide(lm || [], ['shoulder', 'elbow', 'wrist', 'hip', 'knee']);
-      if (!p) { st.feedback = 'มองไม่เห็นตัว — ถอยห่างให้เห็นไหล่ ศอก สะโพก และขา'; return { ...st, counted }; }
-      const foot = p.ankle || p.knee;
-      const elbow = smooth(poseAngle(p.shoulder, p.elbow, p.wrist, aspect));
-      const body = poseAngle(p.shoulder, p.hip, foot, aspect);
-      const flat = poseTilt(p.shoulder, foot, aspect) < 45;
-      st.angle = Math.round(elbow);
-      const bodyOk = body >= 150;
-      if (exercise === 'plank') {
-        const holding = flat && body >= 160;
-        if (holding) { st.holdMs += dt; st.phase = 'hold'; st.feedback = 'ดีมาก ค้างไว้'; }
-        else { st.phase = 'wait'; st.feedback = !flat ? 'ลงท่าแพลงก์ (ลำตัวขนานพื้น)' : (body < 160 ? 'ให้ลำตัวตรง สะโพกไม่ตก/ไม่โด่ง' : 'จัดท่า'); }
-        return { ...st, counted };
-      }
-      if (!flat) { st.phase = 'wait'; st.feedback = 'ลงท่าวิดพื้น (ลำตัวขนานพื้น)'; return { ...st, counted }; }
-      if (st.phase === 'wait') { if (elbow > 150) { st.phase = 'up'; st.feedback = 'พร้อม — ลงได้เลย'; } return { ...st, counted }; }
-      if (st.phase === 'up' && elbow < 140) { st.phase = 'going'; st.minAngle = elbow; st.badForm = false; }
-      if (st.phase === 'going' || st.phase === 'down') {
-        st.minAngle = Math.min(st.minAngle, elbow);
-        if (!bodyOk) { st.badForm = true; st.feedback = 'สะโพกตกหรือโด่ง — ให้ลำตัวตรง'; }
-        if (elbow <= 95) st.phase = 'down';
-        if (elbow > 155) {
-          if (st.phase === 'down' && !st.badForm) { st.reps++; counted = true; st.feedback = `${st.reps} ✔`; }
-          else if (!st.badForm) st.feedback = 'ลงให้ลึกกว่านี้ (ศอกงอถึง 90°)';
-          else st.feedback = 'ครั้งนี้ไม่นับ — ลำตัวไม่ตรง';
-          st.phase = 'up';
-        }
-      }
-      return { ...st, counted };
+  const st = { reps: 0, phase: 'wait', holdMs: 0, lastT: 0, minAngle: 999, badForm: false, feedback: 'จัดท่าให้กล้องเห็นทั้งตัวจากด้านข้าง', angle: null,
+    side: null, lostMs: 0, offMs: 0, badMs: 0 };
+  const ema = {};
+  const smooth = (k, v, a = 0.5) => (ema[k] = ema[k] == null ? v : ema[k] * (1 - a) + v * a);
+  const out = counted => ({ ...st, counted });
+
+  function lost(dt, msg) {
+    st.lostMs += dt;
+    // จุดหายสั้น ๆ (เช่น แขนบังตัวตอนลงสุด) ให้คงสถานะเดิมไว้
+    if (st.lostMs > POSE_GRACE_MS.lost) {
+      st.feedback = msg;
+      if (exercise === 'plank') st.phase = 'wait';
+      for (const k in ema) delete ema[k];
     }
-    // squat: มุมเข่า สะโพก–เข่า–ข้อเท้า
-    const p = poseSide(lm || [], ['shoulder', 'hip', 'knee', 'ankle']);
-    if (!p) { st.feedback = 'มองไม่เห็นตัว — ถอยห่างให้เห็นตั้งแต่ไหล่ถึงข้อเท้า'; return { ...st, counted }; }
-    const knee = smooth(poseAngle(p.hip, p.knee, p.ankle, aspect));
-    const upright = poseTilt(p.hip, p.shoulder, aspect) > 30;
-    st.angle = Math.round(knee);
-    if (st.phase === 'wait') { if (knee > 160 && upright) { st.phase = 'up'; st.feedback = 'พร้อม — ย่อลงได้เลย'; } else st.feedback = 'ยืนตรงหันข้างให้กล้อง'; return { ...st, counted }; }
-    if (st.phase === 'up' && knee < 150) { st.phase = 'going'; st.minAngle = knee; st.badForm = false; }
+    return out(false);
+  }
+
+  // ลำดับขึ้น–ลงร่วมกันของวิดพื้นและสควอท
+  function reps(angle, rule, ok, offPose, dt, msgs) {
+    let counted = false;
+    st.offMs = offPose ? st.offMs + dt : 0;
+    if (st.phase === 'wait') {
+      if (!offPose && (ok || !rule.startNeedsOk) && angle > rule.start) { st.phase = 'up'; st.feedback = msgs.ready; }
+      else st.feedback = msgs.setup;
+      return counted;
+    }
+    if (st.offMs > POSE_GRACE_MS.offPose) { st.phase = 'wait'; st.feedback = msgs.setup; return counted; }
+    st.badMs = ok ? 0 : st.badMs + dt;
+    if (st.phase === 'up' && angle < rule.going) { st.phase = 'going'; st.minAngle = angle; st.badForm = false; st.badMs = ok ? 0 : dt; }
     if (st.phase === 'going' || st.phase === 'down') {
-      st.minAngle = Math.min(st.minAngle, knee);
-      if (!upright) { st.badForm = true; st.feedback = 'หลังก้มมากไป — อกตั้ง'; }
-      if (knee <= 100) st.phase = 'down';
-      if (knee > 160) {
+      st.minAngle = Math.min(st.minAngle, angle);
+      if (st.badMs > POSE_GRACE_MS.badForm) { st.badForm = true; st.feedback = msgs.bad; }
+      if (angle <= rule.down) st.phase = 'down';
+      if (angle > rule.up) {
         if (st.phase === 'down' && !st.badForm) { st.reps++; counted = true; st.feedback = `${st.reps} ✔`; }
-        else if (!st.badForm) st.feedback = 'ย่อลงอีกนิด (ต้นขาขนานพื้น)';
-        else st.feedback = 'ครั้งนี้ไม่นับ — หลังก้มมากไป';
+        else if (!st.badForm) st.feedback = msgs.shallow;
+        else st.feedback = msgs.rejected;
         st.phase = 'up';
       }
     }
-    return { ...st, counted };
+    return counted;
+  }
+
+  function update(lm, tMs, aspect = 1) {
+    const dt = st.lastT ? Math.min(500, tMs - st.lastT) : 0;
+    st.lastT = tMs;
+    if (exercise === 'pushup' || exercise === 'plank') {
+      const p = poseSide(lm || [], ['shoulder', 'elbow', 'wrist', 'hip', 'ankle'], st.side) || poseSide(lm || [], ['shoulder', 'elbow', 'wrist', 'hip', 'knee'], st.side);
+      if (!p) return lost(dt, 'มองไม่เห็นตัว — ถอยห่างให้เห็นไหล่ ศอก สะโพก และขา');
+      if (p.side !== st.side) { delete ema.elbow; delete ema.body; delete ema.tilt; }
+      st.side = p.side; st.lostMs = 0;
+      const foot = p.ankle || p.knee;
+      const elbow = smooth('elbow', poseAngle(p.shoulder, p.elbow, p.wrist, aspect));
+      const body = smooth('body', poseAngle(p.shoulder, p.hip, foot, aspect));
+      const flat = smooth('tilt', poseTilt(p.shoulder, foot, aspect)) < 45;
+      st.angle = Math.round(elbow);
+      if (exercise === 'plank') {
+        const holding = flat && body >= 160;
+        if (holding) { st.holdMs += dt; st.phase = 'hold'; st.feedback = 'ดีมาก ค้างไว้'; }
+        else { st.phase = 'wait'; st.feedback = !flat ? 'ลงท่าแพลงก์ (ลำตัวขนานพื้น)' : 'ให้ลำตัวตรง สะโพกไม่ตก/ไม่โด่ง'; }
+        return out(false);
+      }
+      const counted = reps(elbow, REP_RULES.pushup, body >= REP_RULES.pushup.body, !flat, dt, {
+        ready: 'พร้อม — ลงได้เลย', setup: 'ลงท่าวิดพื้น (ลำตัวขนานพื้น)', bad: 'สะโพกตกหรือโด่ง — ให้ลำตัวตรง',
+        shallow: 'ลงให้ลึกกว่านี้ (ศอกงอถึง 90°)', rejected: 'ครั้งนี้ไม่นับ — ลำตัวไม่ตรง' });
+      return out(counted);
+    }
+    // squat: มุมเข่า สะโพก–เข่า–ข้อเท้า
+    const p = poseSide(lm || [], ['shoulder', 'hip', 'knee', 'ankle'], st.side);
+    if (!p) return lost(dt, 'มองไม่เห็นตัว — ถอยห่างให้เห็นตั้งแต่ไหล่ถึงข้อเท้า');
+    if (p.side !== st.side) { delete ema.knee; delete ema.torso; }
+    st.side = p.side; st.lostMs = 0;
+    const knee = smooth('knee', poseAngle(p.hip, p.knee, p.ankle, aspect));
+    const upright = smooth('torso', poseTilt(p.hip, p.shoulder, aspect)) > 30;
+    st.angle = Math.round(knee);
+    const counted = reps(knee, REP_RULES.squat, upright, false, dt, {
+      ready: 'พร้อม — ย่อลงได้เลย', setup: 'ยืนตรงหันข้างให้กล้อง', bad: 'หลังก้มมากไป — อกตั้ง',
+      shallow: 'ย่อลงอีกนิด (ต้นขาขนานพื้น)', rejected: 'ครั้งนี้ไม่นับ — หลังก้มมากไป' });
+    return out(counted);
   }
   return { update, state: st };
 }
@@ -2966,10 +3004,12 @@ async function loadPoseLandmarker() {
   if (poseLandmarker) return poseLandmarker;
   const vision = await import(`${MP_BASE}/vision_bundle.mjs`);
   const fileset = await vision.FilesetResolver.forVisionTasks(`${MP_BASE}/wasm`);
-  const make = delegate => vision.PoseLandmarker.createFromOptions(fileset, {
-    baseOptions: { modelAssetPath: MP_MODEL, delegate }, runningMode: 'VIDEO', numPoses: 1,
+  const make = (model, delegate) => vision.PoseLandmarker.createFromOptions(fileset, {
+    baseOptions: { modelAssetPath: MP_MODELS[model], delegate }, runningMode: 'VIDEO', numPoses: 1,
+    minPoseDetectionConfidence: 0.5, minPosePresenceConfidence: 0.5, minTrackingConfidence: 0.6,
   });
-  try { poseLandmarker = await make('GPU'); } catch (e) { poseLandmarker = await make('CPU'); }
+  try { poseLandmarker = await make('full', 'GPU'); window.__poseModel = 'full/GPU'; }
+  catch (e) { poseLandmarker = await make('lite', 'CPU'); window.__poseModel = 'lite/CPU'; }
   window.__poseVision = vision;
   return poseLandmarker;
 }

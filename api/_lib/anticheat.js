@@ -7,8 +7,8 @@ const LIMITS = {
   squat:  { timed60: { hard: 90,  review: 60 }, max: { hard: 600, review: 150 } },
   plank:  { hold:    { hard: 3600, review: 600 } },
 };
-// เกณฑ์มุมเดียวกับตัวนับในแอป (index.html: createRepCounter)
-const REP_RULE = { pushup: { down: 95, up: 155 }, squat: { down: 100, up: 160 } };
+// เกณฑ์มุมหลวมกว่าตัวนับในแอปเล็กน้อย (index.html: REP_RULES) เพราะร่องรอยเก็บแค่ 10 ครั้ง/วินาที อาจพลาดจุดต่ำสุด
+const REP_RULE = { pushup: { down: 105, up: 145 }, squat: { down: 105, up: 155 } };
 const TRACE_HZ = 10;
 
 // นับจังหวะขึ้น–ลงจากร่องรอยมุม (−1 = เฟรมที่มองไม่เห็นตัว)
