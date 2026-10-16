@@ -142,9 +142,9 @@ figcaption b { font-weight: 700; }
     <tr><td><b>สถานศึกษา</b></td><td>คณะวิศวกรรมศาสตร์ มหาวิทยาลัยราชภัฏมหาสารคาม</td></tr>
     <tr><td><b>ปีที่พิมพ์</b></td><td>พ.ศ. 2569</td></tr>
   </table>
-  <p>โครงการวิจัยนี้มีวัตถุประสงค์เพื่อพัฒนาโปรแกรมออกกำลังกายสำหรับผู้ที่เพิ่งเริ่มออกกำลังกาย ชื่อว่า FitTrack Pro ในรูปแบบ Progressive Web App (PWA) ที่เปิดใช้งานผ่านเว็บเบราว์เซอร์ได้ทั้งบนคอมพิวเตอร์และโทรศัพท์มือถือ และติดตั้งลงหน้าจอโฮมได้โดยไม่ต้องผ่านร้านค้าแอปพลิเคชัน โปรแกรมประกอบด้วยคลังท่าออกกำลังกาย 30 ท่าใน 7 กลุ่มกล้ามเนื้อ พร้อมวิดีโอสอนจาก YouTube ที่เล่นได้ภายในแอป ระบบบันทึกเวทเทรนนิ่งแบบราย set พร้อมนาฬิกาจับเวลาพัก ระบบบันทึกคาร์ดิโอและนาฬิกาจับเวลา การคำนวณโซนอัตราการเต้นของหัวใจด้วยวิธีของ Karvonen การรับค่าอัตราการเต้นของหัวใจแบบสดจากนาฬิกาอัจฉริยะผ่าน Web Bluetooth ตารางและแผนการฝึกสำเร็จรูป 6 แบบ เครื่องคำนวณ BMR/TDEE, BMI, สารอาหารหลัก และ 1RM ตลอดจนหน้าสรุปภาพรวมพร้อมกราฟ ข้อมูลทั้งหมดเก็บไว้ในเครื่องของผู้ใช้ (localStorage) และสำรองหรือย้ายเครื่องได้ด้วยไฟล์ JSON</p>
-  <p>ผลการทดสอบการทำงานด้วยการทดสอบอัตโนมัติบนเว็บเบราว์เซอร์ Chrome พบว่าผ่านกรณีทดสอบชุดหลักครบ 31 จาก 31 กรณี และเมื่อรวมกรณีทดสอบระบบวิดีโอสอนแล้ว ผ่านครบ 42 จาก 42 กรณี ส่วนการเชื่อมต่อนาฬิกาผ่าน Bluetooth ผ่านการทดสอบกับอุปกรณ์จำลองครบทุกกรณี ผลการประเมินความพึงพอใจของผู้ใช้งานกลุ่มตัวอย่างจำนวน ....... คน อยู่ในระดับ ....... มีค่าเฉลี่ย ....... และส่วนเบี่ยงเบนมาตรฐาน .......</p>
-  <p class="ni" style="margin-top:0.6em"><b>คำสำคัญ:</b> โปรแกรมออกกำลังกาย, ผู้เริ่มต้นออกกำลังกาย, Progressive Web App, โซนอัตราการเต้นของหัวใจ, Web Bluetooth</p>
+  <p>โครงการวิจัยนี้มีวัตถุประสงค์เพื่อพัฒนาโปรแกรมออกกำลังกายสำหรับผู้ที่เพิ่งเริ่มออกกำลังกาย ชื่อว่า FitTrack Pro ในรูปแบบ Progressive Web App (PWA) ที่เปิดใช้งานผ่านเว็บเบราว์เซอร์ได้ทั้งบนคอมพิวเตอร์และโทรศัพท์มือถือ โปรแกรมประกอบด้วยคลังท่าออกกำลังกาย 30 ท่าพร้อมวิดีโอสอน ระบบบันทึกเวทเทรนนิ่งและคาร์ดิโอ นาฬิกาจับเวลาพัก โซนอัตราการเต้นของหัวใจด้วยวิธีของ Karvonen การรับค่าหัวใจแบบสดจากนาฬิกาอัจฉริยะผ่าน Web Bluetooth ซึ่งทดสอบกับนาฬิกา Huawei Watch GT 6 การดึงกิจกรรมจากแอป Huawei Health ผ่าน Strava API การคำนวณอัตโนมัติจากโปรไฟล์ผู้ใช้ (แคลอรี่ด้วยสมการของ Keytel และค่า MET, pace และระดับความหนักจากอัตราการเต้นของหัวใจ) ระบบชาเลนจ์ที่นับจำนวนครั้งของวิดพื้นและสควอท และจับเวลาแพลงก์ด้วยกล้อง โดยใช้ MediaPipe Pose Landmarker ประมวลผลภายในเครื่อง และระบบบัญชีผู้ใช้ ตารางอันดับ และการแข่งขัน 3 รูปแบบ (ดวล 1:1 ทีมต่อทีม และอีเวนต์) ที่ทำงานบน Vercel Functions และ Supabase พร้อมระบบตรวจสอบผลฝั่งเซิร์ฟเวอร์เพื่อป้องกันการโกง ข้อมูลการฝึกส่วนตัวเก็บไว้ในเครื่องของผู้ใช้ ส่วนบัญชีและผลการแข่งขันเก็บบนเซิร์ฟเวอร์ตามหลักการของพระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562</p>
+  <p>ผลการทดสอบอัตโนมัติผ่านครบ 293 จาก 293 กรณี ประกอบด้วยการทดสอบการทำงานของแอปหลัก การทดสอบตัวนับท่าด้วยข้อมูลจุดร่างกายจำลอง การทดสอบด้วยกล้องจำลองในเว็บเบราว์เซอร์จริง และการทดสอบระบบบัญชี อันดับ และการแข่งขันกับฐานข้อมูลจริง ผลการประเมินความพึงพอใจของผู้ใช้งานกลุ่มตัวอย่างจำนวน ....... คน อยู่ในระดับ ....... มีค่าเฉลี่ย ....... และส่วนเบี่ยงเบนมาตรฐาน .......</p>
+  <p class="ni" style="margin-top:0.6em"><b>คำสำคัญ:</b> โปรแกรมออกกำลังกาย, Progressive Web App, Web Bluetooth, การประมาณท่าทางร่างกาย, ตารางอันดับ</p>
 </section>
 
 <section class="front">
@@ -157,9 +157,9 @@ figcaption b { font-weight: 700; }
     <tr><td><b>Institution</b></td><td>Faculty of Engineering, Rajabhat Maha Sarakham University</td></tr>
     <tr><td><b>Year</b></td><td>2026</td></tr>
   </table>
-  <p>This research project aimed to develop a workout program for people who are new to exercise, named FitTrack Pro. It is a Progressive Web App (PWA) that runs in a web browser on both computers and mobile phones and can be installed to the home screen without an app store. The program provides an exercise library of 30 exercises covering 7 muscle groups with in-app YouTube tutorial videos, set-by-set weight training logging with a rest timer, cardio logging with a stopwatch, heart-rate zone calculation using the Karvonen method, live heart-rate readings from smartwatches over Web Bluetooth, a weekly schedule and 6 ready-made training programs, calculators for BMR/TDEE, BMI, macronutrients and one-repetition maximum (1RM), and a dashboard with charts. All data are stored on the user's device (localStorage) and can be backed up or moved with a JSON file.</p>
-  <p>Automated functional tests in the Chrome browser passed all 31 of 31 core test cases, and all 42 of 42 cases after adding the tutorial-video tests. The Bluetooth heart-rate connection passed all test cases with a simulated device. The satisfaction evaluation of ....... sample users was at the ....... level, with a mean of ....... and a standard deviation of .......</p>
-  <p class="ni" style="margin-top:0.6em"><b>Keywords:</b> Workout Program, Beginner Exercise, Progressive Web App, Heart Rate Zones, Web Bluetooth</p>
+  <p>This research project aimed to develop a workout program for people who are new to exercise, named FitTrack Pro. It is a Progressive Web App (PWA) that runs in a web browser on both computers and mobile phones. The program provides an exercise library of 30 exercises with tutorial videos, weight training and cardio logging, a rest timer, heart-rate zones using the Karvonen method, and live heart-rate readings from smartwatches over Web Bluetooth, tested with a Huawei Watch GT 6. It also imports workouts from Huawei Health through the Strava API and calculates values automatically from the user profile (calories with the Keytel equation or MET values, pace, and intensity from heart rate). A camera challenge counts push-ups and squats and times planks with MediaPipe Pose Landmarker running on the device. User accounts, leaderboards and three competition formats (one-on-one duels, team versus team and events) run on Vercel Functions and Supabase, with server-side result checks against cheating. Personal training data stay on the user's device, while accounts and competition results are stored on the server following the principles of the Thai Personal Data Protection Act B.E. 2562 (2019).</p>
+  <p>All 293 of 293 automated test cases passed. They cover the main app functions, the repetition counter with simulated body landmarks, a simulated camera in a real browser, and the account, leaderboard and competition system against the live database. The satisfaction evaluation of ....... sample users was at the ....... level, with a mean of ....... and a standard deviation of .......</p>
+  <p class="ni" style="margin-top:0.6em"><b>Keywords:</b> Workout Program, Progressive Web App, Web Bluetooth, Pose Estimation, Leaderboard</p>
 </section>
 
 <!-- ═══════════ กิตติกรรมประกาศ ═══════════ -->
@@ -195,13 +195,16 @@ figcaption b { font-weight: 700; }
 <h2 data-toc="1.1 ความเป็นมาและความสำคัญของปัญหา">1.1 ความเป็นมาและความสำคัญของปัญหา</h2>
 <p>การออกกำลังกายอย่างสม่ำเสมอเป็นปัจจัยสำคัญต่อสุขภาพ องค์การอนามัยโลกแนะนำให้ผู้ใหญ่มีกิจกรรมทางกายระดับปานกลางอย่างน้อย 150–300 นาทีต่อสัปดาห์ ร่วมกับการฝึกเสริมสร้างกล้ามเนื้ออย่างน้อย 2 วันต่อสัปดาห์ [8] อย่างไรก็ตาม ผู้ที่เพิ่งเริ่มออกกำลังกายมักพบปัญหาหลายประการ ได้แก่ ไม่รู้ว่าควรเล่นท่าใด ไม่แน่ใจว่าท่าที่ทำถูกต้องหรือไม่ ไม่รู้ว่าควรพักระหว่าง set นานเท่าใด ไม่รู้ว่าควรใช้ความหนักระดับใด และไม่ได้จดบันทึกการฝึก จึงไม่เห็นความก้าวหน้าของตนเองและเลิกฝึกไปในที่สุด</p>
 <p>แอปพลิเคชันด้านการออกกำลังกายที่มีอยู่ในปัจจุบันจำนวนมากต้องสมัครสมาชิก ต้องติดตั้งจากร้านค้าแอปพลิเคชัน มีค่าบริการรายเดือนสำหรับฟังก์ชันสำคัญ หรือแยกการบันทึกเวทเทรนนิ่ง การบันทึกคาร์ดิโอ และการคำนวณทางโภชนาการไว้คนละแอป ผู้เริ่มต้นจึงต้องใช้หลายแอปพร้อมกัน นอกจากนี้ข้อมูลสุขภาพของผู้ใช้มักถูกส่งไปเก็บไว้บนเซิร์ฟเวอร์ของผู้ให้บริการ</p>
-<p>คณะผู้วิจัยจึงพัฒนา “โปรแกรมออกกำลังกายสำหรับมือใหม่” ชื่อ FitTrack Pro ในรูปแบบ Progressive Web App ที่รวมเครื่องมือที่ผู้เริ่มต้นจำเป็นต้องใช้ไว้ในที่เดียว ได้แก่ คลังท่าพร้อมวิดีโอสอน การบันทึกเวทเทรนนิ่งและคาร์ดิโอ นาฬิกาจับเวลาพัก โซนอัตราการเต้นของหัวใจ การรับค่าหัวใจแบบสดจากนาฬิกาอัจฉริยะ แผนการฝึกสำเร็จรูป และเครื่องคำนวณด้านโภชนาการและความแข็งแรง โปรแกรมใช้งานได้ฟรี ไม่ต้องสมัครสมาชิก ใช้งานออฟไลน์ได้ และเก็บข้อมูลไว้ในเครื่องของผู้ใช้เท่านั้น</p>
+<p>คณะผู้วิจัยจึงพัฒนา “โปรแกรมออกกำลังกายสำหรับมือใหม่” ชื่อ FitTrack Pro ในรูปแบบ Progressive Web App ที่รวมเครื่องมือที่ผู้เริ่มต้นจำเป็นต้องใช้ไว้ในที่เดียว ได้แก่ คลังท่าพร้อมวิดีโอสอน การบันทึกเวทเทรนนิ่งและคาร์ดิโอ นาฬิกาจับเวลาพัก โซนอัตราการเต้นของหัวใจ การรับค่าหัวใจแบบสดจากนาฬิกาอัจฉริยะ แผนการฝึกสำเร็จรูป และเครื่องคำนวณด้านโภชนาการและความแข็งแรง โปรแกรมใช้งานได้ฟรี ไม่ต้องสมัครสมาชิก ใช้งานออฟไลน์ได้ และเก็บข้อมูลการฝึกไว้ในเครื่องของผู้ใช้</p>
+<p>เมื่อทดลองใช้งานโปรแกรมรุ่นแรก คณะผู้วิจัยพบปัญหาเพิ่มเติม 3 ประการ ประการแรก ผู้ใช้ที่มีนาฬิกาอัจฉริยะยังต้องกรอกข้อมูลคาร์ดิโอซ้ำเอง ประการที่สอง ค่าที่ผู้เริ่มต้นไม่รู้ เช่น แคลอรี่ที่เผาผลาญ และระดับความหนัก ยังต้องกรอกเอง และประการที่สาม การฝึกคนเดียวขาดแรงจูงใจและไม่มีใครตรวจว่าทำท่าถูกต้องหรือไม่ คณะผู้วิจัยจึงพัฒนาเพิ่มเติม ได้แก่ การดึงกิจกรรมจากนาฬิกาผ่าน Strava การคำนวณอัตโนมัติจากสมการที่มีงานวิจัยรองรับ ระบบชาเลนจ์ที่นับจำนวนครั้งด้วยกล้องโดยตรวจท่าทางไปพร้อมกัน และระบบตารางอันดับกับการแข่งขันกับเพื่อนหรือทีม โดยออกแบบให้ผลที่ขึ้นตารางอันดับผ่านการตรวจสอบที่เซิร์ฟเวอร์ก่อนเสมอ</p>
 
 <h2 data-toc="1.2 วัตถุประสงค์ของโครงการวิจัย">1.2 วัตถุประสงค์ของโครงการวิจัย</h2>
 <ol>
   <li>เพื่อพัฒนาโปรแกรมออกกำลังกายสำหรับผู้เริ่มต้นในรูปแบบ Progressive Web App ที่ใช้งานได้ทั้งบนคอมพิวเตอร์และโทรศัพท์มือถือ</li>
   <li>เพื่อพัฒนาระบบบันทึกและสรุปผลการออกกำลังกายแบบเวทเทรนนิ่งและคาร์ดิโอ พร้อมเครื่องมือช่วยฝึก ได้แก่ วิดีโอสอนท่า นาฬิกาจับเวลาพัก และโซนอัตราการเต้นของหัวใจ</li>
-  <li>เพื่อพัฒนาการเชื่อมต่อนาฬิกาอัจฉริยะผ่าน Web Bluetooth เพื่อแสดงอัตราการเต้นของหัวใจแบบสดระหว่างออกกำลังกาย</li>
+  <li>เพื่อพัฒนาการเชื่อมต่อนาฬิกาอัจฉริยะผ่าน Web Bluetooth เพื่อแสดงอัตราการเต้นของหัวใจแบบสดระหว่างออกกำลังกาย และดึงกิจกรรมจากนาฬิกาผ่าน Strava</li>
+  <li>เพื่อพัฒนาระบบนับจำนวนครั้งและตรวจท่าออกกำลังกายด้วยกล้อง โดยใช้การประมาณท่าทางร่างกาย (Pose Estimation) ภายในเครื่องของผู้ใช้</li>
+  <li>เพื่อพัฒนาระบบตารางอันดับและการแข่งขันที่มีการตรวจสอบผลฝั่งเซิร์ฟเวอร์ เพื่อสร้างแรงจูงใจในการออกกำลังกายอย่างต่อเนื่อง</li>
   <li>เพื่อทดสอบการทำงานและประเมินความพึงพอใจของผู้ใช้งานที่มีต่อโปรแกรม</li>
 </ol>
 
@@ -215,11 +218,16 @@ figcaption b { font-weight: 700; }
   <li>เครื่องคำนวณ BMR/TDEE, BMI, สารอาหารหลัก (มาโคร) และ 1RM</li>
   <li>การส่งออกและนำเข้าข้อมูลเป็นไฟล์ JSON</li>
   <li>การติดตั้งเป็นแอปบนหน้าจอโฮมและใช้งานแบบออฟไลน์</li>
+  <li>โปรไฟล์ผู้ใช้ (เพศ อายุ น้ำหนัก ส่วนสูง HR ขณะพัก) และการคำนวณอัตโนมัติ ได้แก่ แคลอรี่ของคาร์ดิโอและเวทเทรนนิ่ง pace ระดับความหนักจาก HR นาฬิกาพักที่เริ่มเองหลังบันทึก set และการเติมค่าในเครื่องคำนวณ</li>
+  <li>การดึงกิจกรรมจาก Huawei Health ผ่าน Strava เข้าประวัติคาร์ดิโออัตโนมัติ</li>
+  <li>ชาเลนจ์นับท่าด้วยกล้อง 3 ท่า ได้แก่ วิดพื้น สควอท และแพลงก์ ใน 3 โหมด (มากสุดใน 60 วินาที ทำได้มากสุด และค้างได้นานสุด) พร้อมสถิติส่วนตัว</li>
+  <li>บัญชีผู้ใช้ เพื่อน ทีม ตารางอันดับรายสัปดาห์ รายเดือน และตลอดกาล แยกตามเพศและช่วงอายุ</li>
+  <li>การแข่งขัน 3 รูปแบบ ได้แก่ ดวล 1:1 ทีมต่อทีม และอีเวนต์ที่ผู้ดูแลสร้าง พร้อมการแจ้งผลในแอป เหรียญรางวัล 10 แบบ และระบบป้องกันการโกง (ตรวจผลที่เซิร์ฟเวอร์ วิดีโอหลักฐาน การรายงาน และหน้าผู้ดูแล)</li>
 </ol>
 <h3 class="sub">1.3.2 ขอบเขตด้านผู้ใช้งาน</h3>
-<p>ผู้ใช้งานคือบุคคลทั่วไปที่เพิ่งเริ่มออกกำลังกายหรือมีประสบการณ์น้อย ใช้งานแบบส่วนบุคคล ไม่มีระบบสมาชิกและไม่มีผู้ดูแลระบบ</p>
+<p>ผู้ใช้งานแบ่งเป็น 2 กลุ่ม กลุ่มแรกคือผู้ใช้งานทั่วไปที่เพิ่งเริ่มออกกำลังกายหรือมีประสบการณ์น้อย ใช้ฟังก์ชันบันทึกและคำนวณได้โดยไม่ต้องสมัครสมาชิก และสมัครสมาชิกเมื่อต้องการส่งผลเข้าตารางอันดับหรือแข่งขันกับผู้อื่น ผู้ใช้อายุต่ำกว่า 18 ปีต้องได้รับความยินยอมจากผู้ปกครอง กลุ่มที่สองคือผู้ดูแลระบบ ซึ่งตรวจผลที่ถูกตั้งข้อสงสัย จัดการรายงาน ระงับบัญชี และสร้างอีเวนต์</p>
 <h3 class="sub">1.3.3 ขอบเขตด้านอุปกรณ์</h3>
-<p>โปรแกรมใช้งานบนเว็บเบราว์เซอร์รุ่นปัจจุบัน ได้แก่ Google Chrome, Microsoft Edge และ Safari ฟังก์ชันรับค่าหัวใจผ่าน Bluetooth ใช้ได้บน Chrome หรือ Edge (Android, Windows, macOS) กับอุปกรณ์ที่ส่งข้อมูลตามมาตรฐาน Heart Rate Service ของ Bluetooth SIG ส่วน iPhone และ iPad ยังไม่รองรับ Web Bluetooth</p>
+<p>โปรแกรมใช้งานบนเว็บเบราว์เซอร์รุ่นปัจจุบัน ได้แก่ Google Chrome, Microsoft Edge และ Safari ฟังก์ชันรับค่าหัวใจผ่าน Bluetooth ใช้ได้บน Chrome หรือ Edge (Android, Windows, macOS) กับอุปกรณ์ที่ส่งข้อมูลตามมาตรฐาน Heart Rate Service ของ Bluetooth SIG ส่วน iPhone และ iPad ยังไม่รองรับ Web Bluetooth นาฬิกาที่ใช้ทดสอบจริงคือ Huawei Watch GT 6 ระบบชาเลนจ์ต้องใช้กล้องของคอมพิวเตอร์หรือโทรศัพท์มือถือ และต้องต่ออินเทอร์เน็ตครั้งแรกเพื่อโหลดแบบจำลองตรวจจับท่าทาง</p>
 
 <h2 data-toc="1.4 ประโยชน์ที่คาดว่าจะได้รับ">1.4 ประโยชน์ที่คาดว่าจะได้รับ</h2>
 <ol>
@@ -227,7 +235,9 @@ figcaption b { font-weight: 700; }
   <li>ผู้ใช้เห็นความก้าวหน้าของตนเองจากสถิติและกราฟ ซึ่งช่วยสร้างแรงจูงใจในการฝึกอย่างต่อเนื่อง</li>
   <li>ผู้ใช้ควบคุมความหนักของการฝึกคาร์ดิโอได้เหมาะสมจากโซนอัตราการเต้นของหัวใจ</li>
   <li>ข้อมูลสุขภาพของผู้ใช้อยู่ในเครื่องของผู้ใช้เอง ไม่ถูกส่งไปยังเซิร์ฟเวอร์ภายนอก</li>
-  <li>คณะผู้วิจัยได้ประยุกต์ความรู้ด้านการพัฒนาเว็บแอปพลิเคชัน การออกแบบระบบ และการทดสอบซอฟต์แวร์</li>
+  <li>ผู้ใช้ไม่ต้องกรอกค่าที่คำนวณได้เอง และได้ค่าที่มีที่มาจากงานวิจัย</li>
+  <li>ผู้ใช้มีแรงจูงใจเพิ่มขึ้นจากชาเลนจ์ ตารางอันดับ และการแข่งขันกับเพื่อน โดยผลที่นับด้วยกล้องช่วยยืนยันว่าทำท่าถูกต้อง</li>
+  <li>คณะผู้วิจัยได้ประยุกต์ความรู้ด้านการพัฒนาเว็บแอปพลิเคชัน การออกแบบระบบ ฐานข้อมูล ความปลอดภัย คอมพิวเตอร์วิทัศน์ และการทดสอบซอฟต์แวร์</li>
 </ol>
 
 <h2 data-toc="1.5 นิยามศัพท์เฉพาะ">1.5 นิยามศัพท์เฉพาะ</h2>
@@ -240,6 +250,11 @@ figcaption b { font-weight: 700; }
   <li><b>HR (Heart Rate)</b> หมายถึง อัตราการเต้นของหัวใจ หน่วยเป็นครั้งต่อนาที (bpm)</li>
   <li><b>1RM (One-Repetition Maximum)</b> หมายถึง น้ำหนักสูงสุดที่ผู้ฝึกยกได้ 1 ครั้งในท่านั้น</li>
   <li><b>PWA (Progressive Web App)</b> หมายถึง เว็บแอปพลิเคชันที่ติดตั้งลงหน้าจอโฮมและทำงานแบบออฟไลน์ได้คล้ายแอปพลิเคชันทั่วไป</li>
+  <li><b>MET (Metabolic Equivalent of Task)</b> หมายถึง อัตราการใช้พลังงานของกิจกรรมเทียบกับขณะนั่งพัก 1 MET เท่ากับประมาณ 1 กิโลแคลอรีต่อน้ำหนักตัว 1 กิโลกรัมต่อชั่วโมง</li>
+  <li><b>การประมาณท่าทางร่างกาย (Pose Estimation)</b> หมายถึง การหาตำแหน่งจุดสำคัญของร่างกาย เช่น ไหล่ ศอก สะโพก เข่า จากภาพหรือวิดีโอด้วยแบบจำลองการเรียนรู้ของเครื่อง</li>
+  <li><b>ชาเลนจ์ (Challenge)</b> หมายถึง การทดสอบตนเองที่โปรแกรมนับผลด้วยกล้อง เช่น วิดพื้นให้ได้มากที่สุดใน 60 วินาที</li>
+  <li><b>ตารางอันดับ (Leaderboard)</b> หมายถึง ตารางเรียงลำดับผลของผู้ใช้หลายคนในรายการและช่วงเวลาเดียวกัน</li>
+  <li><b>RLS (Row Level Security)</b> หมายถึง กลไกของฐานข้อมูล PostgreSQL ที่กำหนดสิทธิ์การอ่านและเขียนข้อมูลเป็นรายแถว</li>
 </ol>
 </section>
 
@@ -285,6 +300,15 @@ figcaption b { font-weight: 700; }
 <p class="ni" style="text-align:center">Epley: 1RM = w × (1 + r / 30) &nbsp;&nbsp;&nbsp;&nbsp; (2.5)</p>
 <p class="ni" style="text-align:center">Brzycki: 1RM = w × 36 / (37 − r) &nbsp;&nbsp;&nbsp;&nbsp; (2.6)</p>
 <p>เมื่อจำนวนครั้งไม่เกิน 10 ครั้ง โปรแกรมใช้ค่าเฉลี่ยของทั้งสองสูตร และเมื่อเกิน 10 ครั้งใช้สูตร Epley เพียงสูตรเดียว เนื่องจากสูตร Brzycki คลาดเคลื่อนมากขึ้นเมื่อจำนวนครั้งสูง และหารด้วยศูนย์ที่ 37 ครั้ง</p>
+<h3 class="sub">2.3.5 พลังงานที่ใช้ระหว่างออกกำลังกาย</h3>
+<p>เมื่อมีอัตราการเต้นของหัวใจเฉลี่ย (HR) ตั้งแต่ 90 ครั้งต่อนาที และผู้ใช้กรอกเพศ อายุ (A) และน้ำหนัก (W) ไว้ในโปรไฟล์ โปรแกรมประมาณพลังงานด้วยสมการของ Keytel และคณะ [17] ซึ่งให้ผลเป็นกิโลจูลต่อนาที แล้วหารด้วย 4.184 เพื่อแปลงเป็นกิโลแคลอรี ดังนี้</p>
+<p class="ni" style="text-align:center">ผู้ชาย: EE = −55.0969 + 0.6309HR + 0.1988W + 0.2017A &nbsp;&nbsp;&nbsp;&nbsp; (2.7)</p>
+<p class="ni" style="text-align:center">ผู้หญิง: EE = −20.4022 + 0.4472HR − 0.1263W + 0.074A &nbsp;&nbsp;&nbsp;&nbsp; (2.8)</p>
+<p>เมื่อไม่มีค่า HR โปรแกรมใช้ค่า MET ของกิจกรรมจาก Compendium of Physical Activities [18] เช่น วิ่ง 9.8 MET จักรยาน 7.5 MET เดินเร็ว 4.3 MET ตามสมการที่ 2.9 โดย t คือเวลาเป็นชั่วโมง สำหรับเวทเทรนนิ่ง โปรแกรมใช้ 3.5 MET (ปานกลาง) หรือ 6 MET (หนัก เมื่อ RIR เฉลี่ยไม่เกิน 1) คูณระยะเวลาตั้งแต่ set แรกถึง set สุดท้าย ค่าที่ได้จากการประมาณแสดงด้วยเครื่องหมาย ≈ เพื่อไม่ให้ผู้ใช้เข้าใจว่าเป็นค่าที่วัดได้จริง</p>
+<p class="ni" style="text-align:center">พลังงาน (kcal) = MET × W × t &nbsp;&nbsp;&nbsp;&nbsp; (2.9)</p>
+<h3 class="sub">2.3.6 การวัดมุมข้อต่อจากจุดร่างกาย</h3>
+<p>ระบบชาเลนจ์คำนวณมุมที่ข้อต่อ B จากจุด A, B และ C เช่น ไหล่–ศอก–ข้อมือ สำหรับมุมศอก หรือสะโพก–เข่า–ข้อเท้า สำหรับมุมเข่า ด้วยผลคูณจุดของเวกเตอร์ BA และ BC ดังสมการที่ 2.10 เนื่องจากพิกัดจากแบบจำลองมีค่า 0–1 ทั้งสองแกน โปรแกรมจึงคูณพิกัดแกนนอนด้วยอัตราส่วนความกว้างต่อความสูงของภาพก่อนคำนวณ</p>
+<p class="ni" style="text-align:center">θ = arccos( (BA · BC) / (|BA| |BC|) ) &nbsp;&nbsp;&nbsp;&nbsp; (2.10)</p>
 
 <h2 data-toc="2.4 เทคโนโลยีที่ใช้ในการพัฒนา">2.4 เทคโนโลยีที่ใช้ในการพัฒนา</h2>
 <h3 class="sub">2.4.1 HTML, CSS และ JavaScript</h3>
@@ -303,6 +327,16 @@ figcaption b { font-weight: 700; }
 <p>PowerShell เป็นเชลล์ที่ติดมากับระบบปฏิบัติการ Windows ส่วน HttpListener เป็นคลาสของ .NET ที่ใช้สร้างเว็บเซิร์ฟเวอร์ขนาดเล็ก คณะผู้วิจัยใช้ทั้งสองอย่างสร้างสคริปต์ติดตั้งและเปิดโปรแกรม (run.ps1) ที่ดาวน์โหลดโปรแกรมจาก GitHub แล้วเปิดเว็บเซิร์ฟเวอร์ในเครื่องที่ http://localhost:8080 ผู้ใช้จึงไม่ต้องติดตั้งโปรแกรมอื่นเพิ่ม</p>
 <h3 class="sub">2.4.8 Git, GitHub และ Vercel</h3>
 <p>Git ใช้จัดการเวอร์ชันของซอร์สโค้ด GitHub ใช้เก็บซอร์สโค้ดและเป็นแหล่งดาวน์โหลดของสคริปต์ติดตั้ง ส่วน Vercel เป็นบริการโฮสต์เว็บที่ให้บริการผ่าน https ซึ่งจำเป็นต่อการใช้ Service Worker และ Web Bluetooth บนโทรศัพท์มือถือ</p>
+<h3 class="sub">2.4.9 MediaPipe Pose Landmarker</h3>
+<p>MediaPipe Pose Landmarker เป็นเครื่องมือของ Google สำหรับตรวจจับจุดสำคัญของร่างกาย 33 จุดจากภาพหรือวิดีโอ พัฒนาต่อจากแบบจำลอง BlazePose [19] ทำงานในเว็บเบราว์เซอร์ด้วย WebAssembly และ GPU [20] จึงประมวลผลภาพจากกล้องภายในเครื่องโดยไม่ต้องส่งภาพออกไปภายนอก แบบจำลองมีหลายขนาด โปรแกรมใช้รุ่น full เมื่อเครื่องรองรับ GPU และรุ่น lite เมื่อประมวลผลด้วย CPU เพื่อให้ยังทำงานได้ลื่น</p>
+<h3 class="sub">2.4.10 MediaRecorder API</h3>
+<p>MediaRecorder API ใช้บันทึกภาพจากกล้องเป็นไฟล์วิดีโอในเบราว์เซอร์ [10] โปรแกรมใช้อัดวิดีโอหลักฐานความละเอียดต่ำ (300 กิโลบิตต่อวินาที) เฉพาะเมื่อผู้ใช้เลือกเปิด และส่งขึ้นเซิร์ฟเวอร์เฉพาะผลที่ต้องให้ผู้ดูแลตรวจ</p>
+<h3 class="sub">2.4.11 Strava API และ OAuth 2.0</h3>
+<p>Strava เป็นบริการบันทึกกิจกรรมออกกำลังกายที่แอป Huawei Health ส่งข้อมูลไปให้ได้ Strava API v3 [21] ให้แอปอื่นอ่านกิจกรรมของผู้ใช้หลังผู้ใช้อนุญาตผ่านมาตรฐาน OAuth 2.0 [25] ซึ่งต้องใช้ Client Secret ที่ห้ามเปิดเผยในหน้าเว็บ โปรแกรมจึงแลก token ผ่านฟังก์ชันฝั่งเซิร์ฟเวอร์</p>
+<h3 class="sub">2.4.12 Supabase</h3>
+<p>Supabase เป็นบริการฐานข้อมูล PostgreSQL ที่มีระบบยืนยันตัวตน (Auth) และพื้นที่เก็บไฟล์ (Storage) ในตัว [22] ฐานข้อมูลรองรับ Row Level Security (RLS) โปรแกรมเปิด RLS ทุกตารางโดยไม่อนุญาตให้เว็บเบราว์เซอร์เข้าถึงตารางโดยตรง การอ่านเขียนทั้งหมดต้องผ่านฟังก์ชันฝั่งเซิร์ฟเวอร์ของโปรแกรม</p>
+<h3 class="sub">2.4.13 Vercel Functions</h3>
+<p>Vercel Functions คือโค้ดฝั่งเซิร์ฟเวอร์แบบ Serverless ที่ทำงานเมื่อมีคำขอเข้ามา [26] โปรแกรมใช้เก็บกุญแจลับของ Strava และ Supabase ไว้ฝั่งเซิร์ฟเวอร์ ตรวจสิทธิ์ผู้ใช้ และตรวจผลการแข่งขันก่อนบันทึก</p>
 
 <h2 data-toc="2.5 แอปพลิเคชันที่เกี่ยวข้อง">2.5 แอปพลิเคชันที่เกี่ยวข้อง</h2>
 <p>คณะผู้วิจัยได้ศึกษาแอปพลิเคชันด้านการออกกำลังกายที่มีผู้ใช้จำนวนมาก เพื่อนำจุดเด่นมาออกแบบและหาส่วนที่ยังขาดสำหรับผู้เริ่มต้น ดังนี้</p>
@@ -318,13 +352,20 @@ figcaption b { font-weight: 700; }
   <thead><tr><th>ประเด็น</th><th>Strong</th><th>Hevy</th><th>Strava</th><th>Nike Training Club</th><th>โปรแกรมที่พัฒนา</th></tr></thead>
   <tr><td>จุดเน้นหลัก</td><td>บันทึกเวท</td><td>บันทึกเวท + สังคม</td><td>คาร์ดิโอ + GPS</td><td>คลาสวิดีโอ</td><td>เวท + คาร์ดิโอ + เครื่องคำนวณ</td></tr>
   <tr><td>รูปแบบการติดตั้ง</td><td>แอปมือถือ</td><td>แอปมือถือ</td><td>แอปมือถือ</td><td>แอปมือถือ</td><td>เว็บ (PWA) ติดตั้งได้ ไม่ผ่าน store</td></tr>
-  <tr><td>บัญชีผู้ใช้</td><td>ตามนโยบายแอป</td><td>ต้องมี</td><td>ต้องมี</td><td>ต้องมี</td><td>ไม่ต้องมี</td></tr>
-  <tr><td>ที่เก็บข้อมูล</td><td>ตามนโยบายแอป</td><td>เซิร์ฟเวอร์ผู้ให้บริการ</td><td>เซิร์ฟเวอร์ผู้ให้บริการ</td><td>เซิร์ฟเวอร์ผู้ให้บริการ</td><td>ในเครื่องผู้ใช้</td></tr>
+  <tr><td>บัญชีผู้ใช้</td><td>ตามนโยบายแอป</td><td>ต้องมี</td><td>ต้องมี</td><td>ต้องมี</td><td>ไม่บังคับ (ต้องมีเฉพาะการแข่งขัน)</td></tr>
+  <tr><td>ที่เก็บข้อมูล</td><td>ตามนโยบายแอป</td><td>เซิร์ฟเวอร์ผู้ให้บริการ</td><td>เซิร์ฟเวอร์ผู้ให้บริการ</td><td>เซิร์ฟเวอร์ผู้ให้บริการ</td><td>การฝึกอยู่ในเครื่อง ผลแข่งอยู่บนเซิร์ฟเวอร์</td></tr>
+  <tr><td>นับท่าด้วยกล้อง</td><td colspan="4" class="c">ขึ้นอยู่กับแอปและรุ่น</td><td>มี (ประมวลผลในเครื่อง)</td></tr>
   <tr><td>ภาษาไทยทั้งระบบ</td><td colspan="4" class="c">ขึ้นอยู่กับแอปและรุ่น</td><td>มี</td></tr>
 </table></div>
 
-<h2 data-toc="2.6 กรอบแนวคิดของโครงการวิจัย">2.6 กรอบแนวคิดของโครงการวิจัย</h2>
-<p>จากการศึกษาทฤษฎีและแอปพลิเคชันที่เกี่ยวข้อง คณะผู้วิจัยกำหนดกรอบแนวคิดของโครงการวิจัยดังภาพที่ 2.1 โดยรับข้อมูลจากผู้ใช้และอุปกรณ์วัดหัวใจ นำมาประมวลผลในโปรแกรม แล้วแสดงผลลัพธ์ที่ช่วยให้ผู้เริ่มต้นฝึกได้อย่างถูกต้องและต่อเนื่อง</p>
+<h2 data-toc="2.6 การสร้างแรงจูงใจด้วยกลไกของเกม">2.6 การสร้างแรงจูงใจด้วยกลไกของเกม</h2>
+<p>Deterding และคณะ [24] นิยามเกมมิฟิเคชัน (Gamification) ว่าเป็นการนำองค์ประกอบของการออกแบบเกมมาใช้ในบริบทที่ไม่ใช่เกม องค์ประกอบที่พบบ่อย ได้แก่ คะแนน ตารางอันดับ เหรียญรางวัล และการแข่งขัน โปรแกรมนำองค์ประกอบเหล่านี้มาใช้ในรูปแบบของชาเลนจ์ ตารางอันดับ การดวลกับเพื่อน การแข่งแบบทีม และเหรียญรางวัล เพื่อให้ผู้เริ่มต้นมีเป้าหมายระยะสั้นและมีเหตุผลที่จะกลับมาฝึกต่อ อย่างไรก็ตาม ตารางอันดับจะมีความหมายก็ต่อเมื่อผลในตารางเชื่อถือได้ โปรแกรมจึงนับผลด้วยกล้องแทนการให้ผู้ใช้กรอกตัวเลขเอง และตรวจผลซ้ำที่เซิร์ฟเวอร์ทุกครั้ง</p>
+
+<h2 data-toc="2.7 พระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562">2.7 พระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562</h2>
+<p>พระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562 [23] กำหนดให้ผู้เก็บข้อมูลส่วนบุคคลต้องได้รับความยินยอมจากเจ้าของข้อมูล เก็บข้อมูลเท่าที่จำเป็นตามวัตถุประสงค์ และให้เจ้าของข้อมูลขอลบข้อมูลได้ ในกรณีผู้เยาว์ การขอความยินยอมบางกรณีต้องได้รับความยินยอมจากผู้ใช้อำนาจปกครองด้วย โปรแกรมจึงไม่เก็บอีเมลหรือเบอร์โทรศัพท์ ให้ผู้ใช้ยินยอมก่อนสมัคร ให้ผู้ใช้อายุต่ำกว่า 18 ปียืนยันความยินยอมของผู้ปกครอง และให้ผู้ใช้ลบบัญชีพร้อมข้อมูลทั้งหมดได้เอง ส่วนภาพจากกล้องประมวลผลภายในเครื่องและไม่ถูกส่งออก ยกเว้นวิดีโอหลักฐานที่ผู้ใช้เลือกเปิดเอง</p>
+
+<h2 data-toc="2.8 กรอบแนวคิดของโครงการวิจัย">2.8 กรอบแนวคิดของโครงการวิจัย</h2>
+<p>จากการศึกษาทฤษฎีและแอปพลิเคชันที่เกี่ยวข้อง คณะผู้วิจัยกำหนดกรอบแนวคิดของโครงการวิจัยดังภาพที่ 2.1 โดยรับข้อมูลจากผู้ใช้ อุปกรณ์วัดหัวใจ กล้อง และ Strava นำมาประมวลผลในโปรแกรม แล้วแสดงผลลัพธ์ที่ช่วยให้ผู้เริ่มต้นฝึกได้อย่างถูกต้องและต่อเนื่อง</p>
 <figure>
 <svg viewBox="0 0 640 300" width="600" xmlns="http://www.w3.org/2000/svg" font-family="Sarabun" font-size="13">
   <defs><marker id="ar" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z"/></marker></defs>
@@ -336,7 +377,7 @@ figcaption b { font-weight: 700; }
   <text x="18" y="164">• ค่าหัวใจสดจากนาฬิกา</text>
   <text x="18" y="192">• น้ำหนัก ส่วนสูง เพศ</text>
   <text x="18" y="220">• เป้าหมายการฝึก</text>
-  <text x="18" y="248">• ไฟล์ JSON (นำเข้า)</text>
+  <text x="18" y="248">• ภาพจากกล้อง / Strava</text>
   <rect x="227" y="20" width="185" height="260" rx="8" fill="#fff3e0" stroke="#000"/>
   <text x="319" y="45" text-anchor="middle" font-weight="700" font-size="14">กระบวนการ</text>
   <text x="319" y="65" text-anchor="middle">FitTrack Pro (PWA)</text>
@@ -344,8 +385,8 @@ figcaption b { font-weight: 700; }
   <text x="240" y="126">• คำนวณ Volume, pace</text>
   <text x="240" y="154">• คำนวณโซนหัวใจ (Karvonen)</text>
   <text x="240" y="182">• คำนวณ BMR/TDEE, BMI</text>
-  <text x="240" y="210">• คำนวณมาโคร และ 1RM</text>
-  <text x="240" y="238">• เก็บข้อมูลใน localStorage</text>
+  <text x="240" y="210">• คำนวณมาโคร 1RM แคลอรี่</text>
+  <text x="240" y="238">• นับท่าและตรวจผลการแข่ง</text>
   <rect x="449" y="20" width="185" height="260" rx="8" fill="#e8f5e9" stroke="#000"/>
   <text x="541" y="45" text-anchor="middle" font-weight="700" font-size="14">ผลลัพธ์</text>
   <text x="462" y="80">• สถิติและกราฟความก้าวหน้า</text>
@@ -354,7 +395,7 @@ figcaption b { font-weight: 700; }
   <text x="462" y="164">• วิดีโอสอนท่า</text>
   <text x="462" y="192">• แผนการฝึกรายสัปดาห์</text>
   <text x="462" y="220">• พลังงานและสารอาหาร</text>
-  <text x="462" y="248">• ไฟล์สำรองข้อมูล</text>
+  <text x="462" y="248">• ตารางอันดับและการแข่ง</text>
   <line x1="190" y1="150" x2="225" y2="150" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
   <line x1="412" y1="150" x2="447" y2="150" stroke="#000" stroke-width="2" marker-end="url(#ar)"/>
 </svg>
@@ -369,9 +410,9 @@ figcaption b { font-weight: 700; }
 
 <h2 data-toc="3.1 การศึกษาความเป็นไปได้">3.1 การศึกษาความเป็นไปได้</h2>
 <ol>
-  <li><b>ด้านเทคนิค</b> ฟังก์ชันทั้งหมดของโปรแกรมใช้ความสามารถมาตรฐานของเว็บเบราว์เซอร์ ได้แก่ localStorage, Service Worker, Canvas, Web Bluetooth และ iframe ไม่ต้องมีเซิร์ฟเวอร์ฐานข้อมูล จึงพัฒนาได้ด้วยความรู้และเครื่องมือที่คณะผู้วิจัยมีอยู่</li>
-  <li><b>ด้านเศรษฐศาสตร์</b> เครื่องมือพัฒนาทั้งหมดใช้ได้ฟรี การเผยแพร่ใช้ GitHub และ Vercel แบบไม่มีค่าใช้จ่าย และผู้ใช้ไม่ต้องเสียค่าบริการ</li>
-  <li><b>ด้านการใช้งาน</b> ผู้ใช้เปิดโปรแกรมได้จากลิงก์เว็บ หรือรันคำสั่งเดียวบน Windows โปรแกรมเป็นภาษาไทย และแบ่งเมนูเป็น 5 หน้าตามกิจกรรมของผู้ใช้</li>
+  <li><b>ด้านเทคนิค</b> ฟังก์ชันส่วนตัวใช้ความสามารถมาตรฐานของเว็บเบราว์เซอร์ ได้แก่ localStorage, Service Worker, Canvas, Web Bluetooth, กล้อง (getUserMedia) และ iframe ส่วนการตรวจจับท่าทางใช้ MediaPipe ที่ทำงานในเบราว์เซอร์ได้ สำหรับระบบอันดับและการแข่งขันซึ่งต้องมีเซิร์ฟเวอร์ ใช้ Vercel Functions ร่วมกับ Supabase ที่เชื่อมต่อกันผ่าน Vercel Marketplace จึงพัฒนาได้ด้วยความรู้และเครื่องมือที่คณะผู้วิจัยมีอยู่</li>
+  <li><b>ด้านเศรษฐศาสตร์</b> เครื่องมือพัฒนาทั้งหมดใช้ได้ฟรี การเผยแพร่ใช้ GitHub และ Vercel และฐานข้อมูลใช้ Supabase แผนฟรี ผู้ใช้ไม่ต้องเสียค่าบริการ</li>
+  <li><b>ด้านการใช้งาน</b> ผู้ใช้เปิดโปรแกรมได้จากลิงก์เว็บ หรือรันคำสั่งเดียวบน Windows โปรแกรมเป็นภาษาไทย และแบ่งเมนูเป็น 7 หน้าตามกิจกรรมของผู้ใช้</li>
 </ol>
 
 <h2 data-toc="3.2 การวิเคราะห์ความต้องการของระบบ">3.2 การวิเคราะห์ความต้องการของระบบ</h2>
@@ -385,6 +426,11 @@ figcaption b { font-weight: 700; }
   <li>ผู้ใช้ดูแผนการฝึกรายสัปดาห์และแผนสำเร็จรูปได้</li>
   <li>ผู้ใช้คำนวณ BMR/TDEE, BMI, มาโคร และ 1RM ได้</li>
   <li>ผู้ใช้ดูสถิติรวมและกราฟความก้าวหน้า และส่งออกหรือนำเข้าข้อมูลได้</li>
+  <li>ผู้ใช้กรอกโปรไฟล์ครั้งเดียว แล้วโปรแกรมคำนวณแคลอรี่ pace และระดับความหนักให้อัตโนมัติ</li>
+  <li>ผู้ใช้เชื่อม Strava ครั้งเดียว แล้วกิจกรรมจากนาฬิกาเข้าประวัติคาร์ดิโอเองทุกครั้งที่เปิดโปรแกรม</li>
+  <li>ผู้ใช้ทำชาเลนจ์หน้ากล้อง โปรแกรมนับเฉพาะครั้งที่ทำท่าถูกต้องและบอกเหตุผลเมื่อไม่นับ</li>
+  <li>ผู้ใช้สมัครสมาชิก เพิ่มเพื่อน ตั้งทีม ดูตารางอันดับ และแข่งขันแบบดวล ทีม หรืออีเวนต์ได้</li>
+  <li>ผู้ใช้รายงานผลที่น่าสงสัย และผู้ดูแลตรวจ อนุมัติ หรือไม่อนุมัติผล และระงับบัญชีได้</li>
 </ol>
 <h3 class="sub">3.2.2 ความต้องการที่ไม่ใช่ฟังก์ชัน</h3>
 <ol>
@@ -393,100 +439,91 @@ figcaption b { font-weight: 700; }
   <li>ข้อมูลไม่สูญหายเมื่อรูปแบบข้อมูลเปลี่ยน (มีการแปลงข้อมูลรุ่นเก่าและสำรองข้อมูลก่อนแปลง)</li>
   <li>ป้องกันสคริปต์อันตรายจากไฟล์ที่นำเข้า (Cross-Site Scripting)</li>
   <li>ตรวจสอบค่าที่ผู้ใช้กรอกให้อยู่ในช่วงที่เป็นไปได้ก่อนบันทึก</li>
+  <li>กุญแจลับของ Strava และ Supabase อยู่ฝั่งเซิร์ฟเวอร์เท่านั้น และเว็บเบราว์เซอร์เข้าถึงตารางในฐานข้อมูลโดยตรงไม่ได้</li>
+  <li>ผลที่ส่งเข้าตารางอันดับต้องผ่านการตรวจที่เซิร์ฟเวอร์ เพราะค่าที่ส่งจากเว็บเบราว์เซอร์อาจถูกแก้ไขได้</li>
+  <li>ภาพจากกล้องประมวลผลภายในเครื่อง และระบบบัญชีเป็นไปตามหลักการของพระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล</li>
+  <li>ตัวนับท่าต้องทนต่อสัญญาณรบกวน เช่น จุดร่างกายหายไปชั่วขณะ โดยไม่นับเกินหรือนับขาด</li>
 </ol>
 
 <h2 data-toc="3.3 การออกแบบระบบ">3.3 การออกแบบระบบ</h2>
 <h3 class="sub">3.3.1 สถาปัตยกรรมของระบบ</h3>
-<p>โปรแกรมทำงานทั้งหมดในเว็บเบราว์เซอร์ของผู้ใช้ ดังภาพที่ 3.1 ไฟล์ของโปรแกรมให้บริการจาก Vercel ผ่าน https หรือจากเว็บเซิร์ฟเวอร์ในเครื่องที่สร้างโดย run.ps1 เมื่อโหลดครั้งแรก Service Worker จะเก็บไฟล์ไว้ในแคช ข้อมูลของผู้ใช้เก็บใน localStorage ส่วนที่ติดต่อภายนอกมีเพียงวิดีโอจาก YouTube และนาฬิกาที่เชื่อมผ่าน Bluetooth</p>
+<p>โปรแกรมแบ่งเป็น 2 ส่วน ดังภาพที่ 3.1 ส่วนแรกทำงานในเว็บเบราว์เซอร์ของผู้ใช้ ได้แก่ ส่วนติดต่อผู้ใช้ การเก็บข้อมูลการฝึกใน localStorage การรับค่าหัวใจจากนาฬิกาผ่าน Bluetooth และการตรวจจับท่าทางจากกล้องด้วย MediaPipe ส่วนที่สองทำงานบนเซิร์ฟเวอร์ ได้แก่ Vercel Functions 2 ตัว คือ <code>api/strava.js</code> สำหรับแลก token ของ Strava และ <code>api/social.js</code> สำหรับบัญชี ตารางอันดับ และการแข่งขัน ซึ่งติดต่อฐานข้อมูล Supabase ด้วยกุญแจฝั่งเซิร์ฟเวอร์ ไฟล์ของโปรแกรมให้บริการจาก Vercel ผ่าน https หรือจากเว็บเซิร์ฟเวอร์ในเครื่องที่สร้างโดย run.ps1</p>
 <figure>
-<svg viewBox="0 0 640 330" width="600" xmlns="http://www.w3.org/2000/svg" font-family="Sarabun" font-size="12.5">
+<svg viewBox="0 0 640 400" width="600" xmlns="http://www.w3.org/2000/svg" font-family="Sarabun" font-size="12">
   <defs><marker id="a2" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z"/></marker></defs>
-  <rect x="150" y="10" width="340" height="250" rx="10" fill="#f5f5f5" stroke="#000" stroke-dasharray="6 4"/>
-  <text x="320" y="32" text-anchor="middle" font-weight="700">เว็บเบราว์เซอร์ของผู้ใช้ (Chrome / Edge / Safari)</text>
-  <rect x="170" y="45" width="300" height="70" rx="6" fill="#ffebee" stroke="#000"/>
-  <text x="320" y="68" text-anchor="middle" font-weight="700">ส่วนติดต่อผู้ใช้ (index.html)</text>
-  <text x="320" y="88" text-anchor="middle">ภาพรวม · เวทเทรนนิ่ง · คาร์ดิโอ · แผน · คำนวณ</text>
-  <text x="320" y="106" text-anchor="middle">JavaScript + Chart.js 4.4.4</text>
-  <rect x="170" y="135" width="140" height="55" rx="6" fill="#e3f2fd" stroke="#000"/>
-  <text x="240" y="158" text-anchor="middle" font-weight="700">localStorage</text>
-  <text x="240" y="177" text-anchor="middle">คีย์ fittrack (schema v2)</text>
-  <rect x="330" y="135" width="140" height="55" rx="6" fill="#e8f5e9" stroke="#000"/>
-  <text x="400" y="158" text-anchor="middle" font-weight="700">Service Worker</text>
-  <text x="400" y="177" text-anchor="middle">แคช fittrack-v2</text>
-  <rect x="170" y="205" width="300" height="40" rx="6" fill="#fff" stroke="#000"/>
-  <text x="320" y="230" text-anchor="middle" font-size="11">Web Bluetooth · YouTube IFrame · Wake Lock · Notification</text>
-  <line x1="240" y1="115" x2="240" y2="133" stroke="#000" marker-end="url(#a2)"/>
-  <line x1="400" y1="115" x2="400" y2="133" stroke="#000" marker-end="url(#a2)"/>
-  <rect x="5" y="60" width="125" height="60" rx="6" fill="#fff3e0" stroke="#000"/>
-  <text x="67" y="85" text-anchor="middle" font-weight="700">นาฬิกา / สายคาดอก</text>
-  <text x="67" y="104" text-anchor="middle">Heart Rate Service</text>
-  <line x1="130" y1="90" x2="168" y2="220" stroke="#000" marker-end="url(#a2)"/>
-  <text x="102" y="160">BLE</text>
-  <rect x="510" y="60" width="125" height="60" rx="6" fill="#fff3e0" stroke="#000"/>
-  <text x="572" y="85" text-anchor="middle" font-weight="700">YouTube</text>
-  <text x="572" y="104" text-anchor="middle">วิดีโอสอนท่า</text>
-  <line x1="508" y1="90" x2="472" y2="220" stroke="#000" marker-end="url(#a2)"/>
-  <rect x="40" y="280" width="170" height="44" rx="6" fill="#ede7f6" stroke="#000"/>
-  <text x="125" y="300" text-anchor="middle" font-weight="700">GitHub</text>
-  <text x="125" y="317" text-anchor="middle">karshi02/finnest</text>
-  <rect x="235" y="280" width="170" height="44" rx="6" fill="#ede7f6" stroke="#000"/>
-  <text x="320" y="300" text-anchor="middle" font-weight="700">run.ps1 (Windows)</text>
-  <text x="320" y="317" text-anchor="middle">http://localhost:8080</text>
-  <rect x="430" y="280" width="170" height="44" rx="6" fill="#ede7f6" stroke="#000"/>
-  <text x="515" y="300" text-anchor="middle" font-weight="700">Vercel</text>
-  <text x="515" y="317" text-anchor="middle">https</text>
-  <line x1="210" y1="302" x2="233" y2="302" stroke="#000" marker-end="url(#a2)"/>
-  <line x1="320" y1="280" x2="320" y2="262" stroke="#000" marker-end="url(#a2)"/>
-  <line x1="515" y1="280" x2="440" y2="262" stroke="#000" marker-end="url(#a2)"/>
+  <rect x="150" y="10" width="340" height="260" rx="10" fill="#f5f5f5" stroke="#000" stroke-dasharray="6 4"/>
+  <text x="320" y="30" text-anchor="middle" font-weight="700">เว็บเบราว์เซอร์ของผู้ใช้ (Chrome / Edge / Safari)</text>
+  <rect x="165" y="42" width="310" height="72" rx="6" fill="#ffebee" stroke="#000"/>
+  <text x="320" y="62" text-anchor="middle" font-weight="700">ส่วนติดต่อผู้ใช้ (index.html)</text>
+  <text x="320" y="81" text-anchor="middle" font-size="11">ภาพรวม · เวท · คาร์ดิโอ · แผน · คำนวณ · ชาเลนจ์ · อันดับ</text>
+  <text x="320" y="100" text-anchor="middle" font-size="11">JavaScript · Chart.js 4.4.4 · MediaPipe Pose 1.1.1</text>
+  <rect x="165" y="130" width="150" height="55" rx="6" fill="#e3f2fd" stroke="#000"/>
+  <text x="240" y="153" text-anchor="middle" font-weight="700">localStorage</text>
+  <text x="240" y="172" text-anchor="middle">ข้อมูลการฝึกส่วนตัว</text>
+  <rect x="325" y="130" width="150" height="55" rx="6" fill="#e8f5e9" stroke="#000"/>
+  <text x="400" y="153" text-anchor="middle" font-weight="700">Service Worker</text>
+  <text x="400" y="172" text-anchor="middle">แคช fittrack-v13</text>
+  <rect x="165" y="200" width="310" height="55" rx="6" fill="#fff" stroke="#000"/>
+  <text x="320" y="222" text-anchor="middle" font-size="11">Web Bluetooth · กล้อง (getUserMedia) · MediaRecorder</text>
+  <text x="320" y="241" text-anchor="middle" font-size="11">YouTube IFrame · Wake Lock · Notification</text>
+  <line x1="240" y1="114" x2="240" y2="128" stroke="#000" marker-end="url(#a2)"/>
+  <line x1="400" y1="114" x2="400" y2="128" stroke="#000" marker-end="url(#a2)"/>
+  <rect x="5" y="40" width="125" height="58" rx="6" fill="#fff3e0" stroke="#000"/>
+  <text x="67" y="64" text-anchor="middle" font-weight="700">นาฬิกา (BLE)</text>
+  <text x="67" y="83" text-anchor="middle">Heart Rate Service</text>
+  <rect x="5" y="140" width="125" height="58" rx="6" fill="#fff3e0" stroke="#000"/>
+  <text x="67" y="164" text-anchor="middle" font-weight="700">กล้อง</text>
+  <text x="67" y="183" text-anchor="middle">ภาพไม่ออกจากเครื่อง</text>
+  <line x1="130" y1="70" x2="163" y2="215" stroke="#000" marker-end="url(#a2)"/>
+  <line x1="130" y1="170" x2="163" y2="225" stroke="#000" marker-end="url(#a2)"/>
+  <rect x="510" y="40" width="125" height="58" rx="6" fill="#fff3e0" stroke="#000"/>
+  <text x="572" y="64" text-anchor="middle" font-weight="700">YouTube</text>
+  <text x="572" y="83" text-anchor="middle">วิดีโอสอนท่า</text>
+  <line x1="510" y1="70" x2="477" y2="215" stroke="#000" marker-end="url(#a2)"/>
+  <rect x="5" y="300" width="125" height="64" rx="6" fill="#ede7f6" stroke="#000"/>
+  <text x="67" y="324" text-anchor="middle" font-weight="700">run.ps1 (Windows)</text>
+  <text x="67" y="344" text-anchor="middle">localhost:8080</text>
+  <line x1="100" y1="300" x2="200" y2="272" stroke="#000" marker-end="url(#a2)"/>
+  <rect x="150" y="300" width="200" height="64" rx="6" fill="#ede7f6" stroke="#000"/>
+  <text x="250" y="320" text-anchor="middle" font-weight="700">Vercel (https)</text>
+  <text x="250" y="338" text-anchor="middle" font-size="11">ไฟล์เว็บ + Functions</text>
+  <text x="250" y="355" text-anchor="middle" font-size="11">api/social.js · api/strava.js</text>
+  <line x1="250" y1="298" x2="250" y2="273" stroke="#000" marker-end="url(#a2)"/>
+  <line x1="290" y1="273" x2="290" y2="298" stroke="#000" marker-end="url(#a2)"/>
+  <rect x="380" y="300" width="125" height="64" rx="6" fill="#e0f2f1" stroke="#000"/>
+  <text x="442" y="320" text-anchor="middle" font-weight="700">Supabase</text>
+  <text x="442" y="338" text-anchor="middle" font-size="11">PostgreSQL + RLS</text>
+  <text x="442" y="355" text-anchor="middle" font-size="11">Auth · Storage</text>
+  <line x1="350" y1="332" x2="378" y2="332" stroke="#000" marker-end="url(#a2)"/>
+  <rect x="525" y="300" width="110" height="64" rx="6" fill="#e0f2f1" stroke="#000"/>
+  <text x="580" y="320" text-anchor="middle" font-weight="700">Strava API</text>
+  <text x="580" y="338" text-anchor="middle" font-size="11">กิจกรรมจาก</text>
+  <text x="580" y="355" text-anchor="middle" font-size="11">Huawei Health</text>
+  <polyline points="250,364 250,388 580,388 580,366" fill="none" stroke="#000" marker-end="url(#a2)"/>
 </svg>
 <figcaption><b>ภาพที่ 3.1</b> สถาปัตยกรรมของระบบ</figcaption>
 </figure>
 
 <h3 class="sub">3.3.2 แผนภาพยูสเคส (Use Case Diagram)</h3>
-<p>ระบบมีผู้กระทำ (Actor) 2 ราย คือ ผู้ใช้งาน และนาฬิกาหรืออุปกรณ์วัดหัวใจ ซึ่งส่งค่าหัวใจให้ระบบ ดังภาพที่ 3.2</p>
+<p>ระบบมีผู้กระทำ (Actor) 4 ราย คือ ผู้ใช้งาน นาฬิกาหรืออุปกรณ์วัดหัวใจซึ่งส่งค่าหัวใจให้ระบบ Strava ซึ่งส่งกิจกรรมจากนาฬิกาให้ระบบ และผู้ดูแลระบบ ดังภาพที่ 3.2 ยูสเคส UC14–UC18 ต้องเข้าสู่ระบบก่อน ส่วนยูสเคสอื่นใช้ได้โดยไม่ต้องมีบัญชี</p>
 <figure>
-<svg viewBox="0 0 640 470" width="560" xmlns="http://www.w3.org/2000/svg" font-family="Sarabun" font-size="12.5">
-  <g stroke="#000" fill="none" stroke-width="1.5">
-    <circle cx="55" cy="200" r="13"/><line x1="55" y1="213" x2="55" y2="250"/><line x1="30" y1="225" x2="80" y2="225"/><line x1="55" y1="250" x2="35" y2="280"/><line x1="55" y1="250" x2="75" y2="280"/>
-    <circle cx="590" cy="330" r="13"/><line x1="590" y1="343" x2="590" y2="380"/><line x1="565" y1="355" x2="615" y2="355"/><line x1="590" y1="380" x2="570" y2="410"/><line x1="590" y1="380" x2="610" y2="410"/>
-  </g>
-  <text x="55" y="300" text-anchor="middle" font-weight="700">ผู้ใช้งาน</text>
-  <text x="590" y="430" text-anchor="middle" font-weight="700">นาฬิกา / อุปกรณ์</text>
-  <text x="590" y="446" text-anchor="middle" font-weight="700">วัดหัวใจ</text>
-  <rect x="140" y="8" width="390" height="455" fill="none" stroke="#000"/>
-  <text x="335" y="28" text-anchor="middle" font-weight="700">FitTrack Pro</text>
-  <g fill="#fff" stroke="#000">
-    <ellipse cx="335" cy="55" rx="150" ry="16"/><ellipse cx="335" cy="92" rx="150" ry="16"/><ellipse cx="335" cy="129" rx="150" ry="16"/>
-    <ellipse cx="335" cy="166" rx="150" ry="16"/><ellipse cx="335" cy="203" rx="150" ry="16"/><ellipse cx="335" cy="240" rx="150" ry="16"/>
-    <ellipse cx="335" cy="277" rx="150" ry="16"/><ellipse cx="335" cy="314" rx="150" ry="16"/><ellipse cx="335" cy="351" rx="150" ry="16"/>
-    <ellipse cx="335" cy="388" rx="150" ry="16"/><ellipse cx="335" cy="425" rx="150" ry="16"/>
-  </g>
-  <g text-anchor="middle">
-    <text x="335" y="59">UC01 ดูคลังท่าและวิดีโอสอน</text>
-    <text x="335" y="96">UC02 บันทึกเวทเทรนนิ่ง</text>
-    <text x="335" y="133">UC03 จับเวลาพัก</text>
-    <text x="335" y="170">UC04 บันทึกคาร์ดิโอ</text>
-    <text x="335" y="207">UC05 จับเวลาคาร์ดิโอ (Stopwatch)</text>
-    <text x="335" y="244">UC06 คำนวณโซนหัวใจ</text>
-    <text x="335" y="281">UC07 ดูหัวใจสดจากนาฬิกา</text>
-    <text x="335" y="318">UC08 ดูแผนออกกำลังกาย</text>
-    <text x="335" y="355">UC09 ใช้เครื่องคำนวณ</text>
-    <text x="335" y="392">UC10 ดูภาพรวมและกราฟ</text>
-    <text x="335" y="429">UC11 ส่งออก / นำเข้าข้อมูล</text>
-  </g>
-  <g stroke="#000">
-    <line x1="80" y1="225" x2="185" y2="55"/><line x1="80" y1="225" x2="185" y2="92"/><line x1="80" y1="225" x2="185" y2="129"/>
-    <line x1="80" y1="225" x2="185" y2="166"/><line x1="80" y1="225" x2="185" y2="203"/><line x1="80" y1="225" x2="185" y2="240"/>
-    <line x1="80" y1="225" x2="185" y2="277"/><line x1="80" y1="225" x2="185" y2="314"/><line x1="80" y1="225" x2="185" y2="351"/>
-    <line x1="80" y1="225" x2="185" y2="388"/><line x1="80" y1="225" x2="185" y2="425"/>
-    <line x1="565" y1="345" x2="485" y2="277"/>
-  </g>
+<svg viewBox="0 0 640 640" width="560" xmlns="http://www.w3.org/2000/svg" font-family="Sarabun" font-size="12">
+  <g stroke="#000" fill="none" stroke-width="1.5"><circle cx="55" cy="260" r="13"/><line x1="55" y1="273" x2="55" y2="310"/><line x1="30" y1="285" x2="80" y2="285"/><line x1="55" y1="310" x2="35" y2="340"/><line x1="55" y1="310" x2="75" y2="340"/><circle cx="590" cy="170" r="13"/><line x1="590" y1="183" x2="590" y2="220"/><line x1="565" y1="195" x2="615" y2="195"/><line x1="590" y1="220" x2="570" y2="250"/><line x1="590" y1="220" x2="610" y2="250"/><circle cx="590" cy="330" r="13"/><line x1="590" y1="343" x2="590" y2="380"/><line x1="565" y1="355" x2="615" y2="355"/><line x1="590" y1="380" x2="570" y2="410"/><line x1="590" y1="380" x2="610" y2="410"/><circle cx="590" cy="490" r="13"/><line x1="590" y1="503" x2="590" y2="540"/><line x1="565" y1="515" x2="615" y2="515"/><line x1="590" y1="540" x2="570" y2="570"/><line x1="590" y1="540" x2="610" y2="570"/></g>
+  <text x="55" y="360" text-anchor="middle" font-weight="700">ผู้ใช้งาน</text>
+  <text x="590" y="270" text-anchor="middle" font-weight="700">นาฬิกา</text>
+  <text x="590" y="430" text-anchor="middle" font-weight="700">Strava</text>
+  <text x="590" y="590" text-anchor="middle" font-weight="700">ผู้ดูแลระบบ</text>
+  <rect x="135" y="10" width="400" height="622" fill="none" stroke="#000"/>
+  <text x="335" y="30" text-anchor="middle" font-weight="700">FitTrack Pro</text>
+  <g fill="#fff" stroke="#000"><ellipse cx="335" cy="52" rx="160" ry="13"/><ellipse cx="335" cy="84" rx="160" ry="13"/><ellipse cx="335" cy="116" rx="160" ry="13"/><ellipse cx="335" cy="148" rx="160" ry="13"/><ellipse cx="335" cy="180" rx="160" ry="13"/><ellipse cx="335" cy="212" rx="160" ry="13"/><ellipse cx="335" cy="244" rx="160" ry="13"/><ellipse cx="335" cy="276" rx="160" ry="13"/><ellipse cx="335" cy="308" rx="160" ry="13"/><ellipse cx="335" cy="340" rx="160" ry="13"/><ellipse cx="335" cy="372" rx="160" ry="13"/><ellipse cx="335" cy="404" rx="160" ry="13"/><ellipse cx="335" cy="436" rx="160" ry="13"/><ellipse cx="335" cy="468" rx="160" ry="13"/><ellipse cx="335" cy="500" rx="160" ry="13"/><ellipse cx="335" cy="532" rx="160" ry="13"/><ellipse cx="335" cy="564" rx="160" ry="13"/><ellipse cx="335" cy="596" rx="160" ry="13"/></g>
+  <g text-anchor="middle"><text x="335" y="56">UC01 ดูคลังท่าและวิดีโอสอน</text><text x="335" y="88">UC02 บันทึกเวทเทรนนิ่ง</text><text x="335" y="120">UC03 จับเวลาพัก</text><text x="335" y="152">UC04 บันทึกคาร์ดิโอ</text><text x="335" y="184">UC05 จับเวลาคาร์ดิโอ (Stopwatch)</text><text x="335" y="216">UC06 คำนวณโซนหัวใจ</text><text x="335" y="248">UC07 ดูหัวใจสดจากนาฬิกา</text><text x="335" y="280">UC08 ดูแผนออกกำลังกาย</text><text x="335" y="312">UC09 ใช้เครื่องคำนวณและโปรไฟล์</text><text x="335" y="344">UC10 ดูภาพรวมและกราฟ</text><text x="335" y="376">UC11 ส่งออก / นำเข้าข้อมูล</text><text x="335" y="408">UC12 ซิงก์กิจกรรมจาก Strava</text><text x="335" y="440">UC13 นับท่าด้วยกล้อง (ชาเลนจ์)</text><text x="335" y="472">UC14 สมัครสมาชิก / เข้าสู่ระบบ</text><text x="335" y="504">UC15 จัดการเพื่อนและทีม</text><text x="335" y="536">UC16 ส่งผลและดูตารางอันดับ</text><text x="335" y="568">UC17 แข่งขัน (ดวล / ทีม / อีเวนต์)</text><text x="335" y="600">UC18 ตรวจผลและจัดการระบบ</text></g>
+  <g stroke="#000"><line x1="80" y1="285" x2="177" y2="52"/><line x1="80" y1="285" x2="177" y2="84"/><line x1="80" y1="285" x2="177" y2="116"/><line x1="80" y1="285" x2="177" y2="148"/><line x1="80" y1="285" x2="177" y2="180"/><line x1="80" y1="285" x2="177" y2="212"/><line x1="80" y1="285" x2="177" y2="244"/><line x1="80" y1="285" x2="177" y2="276"/><line x1="80" y1="285" x2="177" y2="308"/><line x1="80" y1="285" x2="177" y2="340"/><line x1="80" y1="285" x2="177" y2="372"/><line x1="80" y1="285" x2="177" y2="404"/><line x1="80" y1="285" x2="177" y2="436"/><line x1="80" y1="285" x2="177" y2="468"/><line x1="80" y1="285" x2="177" y2="500"/><line x1="80" y1="285" x2="177" y2="532"/><line x1="80" y1="285" x2="177" y2="564"/><line x1="565" y1="195" x2="494" y2="244"/><line x1="565" y1="355" x2="494" y2="404"/><line x1="565" y1="515" x2="494" y2="596"/></g>
 </svg>
 <figcaption><b>ภาพที่ 3.2</b> แผนภาพยูสเคสของระบบ</figcaption>
 </figure>
 
 <h3 class="sub">3.3.3 คำอธิบายยูสเคส (Use Case Scenario)</h3>
-<p>คณะผู้วิจัยอธิบายยูสเคสหลักที่มีขั้นตอนการทำงานหลายขั้น ดังตารางที่ 3.1 ถึง 3.3</p>
+<p>คณะผู้วิจัยอธิบายยูสเคสหลักที่มีขั้นตอนการทำงานหลายขั้น ดังตารางที่ 3.1 ถึง 3.5</p>
 <div class="tblk"><div class="tcap">ตารางที่ 3.1 คำอธิบายยูสเคส UC02 บันทึกเวทเทรนนิ่ง</div>
 <table class="t">
   <tr><td style="width:28%"><b>ชื่อยูสเคส</b></td><td>บันทึกเวทเทรนนิ่ง</td></tr>
@@ -501,8 +538,8 @@ figcaption b { font-weight: 700; }
   <tr><td style="width:28%"><b>ชื่อยูสเคส</b></td><td>ดูหัวใจสดจากนาฬิกา</td></tr>
   <tr><td><b>ผู้กระทำ</b></td><td>ผู้ใช้งาน, นาฬิกาหรืออุปกรณ์วัดหัวใจ</td></tr>
   <tr><td><b>เงื่อนไขก่อนเริ่ม</b></td><td>เปิดโปรแกรมผ่าน https หรือ localhost บน Chrome/Edge และนาฬิกาเปิดโหมดส่งค่าหัวใจ</td></tr>
-  <tr><td><b>ขั้นตอนหลัก</b></td><td>1. ผู้ใช้กด “เชื่อมต่อ” ที่แท็บจับเวลา<br>2. เบราว์เซอร์แสดงรายการอุปกรณ์ที่มี Heart Rate Service<br>3. ผู้ใช้เลือกอุปกรณ์<br>4. ระบบเชื่อมต่อและเริ่มรับค่า Heart Rate Measurement<br>5. ระบบแสดงค่าหัวใจ โซนปัจจุบัน ค่าเฉลี่ย และค่าสูงสุดระหว่างจับเวลา</td></tr>
-  <tr><td><b>ขั้นตอนทางเลือก</b></td><td>1a. เบราว์เซอร์ไม่รองรับ Bluetooth ระบบแสดงคำแนะนำ<br>3a. ผู้ใช้ไม่เลือกอุปกรณ์ ระบบแนะนำให้เปิดโหมดส่งค่าหัวใจบนนาฬิกา<br>5a. สัญญาณหลุด ระบบเชื่อมต่อใหม่อัตโนมัติ (ยกเว้นผู้ใช้กดตัดการเชื่อมต่อเอง)</td></tr>
+  <tr><td><b>ขั้นตอนหลัก</b></td><td>1. ผู้ใช้กดปุ่มนาฬิกาบนแถบเมนู หรือปุ่ม “เชื่อมต่อ” ที่แท็บจับเวลา<br>2. เบราว์เซอร์แสดงรายการอุปกรณ์ที่มี Heart Rate Service<br>3. ผู้ใช้เลือกอุปกรณ์<br>4. ระบบเชื่อมต่อและเริ่มรับค่า Heart Rate Measurement<br>5. ระบบแสดงค่าหัวใจ โซนปัจจุบัน ค่าเฉลี่ย และค่าสูงสุดระหว่างจับเวลา</td></tr>
+  <tr><td><b>ขั้นตอนทางเลือก</b></td><td>1a. เบราว์เซอร์ไม่รองรับ Bluetooth ระบบแสดงคำแนะนำ<br>3a. ผู้ใช้ไม่เลือกอุปกรณ์ ระบบแนะนำให้เปิดโหมดส่งค่าหัวใจบนนาฬิกา<br>4a. เชื่อมต่อไม่สำเร็จภายใน 15 วินาที ระบบหยุดรอและแจ้งสาเหตุที่เป็นไปได้<br>5a. สัญญาณหลุด ระบบเชื่อมต่อใหม่อัตโนมัติสูงสุด 30 ครั้ง (ยกเว้นผู้ใช้กดตัดการเชื่อมต่อเอง)<br>5b. เชื่อมต่อแล้วแต่ไม่มีค่าหัวใจเกิน 12 วินาที ระบบอ่านค่าสำรองและแสดงบันทึกการเชื่อมต่อเพื่อหาสาเหตุ</td></tr>
   <tr><td><b>ผลลัพธ์</b></td><td>ผู้ใช้เห็นโซนหัวใจขณะออกกำลังกาย และบันทึก HR เฉลี่ยเป็นคาร์ดิโอได้</td></tr>
 </table></div>
 <div class="tblk"><div class="tcap">ตารางที่ 3.3 คำอธิบายยูสเคส UC11 ส่งออก / นำเข้าข้อมูล</div>
@@ -514,19 +551,39 @@ figcaption b { font-weight: 700; }
   <tr><td><b>ขั้นตอนทางเลือก</b></td><td>3a. ไฟล์ผิดรูปแบบ ระบบปฏิเสธและแจ้งผู้ใช้ โดยข้อมูลเดิมไม่เปลี่ยน</td></tr>
   <tr><td><b>ผลลัพธ์</b></td><td>ข้อมูลในเครื่องใหม่ตรงกับเครื่องเดิม</td></tr>
 </table></div>
+<div class="tblk"><div class="tcap">ตารางที่ 3.4 คำอธิบายยูสเคส UC13 นับท่าด้วยกล้อง (ชาเลนจ์)</div>
+<table class="t">
+  <tr><td style="width:28%"><b>ชื่อยูสเคส</b></td><td>นับท่าด้วยกล้อง (ชาเลนจ์)</td></tr>
+  <tr><td><b>ผู้กระทำ</b></td><td>ผู้ใช้งาน</td></tr>
+  <tr><td><b>เงื่อนไขก่อนเริ่ม</b></td><td>อุปกรณ์มีกล้อง ผู้ใช้อนุญาตให้ใช้กล้อง และวางกล้องด้านข้างลำตัวให้เห็นทั้งตัว</td></tr>
+  <tr><td><b>ขั้นตอนหลัก</b></td><td>1. ผู้ใช้เลือกท่า (วิดพื้น สควอท แพลงก์) และโหมด แล้วกด “เริ่ม”<br>2. ระบบเปิดกล้อง โหลดแบบจำลอง และนับถอยหลัง 3 วินาที<br>3. ระบบตรวจจับจุดร่างกาย คำนวณมุมข้อต่อ วาดโครงร่างทับวิดีโอ และนับครั้งตามแผนภาพสถานะในภาพที่ 3.5<br>4. ระบบเก็บร่องรอยมุมข้อต่อ 10 ครั้งต่อวินาที<br>5. เมื่อครบ 60 วินาทีหรือผู้ใช้กด “จบและบันทึก” ระบบปิดกล้องและบันทึกผลลงสถิติส่วนตัว</td></tr>
+  <tr><td><b>ขั้นตอนทางเลือก</b></td><td>2a. ผู้ใช้ไม่อนุญาตกล้องหรือไม่มีกล้อง ระบบแจ้งวิธีแก้<br>3a. ท่าไม่ถูกต้อง เช่น ลงไม่ลึกหรือสะโพกตก ระบบไม่นับครั้งนั้นและแจ้งเหตุผลบนจอ<br>5a. ผลเป็น 0 ระบบไม่บันทึก<br>5b. ผู้ใช้เข้าสู่ระบบอยู่ ระบบส่งผลเข้าตารางอันดับต่อ (UC16)</td></tr>
+  <tr><td><b>ผลลัพธ์</b></td><td>ผลชาเลนจ์อยู่ในประวัติ และอัปเดตสถิติส่วนตัวสูงสุด</td></tr>
+</table></div>
+<div class="tblk"><div class="tcap">ตารางที่ 3.5 คำอธิบายยูสเคส UC16 ส่งผลและดูตารางอันดับ</div>
+<table class="t">
+  <tr><td style="width:28%"><b>ชื่อยูสเคส</b></td><td>ส่งผลและดูตารางอันดับ</td></tr>
+  <tr><td><b>ผู้กระทำ</b></td><td>ผู้ใช้งาน</td></tr>
+  <tr><td><b>เงื่อนไขก่อนเริ่ม</b></td><td>ผู้ใช้เข้าสู่ระบบแล้ว และบัญชีไม่ถูกระงับ</td></tr>
+  <tr><td><b>ขั้นตอนหลัก</b></td><td>1. เมื่อจบชาเลนจ์ ระบบส่งผลพร้อมร่องรอยมุมข้อต่อไปยังเซิร์ฟเวอร์<br>2. เซิร์ฟเวอร์ตรวจตัวตน รูปแบบข้อมูล และขีดจำกัด ตามผังงานในภาพที่ 3.6<br>3. เซิร์ฟเวอร์นับจำนวนครั้งซ้ำจากร่องรอย และตรวจผลที่ดีขึ้นแบบก้าวกระโดดหรือติด 10 อันดับแรก<br>4. ผลที่ผ่านขึ้นตารางอันดับ นับเข้าการแข่งขันที่ผู้ใช้กำลังเข้าร่วม และให้เหรียญรางวัล<br>5. ผู้ใช้เปิดหน้าอันดับ เลือกรายการ ช่วงเวลา และตัวกรอง</td></tr>
+  <tr><td><b>ขั้นตอนทางเลือก</b></td><td>2a. ผลเป็นไปไม่ได้หรือส่งเกิน 30 ครั้งต่อวัน เซิร์ฟเวอร์ไม่รับและแจ้งเหตุผล<br>3a. มีข้อสงสัย ผลรอผู้ดูแลตรวจ (UC18) ผู้ใช้แนบวิดีโอหลักฐานได้<br>5a. เลือกดูเฉพาะเพื่อนหรือทีมโดยไม่เข้าสู่ระบบ ระบบแจ้งให้เข้าสู่ระบบ</td></tr>
+  <tr><td><b>ผลลัพธ์</b></td><td>ผลขึ้นตารางอันดับเฉพาะผลที่ผ่านการตรวจ และนับเฉพาะผลที่ดีที่สุดของแต่ละคน</td></tr>
+</table></div>
 
 <h3 class="sub">3.3.4 โครงสร้างข้อมูล</h3>
-<p>โปรแกรมเก็บข้อมูลทั้งหมดเป็นวัตถุ JSON ก้อนเดียวใน localStorage คีย์ <code>fittrack</code> ประกอบด้วยรายการย่อยดังตารางที่ 3.4 ถึง 3.6 วันที่เก็บเป็นวันที่ท้องถิ่นรูปแบบ YYYY-MM-DD และเวลาเก็บแยกเป็น timestamp เพื่อป้องกันปัญหาเขตเวลา</p>
-<div class="tblk"><div class="tcap">ตารางที่ 3.4 โครงสร้างข้อมูลหลัก (state)</div>
+<p>โปรแกรมเก็บข้อมูลทั้งหมดเป็นวัตถุ JSON ก้อนเดียวใน localStorage คีย์ <code>fittrack</code> ประกอบด้วยรายการย่อยดังตารางที่ 3.6 ถึง 3.9 และข้อมูลบนเซิร์ฟเวอร์ดังตารางที่ 3.10 วันที่เก็บเป็นวันที่ท้องถิ่นรูปแบบ YYYY-MM-DD และเวลาเก็บแยกเป็น timestamp เพื่อป้องกันปัญหาเขตเวลา</p>
+<div class="tblk"><div class="tcap">ตารางที่ 3.6 โครงสร้างข้อมูลหลัก (state)</div>
 <table class="t">
   <thead><tr><th>ฟิลด์</th><th>ชนิดข้อมูล</th><th>คำอธิบาย</th></tr></thead>
   <tr><td>schemaVersion</td><td>Number</td><td>รุ่นของรูปแบบข้อมูล (ปัจจุบันคือ 2)</td></tr>
-  <tr><td>sessions</td><td>Array</td><td>รายการ session เวทเทรนนิ่ง (ตารางที่ 3.5)</td></tr>
+  <tr><td>sessions</td><td>Array</td><td>รายการ session เวทเทรนนิ่ง (ตารางที่ 3.7)</td></tr>
   <tr><td>todaySets</td><td>Array</td><td>set ที่บันทึกแล้วแต่ยังไม่รวมเป็น session</td></tr>
-  <tr><td>cardioLog</td><td>Array</td><td>รายการคาร์ดิโอ (ตารางที่ 3.6)</td></tr>
-  <tr><td>profile</td><td>Object</td><td>อายุ (10–90) และ HR ขณะพัก (30–100) สำหรับโซนหัวใจ</td></tr>
+  <tr><td>cardioLog</td><td>Array</td><td>รายการคาร์ดิโอ (ตารางที่ 3.8)</td></tr>
+  <tr><td>profile</td><td>Object</td><td>เพศ อายุ (10–90) น้ำหนัก ส่วนสูง และ HR ขณะพัก (30–100) สำหรับโซนหัวใจและการคำนวณอัตโนมัติ</td></tr>
+  <tr><td>strava</td><td>Object</td><td>เวลาซิงก์ล่าสุด และรหัสกิจกรรมที่ผู้ใช้ลบแล้ว (ไม่ดึงซ้ำ)</td></tr>
+  <tr><td>challengeLog</td><td>Array</td><td>ผลชาเลนจ์ (ตารางที่ 3.9) เก็บล่าสุด 300 รายการ</td></tr>
 </table></div>
-<div class="tblk"><div class="tcap">ตารางที่ 3.5 โครงสร้างข้อมูล session และ set</div>
+<div class="tblk"><div class="tcap">ตารางที่ 3.7 โครงสร้างข้อมูล session และ set</div>
 <table class="t">
   <thead><tr><th>ฟิลด์</th><th>ชนิดข้อมูล</th><th>คำอธิบาย</th></tr></thead>
   <tr><td>id</td><td>String</td><td>รหัสของรายการ</td></tr>
@@ -535,7 +592,7 @@ figcaption b { font-weight: 700; }
   <tr><td>volume</td><td>Number</td><td>ผลรวมน้ำหนัก × จำนวนครั้ง</td></tr>
   <tr><td>muscles</td><td>Array</td><td>กลุ่มกล้ามเนื้อที่ฝึกใน session</td></tr>
 </table></div>
-<div class="tblk"><div class="tcap">ตารางที่ 3.6 โครงสร้างข้อมูลคาร์ดิโอ</div>
+<div class="tblk"><div class="tcap">ตารางที่ 3.8 โครงสร้างข้อมูลคาร์ดิโอ</div>
 <table class="t">
   <thead><tr><th>ฟิลด์</th><th>ชนิดข้อมูล</th><th>คำอธิบาย</th></tr></thead>
   <tr><td>id, date, ts</td><td>String, String, Number</td><td>รหัส วันที่ และเวลาที่บันทึก</td></tr>
@@ -544,10 +601,34 @@ figcaption b { font-weight: 700; }
   <tr><td>distance</td><td>Number</td><td>ระยะทาง (0–1000 กม.) ไม่บังคับ</td></tr>
   <tr><td>hr</td><td>Number</td><td>HR เฉลี่ย (30–230 bpm) ไม่บังคับ</td></tr>
   <tr><td>kcal, intensity, note</td><td>Number, String, String</td><td>แคลอรี่ ระดับความเข้มข้น และบันทึก</td></tr>
+  <tr><td>kcalEst, stravaId</td><td>Boolean, String</td><td>แคลอรี่เป็นค่าประมาณหรือไม่ และรหัสกิจกรรมจาก Strava (กันข้อมูลซ้ำ)</td></tr>
+</table></div>
+<div class="tblk"><div class="tcap">ตารางที่ 3.9 โครงสร้างข้อมูลผลชาเลนจ์</div>
+<table class="t">
+  <thead><tr><th>ฟิลด์</th><th>ชนิดข้อมูล</th><th>คำอธิบาย</th></tr></thead>
+  <tr><td>id, date, ts</td><td>String, String, Number</td><td>รหัส วันที่ และเวลาที่บันทึก</td></tr>
+  <tr><td>exercise, mode</td><td>String, String</td><td>ท่า (pushup, squat, plank) และโหมด (timed60, max, hold)</td></tr>
+  <tr><td>value, seconds</td><td>Number, Number</td><td>จำนวนครั้งหรือวินาทีที่ค้างได้ และเวลาที่ใช้ทั้งหมด</td></tr>
+  <tr><td>trace</td><td>Array</td><td>มุมข้อต่อ 10 ครั้งต่อวินาที (−1 = มองไม่เห็นตัว) สูงสุด 3,000 ค่า ไม่ใช่ภาพ</td></tr>
+  <tr><td>remote</td><td>Object</td><td>รหัสผลบนเซิร์ฟเวอร์ สถานะ (ok, review, rejected) และเหตุผลที่ต้องตรวจ</td></tr>
+</table></div>
+<p>ข้อมูลบนเซิร์ฟเวอร์เก็บในฐานข้อมูล PostgreSQL ของ Supabase จำนวน 11 ตาราง ดังตารางที่ 3.10 ทุกตารางเปิด RLS และไม่มีนโยบายที่อนุญาตให้ผู้ใช้ทั่วไปเข้าถึง ฟังก์ชัน <code>leaderboard()</code> คืนผลที่ดีที่สุดของแต่ละคนเฉพาะผลที่ผ่านการตรวจ และไม่รวมบัญชีที่ถูกระงับ ส่วนฟังก์ชัน <code>team_scores()</code> รวมคะแนนทีม</p>
+<div class="tblk"><div class="tcap">ตารางที่ 3.10 ตารางในฐานข้อมูลบนเซิร์ฟเวอร์</div>
+<table class="t">
+  <thead><tr><th style="width:24%">ตาราง</th><th>ข้อมูลที่เก็บ</th></tr></thead>
+  <tr><td>profiles</td><td>ชื่อผู้ใช้ ชื่อที่แสดง เพศ ช่วงอายุ รหัสเพื่อน สถานะผู้ดูแล สถานะระงับ เวลาที่ยินยอม และความยินยอมของผู้ปกครอง</td></tr>
+  <tr><td>teams, team_members</td><td>ทีม รหัสชวน และสมาชิก (1 คนอยู่ได้ 1 ทีม)</td></tr>
+  <tr><td>friends</td><td>คู่เพื่อน (บันทึกทั้งสองทิศทาง)</td></tr>
+  <tr><td>challenges, challenge_members</td><td>การแข่งขัน (event, duel, team) ท่า โหมด วันเริ่ม–จบ สถานะ และผู้เข้าร่วมอีเวนต์</td></tr>
+  <tr><td>entries</td><td>ผลที่ส่ง ค่า เวลา แหล่งที่มา (camera, strava) สถานะ เหตุผลที่ต้องตรวจ ร่องรอยมุม และที่อยู่วิดีโอหลักฐาน</td></tr>
+  <tr><td>challenge_entries</td><td>ผลที่นับเข้าการแข่งขันแต่ละรายการ</td></tr>
+  <tr><td>reports</td><td>การรายงานผลที่น่าสงสัย</td></tr>
+  <tr><td>badges</td><td>เหรียญรางวัลที่ผู้ใช้ได้รับ</td></tr>
+  <tr><td>signup_log</td><td>ค่าแฮชของ IP สำหรับจำกัดการสมัคร (ไม่เก็บ IP จริง)</td></tr>
 </table></div>
 
 <h3 class="sub">3.3.5 ผังงาน (Flowchart)</h3>
-<p>ภาพที่ 3.3 แสดงผังงานการบันทึกเวทเทรนนิ่ง และภาพที่ 3.4 แสดงผังงานการเชื่อมต่อนาฬิกาเพื่อรับค่าหัวใจ</p>
+<p>ภาพที่ 3.3 แสดงผังงานการบันทึกเวทเทรนนิ่ง ภาพที่ 3.4 แสดงผังงานการเชื่อมต่อนาฬิกาเพื่อรับค่าหัวใจ ภาพที่ 3.5 แสดงแผนภาพสถานะของตัวนับวิดพื้น และภาพที่ 3.6 แสดงผังงานการตรวจผลก่อนขึ้นตารางอันดับ</p>
 <figure>
 <svg viewBox="0 0 520 560" width="430" xmlns="http://www.w3.org/2000/svg" font-family="Sarabun" font-size="12.5">
   <defs><marker id="a3" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z"/></marker></defs>
@@ -640,12 +721,95 @@ figcaption b { font-weight: 700; }
 </svg>
 <figcaption><b>ภาพที่ 3.4</b> ผังงานการเชื่อมต่อนาฬิกาเพื่อรับค่าหัวใจ</figcaption>
 </figure>
+<p>ตัวนับวิดพื้นทำงานตามแผนภาพสถานะในภาพที่ 3.5 โดยใช้มุมศอกที่ผ่านการทำให้นิ่ง (Exponential Moving Average) นับ 1 ครั้งเมื่อมุมลงถึง 100 องศาหรือน้อยกว่า แล้วเหยียดกลับเกิน 150 องศา ระหว่างนั้นลำตัว (ไหล่–สะโพก–ข้อเท้า) ต้องตรงอย่างน้อย 150 องศา เพื่อให้ทนต่อสัญญาณรบกวน ระบบยึดข้างของร่างกายที่เห็นชัดไว้ ไม่สลับข้างทุกเฟรม ทนจุดร่างกายหายได้ 1 วินาที และตัดสิทธิ์เฉพาะเมื่อลำตัวไม่ตรงต่อเนื่องเกิน 0.3 วินาที สควอทใช้หลักการเดียวกันกับมุมเข่า (ลงถึง 100 องศาแล้วยืนกลับเกิน 160 องศา) ส่วนแพลงก์จับเวลาเฉพาะช่วงที่ลำตัวตรงอย่างน้อย 160 องศาและขนานพื้น</p>
+<figure>
+<svg viewBox="0 0 620 330" width="560" xmlns="http://www.w3.org/2000/svg" font-family="Sarabun" font-size="12">
+  <defs><marker id="a5" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z"/></marker></defs>
+  <g stroke="#000" stroke-width="1.5">
+    <rect x="10" y="140" width="110" height="50" rx="25" fill="#eeeeee"/>
+    <rect x="190" y="140" width="110" height="50" rx="25" fill="#e3f2fd"/>
+    <rect x="345" y="40" width="120" height="50" rx="25" fill="#fff3e0"/>
+    <rect x="495" y="140" width="110" height="50" rx="25" fill="#ffe0b2"/>
+  </g>
+  <g text-anchor="middle" font-weight="700" font-size="13">
+    <text x="65" y="170">รอเริ่ม</text><text x="245" y="170">ขึ้น</text><text x="405" y="70">กำลังลง</text><text x="550" y="170">ลงสุด</text>
+  </g>
+  <g stroke="#000" fill="none" stroke-width="1.5">
+    <line x1="120" y1="165" x2="188" y2="165" marker-end="url(#a5)"/>
+    <polyline points="270,140 270,65 343,65" marker-end="url(#a5)"/>
+    <polyline points="465,65 550,65 550,138" marker-end="url(#a5)"/>
+    <polyline points="550,190 550,250 245,250 245,192" marker-end="url(#a5)"/>
+    <polyline points="405,90 405,120 302,155" marker-end="url(#a5)"/>
+    <polyline points="245,192 245,215 65,215 65,192" stroke-dasharray="5 4" marker-end="url(#a5)"/>
+  </g>
+  <text x="124" y="125">ลำตัวขนานพื้น</text><text x="124" y="140">และศอก &gt; 150°</text>
+  <text x="280" y="55">ศอก &lt; 140°</text>
+  <text x="485" y="55">ศอก ≤ 100°</text>
+  <text x="290" y="270" font-weight="700">ศอก &gt; 150° และลำตัวตรง: นับ +1</text>
+  <text x="290" y="287">(ลำตัวไม่ตรงต่อเนื่อง &gt; 0.3 วินาที: ไม่นับครั้งนี้)</text>
+  <text x="412" y="112" font-size="11">ศอก &gt; 150° แต่ลงไม่ถึง:</text><text x="412" y="126" font-size="11">ไม่นับ “ลงให้ลึกกว่านี้”</text>
+  <text x="70" y="232">ไม่ขนานพื้นนาน &gt; 0.6 วินาที</text>
+</svg>
+<figcaption><b>ภาพที่ 3.5</b> แผนภาพสถานะของตัวนับวิดพื้น</figcaption>
+</figure>
+<figure>
+<svg viewBox="0 0 560 640" width="430" xmlns="http://www.w3.org/2000/svg" font-family="Sarabun" font-size="12.5">
+  <defs><marker id="a6" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z"/></marker></defs>
+  <g stroke="#000" fill="#fff">
+    <rect x="195" y="5" width="170" height="34" rx="17"/>
+    <polygon points="280,52 390,90 280,128 170,90"/>
+    <rect x="420" y="71" width="135" height="38"/>
+    <rect x="180" y="150" width="200" height="36"/>
+    <rect x="180" y="206" width="200" height="36"/>
+    <polygon points="280,262 390,300 280,338 170,300"/>
+    <rect x="420" y="281" width="135" height="38"/>
+    <rect x="170" y="360" width="220" height="44"/>
+    <polygon points="280,425 370,460 280,495 190,460"/>
+    <rect x="420" y="441" width="135" height="38"/>
+    <rect x="170" y="520" width="220" height="44"/>
+    <rect x="220" y="590" width="120" height="34" rx="17"/>
+  </g>
+  <g text-anchor="middle">
+    <text x="280" y="27">จบชาเลนจ์ (ผล &gt; 0)</text>
+    <text x="280" y="86">เข้าสู่ระบบ และ</text><text x="280" y="102">เปิดส่งอัตโนมัติ?</text>
+    <text x="487" y="95">เก็บในเครื่องเท่านั้น</text>
+    <text x="280" y="173">ส่งผล + ร่องรอยมุมไปเซิร์ฟเวอร์</text>
+    <text x="280" y="229">ตรวจ token และสถานะบัญชี</text>
+    <text x="280" y="296">ผ่านรูปแบบ</text><text x="280" y="312">และขีดจำกัด?</text>
+    <text x="487" y="305">ไม่รับ แจ้งเหตุผล</text>
+    <text x="280" y="378">นับครั้งซ้ำจากร่องรอย</text><text x="280" y="396">ตรวจก้าวกระโดด / 10 อันดับแรก</text>
+    <text x="280" y="465">มีข้อสงสัย?</text>
+    <text x="487" y="465">รอผู้ดูแลตรวจ</text>
+    <text x="280" y="538">ขึ้นอันดับ นับเข้าการแข่ง</text><text x="280" y="556">และให้เหรียญรางวัล</text>
+    <text x="280" y="612">สิ้นสุด</text>
+  </g>
+  <g stroke="#000" fill="none">
+    <line x1="280" y1="39" x2="280" y2="50" marker-end="url(#a6)"/>
+    <line x1="390" y1="90" x2="418" y2="90" marker-end="url(#a6)"/>
+    <line x1="280" y1="128" x2="280" y2="148" marker-end="url(#a6)"/>
+    <line x1="280" y1="186" x2="280" y2="204" marker-end="url(#a6)"/>
+    <line x1="280" y1="242" x2="280" y2="260" marker-end="url(#a6)"/>
+    <line x1="390" y1="300" x2="418" y2="300" marker-end="url(#a6)"/>
+    <line x1="280" y1="338" x2="280" y2="358" marker-end="url(#a6)"/>
+    <line x1="280" y1="404" x2="280" y2="423" marker-end="url(#a6)"/>
+    <line x1="370" y1="460" x2="418" y2="460" marker-end="url(#a6)"/>
+    <line x1="280" y1="495" x2="280" y2="518" marker-end="url(#a6)"/>
+    <polyline points="487,479 487,542 392,542" marker-end="url(#a6)"/>
+    <line x1="280" y1="564" x2="280" y2="588" marker-end="url(#a6)"/>
+  </g>
+  <text x="393" y="82" font-size="11">ไม่ใช่</text><text x="288" y="143">ใช่</text>
+  <text x="393" y="292" font-size="11">ไม่ใช่</text><text x="288" y="353">ใช่</text>
+  <text x="378" y="452">ใช่</text><text x="288" y="512">ไม่ใช่</text>
+  <text x="482" y="525" text-anchor="end">ผู้ดูแลอนุมัติ</text>
+</svg>
+<figcaption><b>ภาพที่ 3.6</b> ผังงานการตรวจผลก่อนขึ้นตารางอันดับ</figcaption>
+</figure>
 
 <h3 class="sub">3.3.6 การออกแบบส่วนติดต่อผู้ใช้</h3>
-<p>ส่วนติดต่อผู้ใช้ใช้โทนสีเข้มเพื่อให้อ่านง่ายในยิมและประหยัดพลังงานบนจอ OLED แถบเมนูด้านบนแบ่งเป็น 5 หน้า ได้แก่ ภาพรวม เวทเทรนนิ่ง คาร์ดิโอ แผนออกกำลังกาย และคำนวณ หน้าที่มีหลายส่วนแบ่งย่อยเป็นแท็บ ฟอร์มทุกช่องมีป้ายกำกับที่ผูกกับช่องกรอก และรองรับการใช้งานด้วยแป้นพิมพ์ เช่น กด Esc เพื่อปิดหน้าต่างวิดีโอ</p>
+<p>ส่วนติดต่อผู้ใช้ใช้โทนสีเข้มเพื่อให้อ่านง่ายในยิมและประหยัดพลังงานบนจอ OLED แถบเมนูด้านบนแบ่งเป็น 7 หน้า ได้แก่ ภาพรวม เวทเทรนนิ่ง คาร์ดิโอ แผนออกกำลังกาย คำนวณ ชาเลนจ์ และอันดับ ด้านขวาของแถบเมนูมีปุ่มนาฬิกาที่แสดงสถานะการเชื่อมต่อและค่าหัวใจสด และปุ่มโปรไฟล์ หน้าที่มีหลายส่วนแบ่งย่อยเป็นแท็บ ฟอร์มทุกช่องมีป้ายกำกับที่ผูกกับช่องกรอก และรองรับการใช้งานด้วยแป้นพิมพ์ เช่น กด Esc เพื่อปิดหน้าต่างวิดีโอ</p>
 
 <h2 data-toc="3.4 ข้อกำหนดด้านฟังก์ชัน (Functional Specification)">3.4 ข้อกำหนดด้านฟังก์ชัน (Functional Specification)</h2>
-<div class="tblk"><div class="tcap">ตารางที่ 3.7 ข้อกำหนดด้านฟังก์ชันของระบบ</div>
+<div class="tblk"><div class="tcap">ตารางที่ 3.11 ข้อกำหนดด้านฟังก์ชันของระบบ</div>
 <table class="t">
   <thead><tr><th style="width:9%">รหัส</th><th style="width:25%">ฟังก์ชัน</th><th>รายละเอียด</th></tr></thead>
   <tr><td class="c">F01</td><td>คลังท่าออกกำลังกาย</td><td>แสดงท่า 30 ท่า กรองตามกลุ่มกล้ามเนื้อ 7 กลุ่ม (หน้าอก หลัง ไหล่ ไบเซ็ป ไตรเซ็ป ขา คอร์) แต่ละท่ามีอุปกรณ์ คำอธิบาย และวิดีโอสอน</td></tr>
@@ -661,26 +825,36 @@ figcaption b { font-weight: 700; }
   <tr><td class="c">F11</td><td>ภาพรวม</td><td>สถิติรวม 4 ค่า กราฟ 7 วันล่าสุด กราฟกลุ่มกล้ามเนื้อ และบันทึกล่าสุด</td></tr>
   <tr><td class="c">F12</td><td>ส่งออก / นำเข้า</td><td>ไฟล์ JSON พร้อมตรวจรูปแบบและแปลงรุ่นข้อมูล</td></tr>
   <tr><td class="c">F13</td><td>PWA</td><td>ติดตั้งลงหน้าจอโฮม ใช้งานออฟไลน์ และแจ้งเมื่อมีเวอร์ชันใหม่</td></tr>
+  <tr><td class="c">F14</td><td>โปรไฟล์และคำนวณอัตโนมัติ</td><td>แคลอรี่ของคาร์ดิโอ (Keytel หรือ MET) และเวทเทรนนิ่ง pace ระดับความหนักจาก HR นาฬิกาพักเริ่มเองหลังบันทึก set และเติมค่าในเครื่องคำนวณ</td></tr>
+  <tr><td class="c">F15</td><td>ปุ่มนาฬิกาบนแถบเมนู</td><td>เชื่อมต่อได้จากทุกหน้า หมดเวลาเชื่อมต่อใน 15 วินาที เชื่อมใหม่เองสูงสุด 30 ครั้ง จำอุปกรณ์หลังรีเฟรช และบันทึกขั้นตอนการเชื่อมต่อเพื่อหาสาเหตุ</td></tr>
+  <tr><td class="c">F16</td><td>ซิงก์ Strava</td><td>เชื่อมบัญชีด้วย OAuth ดึงกิจกรรมย้อนหลัง 90 วันและกิจกรรมใหม่ทุกครั้งที่เปิดโปรแกรม ไม่ดึงซ้ำ</td></tr>
+  <tr><td class="c">F17</td><td>ชาเลนจ์นับท่าด้วยกล้อง</td><td>วิดพื้น สควอท แพลงก์ 3 โหมด นับเฉพาะท่าที่ถูกต้อง บอกเหตุผลเมื่อไม่นับ สถิติส่วนตัว และอัดวิดีโอหลักฐานได้</td></tr>
+  <tr><td class="c">F18</td><td>บัญชีผู้ใช้</td><td>สมัครด้วยชื่อผู้ใช้และรหัสผ่าน ยินยอมตาม PDPA ผู้ปกครองยินยอมสำหรับอายุต่ำกว่า 18 ปี แก้ไขข้อมูล และลบบัญชี</td></tr>
+  <tr><td class="c">F19</td><td>เพื่อนและทีม</td><td>เพิ่มเพื่อนด้วยรหัสเพื่อน สร้างหรือเข้าร่วมทีมด้วยรหัสชวน</td></tr>
+  <tr><td class="c">F20</td><td>ตารางอันดับ</td><td>รายสัปดาห์ รายเดือน ตลอดกาล กรองทุกคน เพื่อน ทีม เพศ ช่วงอายุ และอันดับคาร์ดิโอรายสัปดาห์จาก Strava</td></tr>
+  <tr><td class="c">F21</td><td>การแข่งขัน</td><td>ดวล 1:1 ด้วยรหัสท้า (24 ชั่วโมง) ทีมต่อทีม (3–14 วัน) และอีเวนต์ ปิดการแข่งและประกาศผลอัตโนมัติ แจ้งผลในแอป</td></tr>
+  <tr><td class="c">F22</td><td>ป้องกันการโกงและผู้ดูแล</td><td>ตรวจผลที่เซิร์ฟเวอร์ วิดีโอหลักฐาน การรายงาน คิวตรวจของผู้ดูแล การระงับบัญชี และเหรียญรางวัล 10 แบบ</td></tr>
 </table></div>
 
 <h2 data-toc="3.5 เครื่องมือที่ใช้ในการพัฒนา">3.5 เครื่องมือที่ใช้ในการพัฒนา</h2>
-<div class="tblk"><div class="tcap">ตารางที่ 3.8 ฮาร์ดแวร์และซอฟต์แวร์ที่ใช้ในการพัฒนา</div>
+<div class="tblk"><div class="tcap">ตารางที่ 3.12 ฮาร์ดแวร์และซอฟต์แวร์ที่ใช้ในการพัฒนา</div>
 <table class="t">
   <thead><tr><th style="width:30%">ประเภท</th><th>รายการ</th></tr></thead>
-  <tr><td>ฮาร์ดแวร์</td><td>เครื่องคอมพิวเตอร์ระบบปฏิบัติการ Windows 11, โทรศัพท์มือถือ Android สำหรับทดสอบ, นาฬิกาหรือสายคาดอกที่ส่งค่าหัวใจผ่าน Bluetooth</td></tr>
+  <tr><td>ฮาร์ดแวร์</td><td>เครื่องคอมพิวเตอร์ระบบปฏิบัติการ Windows 11, โทรศัพท์มือถือ Android สำหรับทดสอบ, นาฬิกา Huawei Watch GT 6, กล้องเว็บแคมหรือกล้องโทรศัพท์</td></tr>
   <tr><td>โปรแกรมแก้ไขโค้ด</td><td>Visual Studio Code</td></tr>
-  <tr><td>ภาษาและไลบรารี</td><td>HTML, CSS, JavaScript, Chart.js 4.4.4, YouTube IFrame Player API</td></tr>
+  <tr><td>ภาษาและไลบรารี</td><td>HTML, CSS, JavaScript, Chart.js 4.4.4, YouTube IFrame Player API, MediaPipe Tasks Vision 1.1.1, SQL (PostgreSQL)</td></tr>
+  <tr><td>บริการฝั่งเซิร์ฟเวอร์</td><td>Vercel Functions (Node.js), Supabase (PostgreSQL 17, Auth, Storage) ภูมิภาคสิงคโปร์, Strava API v3</td></tr>
   <tr><td>เว็บเบราว์เซอร์</td><td>Google Chrome, Microsoft Edge</td></tr>
-  <tr><td>การทดสอบ</td><td>Chrome แบบ headless ควบคุมด้วย puppeteer-core บน Node.js</td></tr>
-  <tr><td>การติดตั้งและเผยแพร่</td><td>PowerShell 5.1, Git, GitHub, Vercel</td></tr>
+  <tr><td>การทดสอบ</td><td>Chrome แบบ headless ควบคุมด้วย puppeteer-core และ Chrome DevTools Protocol (กล้องจำลอง) บน Node.js และสคริปต์ทดสอบ API กับฐานข้อมูลจริง</td></tr>
+  <tr><td>การติดตั้งและเผยแพร่</td><td>PowerShell 5.1, Git, GitHub, Vercel CLI</td></tr>
 </table></div>
 
 <h2 data-toc="3.6 กลุ่มเป้าหมาย">3.6 กลุ่มเป้าหมาย</h2>
 <p>กลุ่มเป้าหมายของการประเมินความพึงพอใจ คือ ผู้ที่เพิ่งเริ่มออกกำลังกายหรือสนใจเริ่มออกกำลังกาย จำนวน ....... คน เลือกแบบเจาะจง (Purposive Sampling)</p>
 
 <h2 data-toc="3.7 วิธีการประเมินผล">3.7 วิธีการประเมินผล</h2>
-<p>การประเมินผลแบ่งเป็น 2 ส่วน ส่วนแรกคือการทดสอบการทำงาน (Functional Testing) ตามข้อกำหนดในตารางที่ 3.7 ด้วยการทดสอบอัตโนมัติบนเว็บเบราว์เซอร์ Chrome ร่วมกับการทดสอบด้วยมือ ส่วนที่สองคือการประเมินความพึงพอใจด้วยแบบสอบถามมาตราส่วนประมาณค่า 5 ระดับ (ภาคผนวก ข) แล้วนำมาคำนวณค่าเฉลี่ย (x̄) และส่วนเบี่ยงเบนมาตรฐาน (S.D.) โดยแปลผลตามเกณฑ์ในตารางที่ 3.9</p>
-<div class="tblk"><div class="tcap">ตารางที่ 3.9 เกณฑ์การแปลผลค่าเฉลี่ยความพึงพอใจ</div>
+<p>การประเมินผลแบ่งเป็น 2 ส่วน ส่วนแรกคือการทดสอบการทำงาน (Functional Testing) ตามข้อกำหนดในตารางที่ 3.11 ด้วยการทดสอบอัตโนมัติบนเว็บเบราว์เซอร์ Chrome ร่วมกับการทดสอบด้วยมือ ส่วนที่สองคือการประเมินความพึงพอใจด้วยแบบสอบถามมาตราส่วนประมาณค่า 5 ระดับ (ภาคผนวก ข) แล้วนำมาคำนวณค่าเฉลี่ย (x̄) และส่วนเบี่ยงเบนมาตรฐาน (S.D.) โดยแปลผลตามเกณฑ์ในตารางที่ 3.13</p>
+<div class="tblk"><div class="tcap">ตารางที่ 3.13 เกณฑ์การแปลผลค่าเฉลี่ยความพึงพอใจ</div>
 <table class="t">
   <thead><tr><th>ช่วงค่าเฉลี่ย</th><th>ระดับความพึงพอใจ</th></tr></thead>
   <tr><td class="c">4.51–5.00</td><td class="c">มากที่สุด</td></tr>
@@ -691,7 +865,7 @@ figcaption b { font-weight: 700; }
 </table></div>
 
 <h2 data-toc="3.8 แผนการดำเนินงาน">3.8 แผนการดำเนินงาน</h2>
-<div class="tblk"><div class="tcap">ตารางที่ 3.10 แผนการดำเนินงาน</div>
+<div class="tblk"><div class="tcap">ตารางที่ 3.14 แผนการดำเนินงาน</div>
 <table class="t">
   <thead><tr><th rowspan="2">ขั้นตอนการดำเนินงาน</th><th colspan="6">เดือนที่</th></tr>
   <tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr></thead>
@@ -699,9 +873,10 @@ figcaption b { font-weight: 700; }
   <tr><td>2. วิเคราะห์ความต้องการและออกแบบระบบ</td><td class="c">■</td><td class="c">■</td><td></td><td></td><td></td><td></td></tr>
   <tr><td>3. พัฒนาระบบบันทึกและเครื่องคำนวณ</td><td></td><td class="c">■</td><td class="c">■</td><td></td><td></td><td></td></tr>
   <tr><td>4. พัฒนาวิดีโอสอนท่าและการเชื่อมต่อนาฬิกา</td><td></td><td></td><td class="c">■</td><td class="c">■</td><td></td><td></td></tr>
-  <tr><td>5. ทดสอบและแก้ไขข้อบกพร่อง</td><td></td><td></td><td></td><td class="c">■</td><td class="c">■</td><td></td></tr>
-  <tr><td>6. ติดตั้งเผยแพร่และประเมินความพึงพอใจ</td><td></td><td></td><td></td><td></td><td class="c">■</td><td class="c">■</td></tr>
-  <tr><td>7. จัดทำเอกสารโครงการวิจัย</td><td></td><td></td><td></td><td></td><td class="c">■</td><td class="c">■</td></tr>
+  <tr><td>5. พัฒนาการซิงก์ Strava คำนวณอัตโนมัติ ชาเลนจ์ และระบบแข่งขัน</td><td></td><td></td><td></td><td class="c">■</td><td class="c">■</td><td></td></tr>
+  <tr><td>6. ทดสอบและแก้ไขข้อบกพร่อง</td><td></td><td></td><td></td><td class="c">■</td><td class="c">■</td><td></td></tr>
+  <tr><td>7. ติดตั้งเผยแพร่และประเมินความพึงพอใจ</td><td></td><td></td><td></td><td></td><td class="c">■</td><td class="c">■</td></tr>
+  <tr><td>8. จัดทำเอกสารโครงการวิจัย</td><td></td><td></td><td></td><td></td><td class="c">■</td><td class="c">■</td></tr>
 </table></div>
 </section>
 
@@ -740,9 +915,31 @@ figcaption b { font-weight: 700; }
 <figure><img class="shot" src="img/calc.png" alt=""><figcaption><b>ภาพที่ 4.9</b> การคำนวณ BMR และ TDEE</figcaption></figure>
 <figure><img class="shot" src="img/macro.png" alt=""><figcaption><b>ภาพที่ 4.10</b> การคำนวณสารอาหารหลัก</figcaption></figure>
 <figure><img class="shot" src="img/orm.png" alt=""><figcaption><b>ภาพที่ 4.11</b> การประมาณ 1RM</figcaption></figure>
+<h3 class="sub">4.1.10 ปุ่มนาฬิกาบนแถบเมนู</h3>
+<p>ปุ่มนาฬิกาอยู่ด้านขวาของแถบเมนูทุกหน้า เมื่อเชื่อมต่อแล้วจะแสดงค่าหัวใจสด ดังภาพที่ 4.12 คณะผู้วิจัยทดสอบกับนาฬิกา Huawei Watch GT 6 จริงบน Microsoft Edge และพัฒนาเพิ่มจากปัญหาที่พบ 3 เรื่อง เรื่องแรก การเชื่อมต่อค้าง จึงกำหนดเวลาหมดอายุ 15 วินาทีพร้อมแจ้งสาเหตุ เรื่องที่สอง การเชื่อมต่อหลุดบ่อยและต้องเลือกนาฬิกาใหม่หลังรีเฟรชหน้า จึงเพิ่มการเชื่อมใหม่อัตโนมัติ การจำอุปกรณ์ และการป้องกันหน้าจอดับ เรื่องที่สาม เชื่อมต่อได้แต่ไม่มีค่าหัวใจ จึงเพิ่มบันทึกการเชื่อมต่อที่แสดงค่าดิบจากนาฬิกา การอ่านค่าสำรอง และข้อความแยกสาเหตุว่านาฬิกาไม่ส่งค่าเลยหรือส่งค่าเป็น 0</p>
+<figure><img class="shot" src="img/hrbtn.png" alt=""><figcaption><b>ภาพที่ 4.12</b> แถบเมนูขณะเชื่อมต่อนาฬิกา แสดงค่าหัวใจ 142 bpm</figcaption></figure>
+<h3 class="sub">4.1.11 โปรไฟล์และการคำนวณอัตโนมัติ</h3>
+<p>ผู้ใช้กรอกโปรไฟล์ครั้งเดียวที่หน้าคำนวณ หรือกดปุ่มโปรไฟล์บนแถบเมนู ดังภาพที่ 4.13 จากนั้นโปรแกรมใช้ค่าเหล่านี้คำนวณให้อัตโนมัติ ภาพที่ 4.14 แสดงการบันทึกการวิ่ง 30 นาที ระยะทาง 5 กิโลเมตร HR เฉลี่ย 150 bpm ของผู้ชายอายุ 21 ปี น้ำหนัก 65 กิโลกรัม HR ขณะพัก 65 bpm โปรแกรมแสดง pace 6:00 นาทีต่อกิโลเมตร ระดับความหนัก “เบา” เพราะ 150 bpm อยู่ใน Zone 2 (145–159 bpm) และแคลอรี่ ≈ 407 kcal ซึ่งตรงกับสมการที่ 2.7 คือ (−55.0969 + 0.6309 × 150 + 0.1988 × 65 + 0.2017 × 21) ÷ 4.184 = 13.55 kcal ต่อนาที คูณ 30 นาที ได้ 406.5 kcal ด้านบนของภาพเป็นการ์ดเชื่อมต่อ Strava ที่ดึงกิจกรรมจาก Huawei Health เข้าประวัติคาร์ดิโอเอง</p>
+<figure><img class="shot" src="img/profile.png" alt=""><figcaption><b>ภาพที่ 4.13</b> โปรไฟล์ผู้ใช้</figcaption></figure>
+<figure><img class="shot" src="img/cardioauto.png" alt=""><figcaption><b>ภาพที่ 4.14</b> การเชื่อมต่อ Strava และการคำนวณอัตโนมัติขณะบันทึกคาร์ดิโอ</figcaption></figure>
+<h3 class="sub">4.1.12 ชาเลนจ์นับท่าด้วยกล้อง</h3>
+<p>หน้าชาเลนจ์ให้ผู้ใช้เลือกท่าและโหมด แล้วกด “เริ่ม” โปรแกรมเปิดกล้อง วาดโครงร่างร่างกายทับวิดีโอ แสดงจำนวนครั้ง เวลาที่เหลือ และข้อความแนะนำท่าด้านล่าง ดังภาพที่ 4.15 ด้านล่างเป็นสถิติส่วนตัวสูงสุดของแต่ละท่าและโหมด และประวัติชาเลนจ์ที่มีคอลัมน์สถานะในตารางอันดับ ได้แก่ ✅ ขึ้นอันดับแล้ว ⏳ รอผู้ดูแลตรวจ และปุ่มส่งเข้าอันดับสำหรับผลที่ยังไม่ได้ส่ง (โครงร่างในภาพสร้างจากข้อมูลจุดร่างกายตัวอย่าง เพื่อแสดงการแสดงผล)</p>
+<figure><img class="shot" src="img/challenge.png" alt=""><figcaption><b>ภาพที่ 4.15</b> หน้าชาเลนจ์นับท่าด้วยกล้อง</figcaption></figure>
+<h3 class="sub">4.1.13 บัญชีผู้ใช้ เพื่อน และทีม</h3>
+<p>หน้าอันดับมีส่วนบัญชีผู้ใช้ ก่อนเข้าสู่ระบบจะแสดงฟอร์มเข้าสู่ระบบและสมัครสมาชิกพร้อมช่องยินยอม เมื่อเข้าสู่ระบบแล้วจะแสดงชื่อ เหรียญรางวัลที่ได้ รหัสเพื่อน รายชื่อเพื่อน ทีมและรหัสชวน และเมนูแก้ไขข้อมูลหรือลบบัญชี ดังภาพที่ 4.16</p>
+<figure><img class="shot" src="img/account.png" alt=""><figcaption><b>ภาพที่ 4.16</b> บัญชีผู้ใช้ เพื่อน และทีม</figcaption></figure>
+<h3 class="sub">4.1.14 ตารางอันดับ</h3>
+<p>ตารางอันดับเลือกรายการ แบบ ช่วงเวลา กลุ่มผู้ใช้ เพศ และช่วงอายุได้ ผลของผู้ใช้เองมีพื้นสีต่างจากผู้อื่น ผลที่มีวิดีโอหลักฐานมีสัญลักษณ์กล้อง และมีปุ่มรายงานผลของผู้อื่น ดังภาพที่ 4.17</p>
+<figure><img class="shot" src="img/board.png" alt=""><figcaption><b>ภาพที่ 4.17</b> ตารางอันดับวิดพื้นรายสัปดาห์</figcaption></figure>
+<h3 class="sub">4.1.15 การแข่งขัน</h3>
+<p>ส่วนการแข่งขันมีฟอร์มสร้างรหัสท้าดวล รับคำท้า และเริ่มแข่งแบบทีม ด้านล่างแสดงการแข่งขันที่ผู้ใช้เกี่ยวข้อง ได้แก่ อีเวนต์พร้อม 10 อันดับแรก ดวลพร้อมผลของทั้งสองฝ่าย และการแข่งแบบทีมพร้อมคะแนนรวม พร้อมเวลาที่เหลือ และปุ่มไปทำชาเลนจ์ที่ตั้งท่าไว้ให้แล้ว เมื่อการแข่งจบ ระบบประกาศผู้ชนะ ดังภาพที่ 4.18</p>
+<figure><img class="shot" src="img/compete.png" alt=""><figcaption><b>ภาพที่ 4.18</b> การแข่งขันแบบอีเวนต์ ดวล และทีม</figcaption></figure>
+<h3 class="sub">4.1.16 หน้าผู้ดูแลระบบ</h3>
+<p>ผู้ดูแลเห็นคิวผลที่รอตรวจพร้อมเหตุผล กราฟมุมข้อต่อตลอดชาเลนจ์ และวิดีโอหลักฐาน (ถ้ามี) และมีปุ่มอนุมัติ ไม่อนุมัติ และระงับบัญชี ภาพที่ 4.19 แสดงผลที่อ้างว่าวิดพื้นได้ 64 ครั้ง แต่กราฟมุมข้อต่อมีจังหวะขึ้น–ลงประมาณ 30 ครั้ง ระบบจึงตั้งข้อสงสัยว่า “จำนวนไม่ตรงกับท่าทางที่จับได้” และไม่นำขึ้นตารางอันดับ</p>
+<figure><img class="shot" src="img/admin.png" alt=""><figcaption><b>ภาพที่ 4.19</b> หน้าผู้ดูแลระบบ</figcaption></figure>
 
 <h2 data-toc="4.2 ผลการทดสอบการทำงานของระบบ">4.2 ผลการทดสอบการทำงานของระบบ</h2>
-<p>คณะผู้วิจัยทดสอบการทำงานด้วยการทดสอบอัตโนมัติบน Chrome แบบ headless ที่ควบคุมด้วย puppeteer-core ผ่านเว็บเซิร์ฟเวอร์ในเครื่อง โดยจำลองการกดและการกรอกข้อมูลเหมือนผู้ใช้จริง ผลการทดสอบชุดหลักผ่าน 31 จาก 31 กรณี ดังตารางที่ 4.1 ผลการทดสอบระบบวิดีโอสอนท่าดังตารางที่ 4.2 และผลการทดสอบการเชื่อมต่อนาฬิกาด้วยอุปกรณ์ Bluetooth จำลองดังตารางที่ 4.3</p>
+<p>คณะผู้วิจัยทดสอบการทำงานด้วยการทดสอบอัตโนมัติบน Chrome แบบ headless ที่ควบคุมด้วย puppeteer-core ผ่านเว็บเซิร์ฟเวอร์ในเครื่อง โดยจำลองการกดและการกรอกข้อมูลเหมือนผู้ใช้จริง ผลการทดสอบชุดหลักผ่าน 31 จาก 31 กรณี ดังตารางที่ 4.1 ผลการทดสอบระบบวิดีโอสอนท่าดังตารางที่ 4.2 ผลการทดสอบการเชื่อมต่อนาฬิกาด้วยอุปกรณ์ Bluetooth จำลองดังตารางที่ 4.3 ผลการทดสอบระบบชาเลนจ์ดังตารางที่ 4.4 ผลการทดสอบระบบบัญชี อันดับ และการแข่งขันดังตารางที่ 4.5 และสรุปผลการทดสอบทั้งหมดดังตารางที่ 4.6 ชุดทดสอบทั้งหมดรันซ้ำทุกครั้งที่แก้ไขโปรแกรม เพื่อยืนยันว่าฟังก์ชันเดิมยังทำงานถูกต้อง</p>
 <div class="tblk"><div class="tcap">ตารางที่ 4.1 ผลการทดสอบการทำงานชุดหลัก</div>
 <table class="t">
   <thead><tr><th style="width:6%">ที่</th><th>กรณีทดสอบ</th><th style="width:12%">ผล</th></tr></thead>
@@ -787,11 +984,62 @@ figcaption b { font-weight: 700; }
   <tr><td class="c">6</td><td>“บันทึกเป็นคาร์ดิโอ” เติมเวลาและ HR เฉลี่ยลงฟอร์ม</td><td class="c">ผ่าน</td></tr>
   <tr><td class="c">7</td><td>สัญญาณหลุดแล้วเชื่อมใหม่เอง และกดตัดการเชื่อมต่อเองแล้วไม่เชื่อมใหม่</td><td class="c">ผ่าน</td></tr>
 </table></div>
+<div class="tblk"><div class="tcap">ตารางที่ 4.4 ผลการทดสอบระบบชาเลนจ์นับท่าด้วยกล้อง</div>
+<table class="t">
+  <thead><tr><th style="width:6%">ที่</th><th>กรณีทดสอบ</th><th style="width:12%">ผล</th></tr></thead>
+  <tr><td class="c">1</td><td>วิดพื้นถูกท่า 5 ครั้ง นับได้ 5 ครั้ง</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">2</td><td>ลงไม่ลึก (ศอก 120°) ไม่นับ และแจ้ง “ลงให้ลึกกว่านี้”</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">3</td><td>สะโพกตกตลอดทั้งครั้ง ไม่นับ และแจ้งว่าลำตัวไม่ตรง</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">4</td><td>มองไม่เห็นตัว ไม่นับ และแจ้งให้ถอยห่างกล้อง</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">5</td><td>ยืนงอแขน (ลำตัวตั้ง) ไม่นับเป็นวิดพื้น</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">6</td><td>มุมสั่น ±5° ยังนับถูก</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">7</td><td>จุดร่างกายหาย 1 เฟรม สะโพกเพี้ยน 1 เฟรม หรือความเอียงเพี้ยน 1 เฟรม ยังนับครบ</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">8</td><td>สองข้างของร่างกายเห็นชัดพอกัน ระบบยึดข้างเดียว ไม่สลับไปมา</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">9</td><td>ลงถึง 98° นับ (ทนความคลาดเคลื่อนของภาพ 2 มิติ)</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">10</td><td>สควอทลึก 3 ครั้ง นับ 3 ย่อครึ่งเดียวไม่นับ และหลังก้มมากไม่นับ</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">11</td><td>แพลงก์ตรง 10 วินาที ได้ 10.0 วินาที และสะโพกตกกลางทาง นาฬิกาหยุด (ได้ประมาณ 7 วินาที)</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">12</td><td>หน้าจอ สถิติส่วนตัว ประวัติ การตรวจข้อมูลนำเข้า และปิดกล้องเมื่อออกจากหน้า</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">13</td><td>กล้องจำลองในเว็บเบราว์เซอร์จริง: โหลดแบบจำลอง เปิดกล้อง ลูปตรวจจับทำงาน และผลเป็น 0 ไม่บันทึก</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">14</td><td>อัดวิดีโอหลักฐาน: เริ่มอัดเมื่อเลือก หยุดอัดก่อนปิดกล้อง และได้ไฟล์วิดีโอ</td><td class="c">ผ่าน</td></tr>
+  <tr><td colspan="2" style="text-align:right"><b>รวม (ตัวนับ 28 กรณีย่อย + กล้องจำลอง 8 กรณีย่อย)</b></td><td class="c"><b>36/36</b></td></tr>
+</table></div>
+<div class="tblk"><div class="tcap">ตารางที่ 4.5 ผลการทดสอบระบบบัญชี อันดับ และการแข่งขันกับฐานข้อมูลจริง</div>
+<table class="t">
+  <thead><tr><th style="width:6%">ที่</th><th>กรณีทดสอบ</th><th style="width:12%">ผล</th></tr></thead>
+  <tr><td class="c">1</td><td>สมัคร เข้าสู่ระบบ และต่ออายุ token ได้ ชื่อซ้ำ ชื่อผิดรูปแบบ และรหัสผ่านผิดถูกปฏิเสธ</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">2</td><td>ต้องยินยอมก่อนสมัคร และผู้ใช้อายุต่ำกว่า 18 ปีต้องมีความยินยอมของผู้ปกครอง</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">3</td><td>เพื่อนบันทึกสองทิศทาง เพิ่มตัวเองไม่ได้ และหนึ่งคนอยู่ได้หนึ่งทีม</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">4</td><td>ดวล: รับคำท้าของตัวเองไม่ได้ และกดรับซ้ำได้เพียงคนเดียว</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">5</td><td>อีเวนต์: ผู้ใช้ทั่วไปสร้างไม่ได้ และนับผลเฉพาะผู้เข้าร่วม</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">6</td><td>ผลปลอม (บอก 40 ครั้ง แต่ร่องรอยมี 5 ครั้ง) รอตรวจและไม่ขึ้นอันดับ ผลที่เป็นไปไม่ได้ (150 ครั้งใน 60 วินาที) และโหมด 60 วินาทีที่ใช้เวลา 10 วินาทีถูกปฏิเสธ</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">7</td><td>ตารางอันดับกรองเพื่อน ทีม เพศ และอายุถูกต้อง และอันดับเพื่อน/ทีมต้องเข้าสู่ระบบ</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">8</td><td>คะแนนทีม (20 + 15 = 35 ต่อ 30) ถูกต้อง</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">9</td><td>รายงาน คิวผู้ดูแล ไม่อนุมัติ และระงับบัญชีแล้วหายจากอันดับและส่งผลไม่ได้</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">10</td><td>วิดีโอหลักฐานอัปโหลดผ่าน URL ที่ใช้ได้ครั้งเดียว และผู้อื่นที่ไม่ใช่ผู้ดูแลดูไม่ได้</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">11</td><td>ดวลหมดเวลาแล้วปิดเอง และผู้ชนะได้เหรียญรางวัล</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">12</td><td>ลบบัญชีแล้วข้อมูลทุกตารางถูกลบ และเข้าสู่ระบบไม่ได้อีก</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">13</td><td>หน้าจอจริงต่อกับระบบจริง: สมัครผ่านฟอร์ม ส่งผลอัตโนมัติ แจ้งผลดวลไม่ซ้ำ ป้องกันสคริปต์อันตรายในชื่อที่แสดง และต่ออายุ token เอง</td><td class="c">ผ่าน</td></tr>
+  <tr><td class="c">14</td><td>กฎตรวจผล 19 กรณี คำขอจากเว็บไซต์อื่นถูกปฏิเสธ ข้อผิดพลาดภายในไม่ถูกเปิดเผย และตัดรอบสัปดาห์/เดือนตามเวลาประเทศไทย</td><td class="c">ผ่าน</td></tr>
+  <tr><td colspan="2" style="text-align:right"><b>รวม (API 63 + หน้าจอ 40 + unit 32 กรณีย่อย)</b></td><td class="c"><b>135/135</b></td></tr>
+</table></div>
+<p>การทดสอบกับฐานข้อมูลจริงใช้บัญชีทดสอบที่ขึ้นต้นด้วย zz_test_ และลบทิ้งหลังทดสอบทุกครั้ง หลังทดสอบไม่มีข้อมูลทดสอบค้างในฐานข้อมูล</p>
+<div class="tblk"><div class="tcap">ตารางที่ 4.6 สรุปผลการทดสอบทั้งหมด</div>
+<table class="t">
+  <thead><tr><th>ชุดทดสอบ</th><th style="width:16%">จำนวนกรณี</th><th style="width:12%">ผล</th></tr></thead>
+  <tr><td>แอปหลัก (บันทึก วิดีโอ Bluetooth Strava คำนวณอัตโนมัติ และอื่น ๆ)</td><td class="c">108</td><td class="c">ผ่านทั้งหมด</td></tr>
+  <tr><td>ตัวนับท่าด้วยข้อมูลจุดร่างกายจำลอง</td><td class="c">28</td><td class="c">ผ่านทั้งหมด</td></tr>
+  <tr><td>กล้องจำลองในเว็บเบราว์เซอร์จริง</td><td class="c">8</td><td class="c">ผ่านทั้งหมด</td></tr>
+  <tr><td>ฟังก์ชันฝั่งเซิร์ฟเวอร์ของ Strava</td><td class="c">14</td><td class="c">ผ่านทั้งหมด</td></tr>
+  <tr><td>API บัญชี อันดับ และการแข่งขัน กับฐานข้อมูลจริง</td><td class="c">63</td><td class="c">ผ่านทั้งหมด</td></tr>
+  <tr><td>หน้าจอต่อกับระบบจริงตั้งแต่ต้นจนจบ</td><td class="c">40</td><td class="c">ผ่านทั้งหมด</td></tr>
+  <tr><td>กฎตรวจผลและการรับคำขอ (unit)</td><td class="c">32</td><td class="c">ผ่านทั้งหมด</td></tr>
+  <tr><td style="text-align:right"><b>รวม</b></td><td class="c"><b>293</b></td><td class="c"><b>293/293</b></td></tr>
+</table></div>
 <p>นอกจากนี้ คณะผู้วิจัยทดสอบสคริปต์ติดตั้ง run.ps1 บน Windows พบว่าดาวน์โหลดโปรแกรมจาก GitHub และเปิดเว็บเซิร์ฟเวอร์ที่ http://localhost:8080 ได้ ไฟล์ที่ไม่มีอยู่ได้รหัส 404 และการขอไฟล์นอกโฟลเดอร์โปรแกรม (path traversal) ถูกปฏิเสธ</p>
 
 <h2 data-toc="4.3 ผลการประเมินความพึงพอใจ">4.3 ผลการประเมินความพึงพอใจ</h2>
-<p>ผลการประเมินความพึงพอใจของกลุ่มเป้าหมายจำนวน ....... คน ดังตารางที่ 4.4</p>
-<div class="tblk"><div class="tcap">ตารางที่ 4.4 ผลการประเมินความพึงพอใจของผู้ใช้งาน</div>
+<p>ผลการประเมินความพึงพอใจของกลุ่มเป้าหมายจำนวน ....... คน ดังตารางที่ 4.7</p>
+<div class="tblk"><div class="tcap">ตารางที่ 4.7 ผลการประเมินความพึงพอใจของผู้ใช้งาน</div>
 <table class="t">
   <thead><tr><th style="width:6%">ที่</th><th>รายการประเมิน</th><th style="width:10%">x̄</th><th style="width:10%">S.D.</th><th style="width:16%">ระดับ</th></tr></thead>
   <tr><td colspan="5"><b>ด้านการออกแบบ</b></td></tr>
@@ -807,6 +1055,8 @@ figcaption b { font-weight: 700; }
   <tr><td class="c">8</td><td>แผนออกกำลังกายช่วยในการวางแผนการฝึก</td><td class="c">.......</td><td class="c">.......</td><td class="c">.......</td></tr>
   <tr><td class="c">9</td><td>สถิติและกราฟช่วยให้เห็นความก้าวหน้า</td><td class="c">.......</td><td class="c">.......</td><td class="c">.......</td></tr>
   <tr><td class="c">10</td><td>เครื่องคำนวณมีประโยชน์ต่อการดูแลโภชนาการ</td><td class="c">.......</td><td class="c">.......</td><td class="c">.......</td></tr>
+  <tr><td class="c">11</td><td>การนับท่าด้วยกล้องช่วยให้ทำท่าได้ถูกต้อง</td><td class="c">.......</td><td class="c">.......</td><td class="c">.......</td></tr>
+  <tr><td class="c">12</td><td>ตารางอันดับและการแข่งขันช่วยสร้างแรงจูงใจ</td><td class="c">.......</td><td class="c">.......</td><td class="c">.......</td></tr>
   <tr><td colspan="2" style="text-align:right"><b>ค่าเฉลี่ยรวม</b></td><td class="c">.......</td><td class="c">.......</td><td class="c">.......</td></tr>
 </table></div>
 </section>
@@ -818,34 +1068,39 @@ figcaption b { font-weight: 700; }
 <h2 data-toc="5.1 สรุปผล">5.1 สรุปผล</h2>
 <p>คณะผู้วิจัยพัฒนาโปรแกรมออกกำลังกายสำหรับมือใหม่ FitTrack Pro ในรูปแบบ Progressive Web App ได้ครบตามวัตถุประสงค์ ดังนี้</p>
 <ol>
-  <li>โปรแกรมใช้งานได้ทั้งบนคอมพิวเตอร์และโทรศัพท์มือถือ ติดตั้งลงหน้าจอโฮม และใช้งานออฟไลน์ได้ เผยแพร่ผ่าน GitHub และ Vercel และมีสคริปต์เปิดโปรแกรมด้วยคำสั่งเดียวบน Windows</li>
-  <li>โปรแกรมมีระบบบันทึกเวทเทรนนิ่งและคาร์ดิโอ คลังท่า 30 ท่าพร้อมวิดีโอสอน นาฬิกาพัก stopwatch โซนหัวใจ แผนการฝึก เครื่องคำนวณ 4 ชนิด และหน้าสรุปผลพร้อมกราฟ</li>
-  <li>โปรแกรมเชื่อมต่อนาฬิกาหรือสายคาดอกผ่าน Web Bluetooth เพื่อแสดงค่าหัวใจแบบสดและโซนปัจจุบัน และบันทึก HR เฉลี่ยลงคาร์ดิโอได้</li>
-  <li>ผลการทดสอบการทำงานผ่านครบ 42 จาก 42 กรณี และการเชื่อมต่อ Bluetooth ผ่านครบทุกกรณีกับอุปกรณ์จำลอง ผลการประเมินความพึงพอใจอยู่ในระดับ ....... (x̄ = ......., S.D. = .......)</li>
+  <li>โปรแกรมใช้งานได้ทั้งบนคอมพิวเตอร์และโทรศัพท์มือถือ ติดตั้งลงหน้าจอโฮม และใช้งานออฟไลน์ได้ เผยแพร่ผ่าน Vercel และมีสคริปต์เปิดโปรแกรมด้วยคำสั่งเดียวบน Windows</li>
+  <li>โปรแกรมมีระบบบันทึกเวทเทรนนิ่งและคาร์ดิโอ คลังท่า 30 ท่าพร้อมวิดีโอสอน นาฬิกาพัก stopwatch โซนหัวใจ แผนการฝึก เครื่องคำนวณ 4 ชนิด หน้าสรุปผลพร้อมกราฟ และการคำนวณแคลอรี่ pace และระดับความหนักอัตโนมัติจากสมการที่มีงานวิจัยรองรับ</li>
+  <li>โปรแกรมเชื่อมต่อนาฬิกาผ่าน Web Bluetooth เพื่อแสดงค่าหัวใจแบบสด ซึ่งพัฒนาความเสถียรจากการทดสอบกับ Huawei Watch GT 6 จริง และดึงกิจกรรมจาก Huawei Health ผ่าน Strava</li>
+  <li>โปรแกรมนับจำนวนครั้งของวิดพื้นและสควอท และจับเวลาแพลงก์ด้วยกล้อง โดยนับเฉพาะท่าที่ถูกต้องและประมวลผลภาพภายในเครื่อง</li>
+  <li>โปรแกรมมีระบบบัญชี เพื่อน ทีม ตารางอันดับ และการแข่งขัน 3 รูปแบบ พร้อมการตรวจผลฝั่งเซิร์ฟเวอร์ วิดีโอหลักฐาน การรายงาน หน้าผู้ดูแล และเหรียญรางวัล</li>
+  <li>ผลการทดสอบการทำงานผ่านครบ 293 จาก 293 กรณี ผลการประเมินความพึงพอใจอยู่ในระดับ ....... (x̄ = ......., S.D. = .......)</li>
 </ol>
 
 <h2 data-toc="5.2 อภิปรายผล">5.2 อภิปรายผล</h2>
-<p>การพัฒนาเป็น Progressive Web App ทำให้ผู้ใช้เริ่มใช้งานได้ทันทีจากลิงก์โดยไม่ต้องสมัครสมาชิกหรือติดตั้งจากร้านค้าแอปพลิเคชัน ซึ่งช่วยลดอุปสรรคของผู้เริ่มต้น การเก็บข้อมูลไว้ในเครื่องของผู้ใช้ทำให้ข้อมูลสุขภาพไม่ถูกส่งออกไปภายนอก แต่ผู้ใช้ต้องสำรองข้อมูลเองด้วยฟังก์ชัน Export</p>
-<p>การใช้วิธีของ Karvonen ทำให้โซนหัวใจสอดคล้องกับระดับความฟิตของแต่ละคนมากกว่าการใช้ร้อยละของ HR สูงสุดเพียงอย่างเดียว และเมื่อใช้ร่วมกับค่าหัวใจสดจากนาฬิกา ผู้เริ่มต้นจึงควบคุมความหนักของการฝึกคาร์ดิโอได้ระหว่างฝึก ผลการคำนวณในโปรแกรมตรงกับการคำนวณด้วยสมการในบทที่ 2 ดังตัวอย่างในหัวข้อ 4.1.6 และ 4.1.9</p>
-<p>การทดสอบอัตโนมัติช่วยให้ตรวจพบและแก้ไขข้อบกพร่องสำคัญได้ก่อนเผยแพร่ เช่น การป้องกันสคริปต์อันตรายจากไฟล์นำเข้า การตรวจช่วงของค่าที่กรอก และการแปลงข้อมูลรุ่นเก่าโดยไม่สูญหาย และใช้ทดสอบซ้ำทุกครั้งที่เพิ่มฟังก์ชันใหม่ เพื่อยืนยันว่าฟังก์ชันเดิมยังทำงานถูกต้อง</p>
+<p>การพัฒนาเป็น Progressive Web App ทำให้ผู้ใช้เริ่มใช้งานได้ทันทีจากลิงก์โดยไม่ต้องสมัครสมาชิกหรือติดตั้งจากร้านค้าแอปพลิเคชัน ซึ่งช่วยลดอุปสรรคของผู้เริ่มต้น การแยกข้อมูลการฝึกส่วนตัวไว้ในเครื่อง และเก็บบนเซิร์ฟเวอร์เฉพาะข้อมูลที่จำเป็นต่อการแข่งขัน ทำให้ผู้ใช้ที่ไม่ต้องการแข่งขันไม่ต้องส่งข้อมูลใดออกไปภายนอก ซึ่งสอดคล้องกับหลักการเก็บข้อมูลเท่าที่จำเป็นของพระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล</p>
+<p>การใช้วิธีของ Karvonen ร่วมกับค่าหัวใจสดทำให้ผู้เริ่มต้นควบคุมความหนักของการฝึกคาร์ดิโอได้ และการคำนวณแคลอรี่ด้วยสมการของ Keytel เมื่อมีค่าหัวใจ หรือค่า MET เมื่อไม่มี ให้ค่าที่มีที่มา ผลการคำนวณในโปรแกรมตรงกับการคำนวณด้วยสมการในบทที่ 2 ดังตัวอย่างในหัวข้อ 4.1.6, 4.1.9 และ 4.1.11</p>
+<p>การนับท่าด้วยกล้องในภาพ 2 มิติได้รับผลจากมุมกล้องและสัญญาณรบกวนของแบบจำลอง รุ่นแรกของตัวนับเปลี่ยนสถานะทันทีเมื่อพบเฟรมที่ผิดพลาดเพียงเฟรมเดียว ทำให้นับขาดเมื่อใช้งานจริง คณะผู้วิจัยจึงปรับให้ระบบยึดข้างของร่างกายที่เห็นชัด ทนต่อเฟรมที่ผิดพลาดเป็นช่วงเวลาสั้น ๆ และใช้แบบจำลองรุ่นที่แม่นยำกว่าเมื่อเครื่องรองรับ GPU ซึ่งยืนยันด้วยกรณีทดสอบในตารางที่ 4.4</p>
+<p>ตารางอันดับจะสร้างแรงจูงใจได้ก็ต่อเมื่อผู้ใช้เชื่อถือผลในตาราง เนื่องจากค่าที่ส่งจากเว็บเบราว์เซอร์แก้ไขได้เสมอ โปรแกรมจึงตรวจผลซ้ำที่เซิร์ฟเวอร์ โดยเฉพาะการนับจำนวนครั้งซ้ำจากร่องรอยมุมข้อต่อ ซึ่งตรวจพบผลปลอมในการทดสอบได้ อย่างไรก็ตาม ผู้ที่สร้างร่องรอยปลอมให้สมจริงยังผ่านการตรวจอัตโนมัติได้ จึงต้องมีวิดีโอหลักฐาน การรายงาน และผู้ดูแลเป็นด่านสุดท้าย</p>
 
 <h2 data-toc="5.3 ข้อจำกัดของระบบ">5.3 ข้อจำกัดของระบบ</h2>
 <ol>
-  <li>ข้อมูลเก็บในเบราว์เซอร์ของแต่ละเครื่อง ไม่ซิงก์ข้ามอุปกรณ์อัตโนมัติ และหากผู้ใช้ล้างข้อมูลเบราว์เซอร์โดยไม่ได้สำรองไว้ ข้อมูลจะหาย</li>
-  <li>iPhone และ iPad ยังไม่รองรับ Web Bluetooth จึงรับค่าหัวใจสดจากนาฬิกาไม่ได้ และนาฬิกาบางรุ่นต้องเปิดโหมดส่งค่าหัวใจ (HR broadcast) ก่อน</li>
-  <li>การเชื่อมต่อ Bluetooth ทดสอบกับอุปกรณ์จำลอง ยังต้องทดสอบกับนาฬิกาหลายรุ่นเพิ่มเติม</li>
+  <li>ข้อมูลการฝึกส่วนตัวเก็บในเบราว์เซอร์ของแต่ละเครื่อง ไม่ซิงก์ข้ามอุปกรณ์อัตโนมัติ และหากผู้ใช้ล้างข้อมูลเบราว์เซอร์โดยไม่ได้สำรองไว้ ข้อมูลจะหาย</li>
+  <li>iPhone และ iPad ยังไม่รองรับ Web Bluetooth และนาฬิกาต้องเปิดโหมดส่งค่าหัวใจก่อน การทดสอบกับ Huawei Watch GT 6 จริงเชื่อมต่อได้ แต่การส่งค่าหัวใจยังต้องตรวจสอบตามโหมดของนาฬิกาเพิ่มเติม</li>
+  <li>การนับท่าด้วยกล้องใช้ภาพ 2 มิติ ผู้ใช้ต้องวางกล้องด้านข้างลำตัว และต้องต่ออินเทอร์เน็ตครั้งแรกเพื่อโหลดแบบจำลอง</li>
+  <li>การดึงกิจกรรมจาก Strava ต้องตั้งค่าแอปพลิเคชัน Strava และกุญแจบนเซิร์ฟเวอร์ก่อน และนาฬิกาต้องส่งข้อมูลจาก Huawei Health ไป Strava ได้</li>
+  <li>Supabase จำกัดจำนวนครั้งการเข้าสู่ระบบตาม IP ของผู้เรียก ซึ่งในระบบนี้คือ IP ของ Vercel ที่ผู้ใช้ทุกคนใช้ร่วมกัน หากมีผู้ใช้พร้อมกันจำนวนมากอาจถูกจำกัดชั่วคราว</li>
+  <li>การแจ้งผลการแข่งขันเป็นการแจ้งภายในแอปเมื่อเปิดโปรแกรม ยังไม่มีการแจ้งเตือนขณะปิดโปรแกรม (Push Notification)</li>
   <li>วิดีโอสอนท่าต้องใช้อินเทอร์เน็ต และขึ้นอยู่กับเจ้าของวิดีโอบน YouTube</li>
-  <li>สคริปต์ติดตั้ง run.ps1 ใช้ได้เฉพาะ Windows และต้องเปิดหน้าต่าง PowerShell ไว้ระหว่างใช้งาน</li>
   <li>ยังแก้ไขรายการในประวัติไม่ได้ ทำได้เฉพาะลบแล้วบันทึกใหม่</li>
 </ol>
 
 <h2 data-toc="5.4 ข้อเสนอแนะ">5.4 ข้อเสนอแนะ</h2>
 <ol>
-  <li>เพิ่มการซิงก์กิจกรรมจากนาฬิกาผ่าน Strava API ซึ่งคณะผู้วิจัยได้ร่างแผนไว้แล้ว เพื่อดึงข้อมูลกิจกรรมที่บันทึกบนนาฬิกาเข้าโปรแกรมโดยอัตโนมัติ</li>
-  <li>เพิ่มการสำรองข้อมูลบนคลาวด์ที่ผู้ใช้เลือกเปิดเอง เพื่อใช้ข้อมูลเดียวกันได้หลายอุปกรณ์</li>
-  <li>เพิ่มการบันทึกสถิติส่วนตัวสูงสุด (Personal Record) กราฟความก้าวหน้ารายท่า และการเติมค่าจากการฝึกครั้งก่อน</li>
-  <li>เพิ่มสูตร BMR แบบ Mifflin–St Jeor ให้ผู้ใช้เลือก</li>
-  <li>ทดสอบกับผู้ใช้กลุ่มใหญ่ขึ้นและนาฬิกาหลายยี่ห้อ เพื่อปรับปรุงการใช้งานจริง</li>
+  <li>เพิ่มการสำรองข้อมูลการฝึกบนคลาวด์ที่ผู้ใช้เลือกเปิดเอง โดยใช้บัญชีผู้ใช้ที่มีอยู่แล้ว เพื่อใช้ข้อมูลเดียวกันได้หลายอุปกรณ์</li>
+  <li>ใช้พิกัด 3 มิติจากแบบจำลอง (World Landmarks) คำนวณมุมข้อต่อ เพื่อลดผลของมุมกล้อง และเพิ่มท่าอื่น เช่น ซิทอัพ และกระโดดตบ</li>
+  <li>เพิ่มการเข้าสู่ระบบด้วย Google และการแจ้งเตือนแบบ Push Notification เมื่อมีคำท้าหรือผลการแข่งขัน</li>
+  <li>เพิ่มการบันทึกสถิติส่วนตัวสูงสุดของเวทเทรนนิ่ง กราฟความก้าวหน้ารายท่า และการแนะนำน้ำหนักครั้งถัดไป</li>
+  <li>ทดสอบกับผู้ใช้กลุ่มใหญ่ขึ้นและนาฬิกาหลายยี่ห้อ และเปรียบเทียบจำนวนครั้งที่ระบบนับกับการนับของผู้สังเกต เพื่อวัดความแม่นยำของตัวนับ</li>
 </ol>
 </section>
 
@@ -869,6 +1124,16 @@ figcaption b { font-weight: 700; }
 <p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[14] Chart.js. (n.d.). <i>Chart.js documentation</i>. สืบค้นจาก https://www.chartjs.org/docs/</p>
 <p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[15] Google. (n.d.). <i>YouTube IFrame Player API reference</i>. สืบค้นจาก https://developers.google.com/youtube/iframe_api_reference</p>
 <p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[16] Bluetooth SIG. (2011). <i>Heart Rate Service Specification</i> (v1.0). สืบค้นจาก https://www.bluetooth.com/specifications/specs/</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[17] Keytel, L. R., Goedecke, J. H., Noakes, T. D., Hiiloskorpi, H., Laukkanen, R., van der Merwe, L., &amp; Lambert, E. V. (2005). Prediction of energy expenditure from heart rate monitoring during submaximal exercise. <i>Journal of Sports Sciences, 23</i>(3), 289–297.</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[18] Ainsworth, B. E., Haskell, W. L., Herrmann, S. D., Meckes, N., Bassett, D. R., Jr., Tudor-Locke, C., Greer, J. L., Vezina, J., Whitt-Glover, M. C., &amp; Leon, A. S. (2011). 2011 Compendium of Physical Activities: A second update of codes and MET values. <i>Medicine &amp; Science in Sports &amp; Exercise, 43</i>(8), 1575–1581.</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[19] Bazarevsky, V., Grishchenko, I., Raveendran, K., Zhu, T., Zhang, F., &amp; Grundmann, M. (2020). <i>BlazePose: On-device real-time body pose tracking</i>. arXiv preprint arXiv:2006.10204.</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[20] Google. (n.d.). <i>Pose landmark detection guide for Web</i>. MediaPipe Solutions. สืบค้นจาก https://ai.google.dev/edge/mediapipe/solutions/vision/pose_landmarker/web_js</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[21] Strava. (n.d.). <i>Strava API v3 documentation</i>. สืบค้นจาก https://developers.strava.com/docs/</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[22] Supabase. (n.d.). <i>Supabase documentation</i>. สืบค้นจาก https://supabase.com/docs</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[23] พระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562. (2562, 27 พฤษภาคม). <i>ราชกิจจานุเบกษา</i>. เล่ม 136 ตอนที่ 69 ก. หน้า 52–95.</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[24] Deterding, S., Dixon, D., Khaled, R., &amp; Nacke, L. (2011). From game design elements to gamefulness: Defining “gamification”. In <i>Proceedings of the 15th International Academic MindTrek Conference</i> (pp. 9–15). ACM.</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[25] Hardt, D. (Ed.). (2012). <i>The OAuth 2.0 Authorization Framework</i> (RFC 6749). Internet Engineering Task Force.</p>
+<p class="ni" style="padding-left:0.5in;text-indent:-0.5in">[26] Vercel. (n.d.). <i>Vercel Functions documentation</i>. สืบค้นจาก https://vercel.com/docs/functions</p>
 </div>
 </section>
 
@@ -899,13 +1164,43 @@ figcaption b { font-weight: 700; }
 <ol>
   <li>ใช้ Chrome บน Android หรือคอมพิวเตอร์ และเปิดโปรแกรมผ่าน https หรือ localhost</li>
   <li>เปิดโหมดส่งค่าหัวใจบนนาฬิกา (เช่น Broadcast Heart Rate) หรือสวมสายคาดอก</li>
-  <li>ไปที่หน้าคาร์ดิโอ แท็บจับเวลา แล้วกด “เชื่อมต่อ” และเลือกอุปกรณ์จากรายการ</li>
+  <li>กดปุ่ม ⌚ บนแถบเมนู (หรือหน้าคาร์ดิโอ แท็บจับเวลา) แล้วเลือกอุปกรณ์จากรายการ เช่น HUAWEI WATCH GT 6 โปรแกรมจะจำนาฬิกาไว้และเชื่อมใหม่เองเมื่อสัญญาณหลุด</li>
   <li>กดเริ่มจับเวลา เมื่อจบให้กด “บันทึกเป็นคาร์ดิโอ” เพื่อเติมเวลาและ HR เฉลี่ยลงฟอร์ม</li>
 </ol>
 <h2>ก.4 การสำรองและย้ายข้อมูล</h2>
 <ol>
   <li>ที่หน้าภาพรวม กด “Export” เพื่อดาวน์โหลดไฟล์ JSON ของข้อมูลทั้งหมด</li>
   <li>ที่เครื่องใหม่ กด “Import” แล้วเลือกไฟล์ที่ส่งออกไว้</li>
+</ol>
+<h2>ก.5 การดึงกิจกรรมจากนาฬิกา Huawei ผ่าน Strava</h2>
+<ol>
+  <li>เปิดแอป Huawei Health บนมือถือ ไปที่ ฉัน (Me) &gt; การจัดการความเป็นส่วนตัว &gt; การแชร์ข้อมูลและการอนุญาต &gt; Strava แล้วเข้าสู่ระบบ Strava</li>
+  <li>ในโปรแกรม ไปที่หน้าคาร์ดิโอ กด “เชื่อมต่อ Strava” แล้วกดอนุญาต (ทำครั้งเดียว)</li>
+  <li>หลังจากนี้ทุกครั้งที่เปิดโปรแกรม กิจกรรมใหม่จะเข้าประวัติคาร์ดิโอเอง พร้อมเวลา ระยะทาง HR เฉลี่ย และแคลอรี่</li>
+</ol>
+<p class="ni">สำหรับผู้ดูแลระบบ: สร้างแอปพลิเคชันที่ https://www.strava.com/settings/api แล้วตั้งค่า <code>STRAVA_CLIENT_ID</code> และ <code>STRAVA_CLIENT_SECRET</code> ใน Environment Variables ของ Vercel</p>
+<h2>ก.6 การทำชาเลนจ์ด้วยกล้อง</h2>
+<ol>
+  <li>วางกล้องด้านข้างลำตัว ห่างประมาณ 2 เมตร สูงประมาณระดับเอว ให้เห็นตั้งแต่ศีรษะถึงเท้า มีแสงเพียงพอ</li>
+  <li>ไปที่หน้าชาเลนจ์ เลือกท่าและโหมด แล้วกด “เริ่ม” และอนุญาตให้ใช้กล้อง</li>
+  <li>เมื่อนับถอยหลังครบ 3 วินาที เริ่มออกกำลังกาย ทำตามข้อความแนะนำบนจอ</li>
+  <li>โหมด 60 วินาทีจบเอง โหมดอื่นกด “จบและบันทึก” หากต้องการวิดีโอหลักฐาน ให้ติ๊ก “อัดวิดีโอเป็นหลักฐาน” ก่อนเริ่ม</li>
+</ol>
+<h2>ก.7 การสมัครสมาชิก ตารางอันดับ และการแข่งขัน</h2>
+<ol>
+  <li>ไปที่หน้าอันดับ เลือก “สมัครใหม่” กรอกชื่อผู้ใช้ รหัสผ่าน ชื่อที่แสดง เพศ และช่วงอายุ (ไม่บังคับ) ติ๊กยินยอม แล้วกดสมัคร</li>
+  <li>แลกรหัสเพื่อนกับเพื่อน หรือสร้างทีมแล้วส่งรหัสชวนให้สมาชิก</li>
+  <li>ผลชาเลนจ์จะส่งเข้าตารางอันดับเองเมื่อจบชาเลนจ์ ปิดได้ที่ช่อง “ส่งผลชาเลนจ์เข้าอันดับอัตโนมัติ”</li>
+  <li>ท้าดวล: เลือกท่า กด “สร้างรหัสท้าดวล” แล้วส่งรหัสให้เพื่อน เพื่อนกด “รับคำท้า” แล้วแข่งกัน 24 ชั่วโมง</li>
+  <li>ทีมต่อทีม: ใส่รหัสทีมคู่แข่ง เลือกจำนวนวัน แล้วกด “เริ่มแข่ง”</li>
+  <li>อีเวนต์: กด “เข้าร่วม” ที่อีเวนต์ที่ต้องการ ผลชาเลนจ์หลังจากนั้นจะนับเข้าอีเวนต์</li>
+  <li>ลบบัญชี: เปิด “แก้ไขข้อมูล / ลบบัญชี” แล้วพิมพ์ชื่อผู้ใช้เพื่อยืนยัน</li>
+</ol>
+<h2>ก.8 การตั้งผู้ดูแลระบบ</h2>
+<ol>
+  <li>สมัครบัญชีในโปรแกรมก่อน</li>
+  <li>ตั้งค่า Environment Variable <code>ADMIN_USERNAMES</code> ใน Vercel เป็นชื่อผู้ใช้ของผู้ดูแล (หลายคนคั่นด้วยเครื่องหมายจุลภาค) แล้ว deploy ใหม่</li>
+  <li>ผู้ดูแลจะเห็นส่วน “ผู้ดูแล: ตรวจผลและรายงาน” ในหน้าอันดับ และสร้างอีเวนต์ได้</li>
 </ol>
 </section>
 
@@ -936,6 +1231,8 @@ figcaption b { font-weight: 700; }
   <tr><td class="c">8</td><td>แผนออกกำลังกายช่วยในการวางแผนการฝึก</td><td></td><td></td><td></td><td></td><td></td></tr>
   <tr><td class="c">9</td><td>สถิติและกราฟช่วยให้เห็นความก้าวหน้า</td><td></td><td></td><td></td><td></td><td></td></tr>
   <tr><td class="c">10</td><td>เครื่องคำนวณมีประโยชน์ต่อการดูแลโภชนาการ</td><td></td><td></td><td></td><td></td><td></td></tr>
+  <tr><td class="c">11</td><td>การนับท่าด้วยกล้องช่วยให้ทำท่าได้ถูกต้อง</td><td></td><td></td><td></td><td></td><td></td></tr>
+  <tr><td class="c">12</td><td>ตารางอันดับและการแข่งขันช่วยสร้างแรงจูงใจ</td><td></td><td></td><td></td><td></td><td></td></tr>
 </table>
 <p class="ni"><b>ตอนที่ 3 ข้อเสนอแนะเพิ่มเติม</b><br>.....................................................................................................................................................................<br>.....................................................................................................................................................................</p>
 </section>
@@ -988,6 +1285,45 @@ if ($file.StartsWith($root, [StringComparison]::OrdinalIgnoreCase) -and
 } else {
   $res.StatusCode = 404
 }</pre>
+<h2>ค.5 ตัวนับจำนวนครั้ง (ส่วนลำดับขึ้น–ลง)</h2>
+<pre>// angle = มุมศอกที่ทำให้นิ่งแล้ว, ok = ลำตัวตรง, offPose = ลำตัวไม่ขนานพื้น, dt = เวลาจากเฟรมก่อน (ms)
+function reps(angle, rule, ok, offPose, dt) {
+  st.offMs = offPose ? st.offMs + dt : 0;
+  if (st.phase === 'wait') {
+    if (!offPose &amp;&amp; angle &gt; rule.start) st.phase = 'up';
+    return false;
+  }
+  if (st.offMs &gt; 600) { st.phase = 'wait'; return false; }   // ไม่ขนานพื้นนานเกิน 0.6 วินาที
+  st.badMs = ok ? 0 : st.badMs + dt;
+  if (st.phase === 'up' &amp;&amp; angle &lt; rule.going) { st.phase = 'going'; st.badForm = false; }
+  if (st.phase === 'going' || st.phase === 'down') {
+    if (st.badMs &gt; 300) st.badForm = true;                  // ลำตัวไม่ตรงต่อเนื่อง 0.3 วินาที
+    if (angle &lt;= rule.down) st.phase = 'down';
+    if (angle &gt; rule.up) {
+      const counted = st.phase === 'down' &amp;&amp; !st.badForm;
+      if (counted) st.reps++;
+      st.phase = 'up';
+      return counted;
+    }
+  }
+  return false;
+}</pre>
+<p class="ni" style="font-size:11pt">หมายเหตุ: ย่อจากโค้ดจริงใน index.html (ตัดข้อความแนะนำท่าออก) เกณฑ์วิดพื้นคือ start 150°, going 140°, down 100°, up 150°</p>
+<h2>ค.6 การนับจำนวนครั้งซ้ำจากร่องรอยที่เซิร์ฟเวอร์</h2>
+<pre>// api/_lib/anticheat.js — เกณฑ์หลวมกว่าในแอปเล็กน้อย เพราะร่องรอยเก็บ 10 ครั้งต่อวินาที
+const REP_RULE = { pushup: { down: 105, up: 145 }, squat: { down: 105, up: 155 } };
+function countTraceReps(trace, exercise) {
+  const rule = REP_RULE[exercise];
+  let phase = 'wait', reps = 0;
+  for (const a of trace) {
+    if (a &lt; 0) continue;                       // −1 = เฟรมที่มองไม่เห็นตัว
+    if (phase === 'wait') { if (a &gt; rule.up) phase = 'up'; continue; }
+    if (phase === 'up' &amp;&amp; a &lt;= rule.down) phase = 'down';
+    else if (phase === 'down' &amp;&amp; a &gt; rule.up) { reps++; phase = 'up'; }
+  }
+  return reps;
+}
+// ถ้านับได้น้อยกว่า 90% ของค่าที่ผู้ใช้ส่งมา ผลจะรอผู้ดูแลตรวจ (trace_mismatch)</pre>
 </section>
 
 <!-- ═══════════ ประวัติผู้วิจัย ═══════════ -->
