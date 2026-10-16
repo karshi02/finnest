@@ -3245,7 +3245,11 @@ async function scApi(action, { body, query } = {}, retried) {
     if (t) return scApi(action, { body, query }, true);
   }
   const d = await r.json().catch(() => null);
-  if (r.status === 401 && token) { setScSession(null); renderScAccount(); }
+  if (r.status === 401 && token) {
+    setScSession(null); renderScAccount();
+    // คำขออ่านอย่างเดียว (อันดับ/การแข่ง) ลองใหม่แบบไม่ได้เข้าสู่ระบบ แทนที่จะขึ้น error
+    if (body === undefined) return scApi(action, { query }, true);
+  }
   if (!d) throw scErr('offline', 'ระบบออนไลน์ใช้ไม่ได้ในตอนนี้');
   if (r.status === 503) throw scErr('not_configured', 'ระบบออนไลน์ยังไม่เปิดใช้');
   if (!r.ok) throw scErr(r.status, d.error || `ผิดพลาด (${r.status})`);
@@ -3475,7 +3479,7 @@ function renderCompActions() {
     <div class="sc-item"><div style="font-weight:700;margin-bottom:6px">⚔️ ท้าดวล 1:1</div>
       <select id="dc-kind" class="sc-kind"></select>
       <button class="btn btn-sm btn-primary mt16" onclick="scDuelCreate()">สร้างรหัสท้าดวล</button>
-      <div class="text-muted" style="margin-top:6px">ส่งรหัสให้เพื่อน รับแล้วแข่งกัน 24 ชม. ผลที่ดีที่สุดชนะ</div></div>
+      <div class="text-muted" style="margin-top:6px">ส่งรหัสให้เพื่อน รับแล้วแข่งภายใน 24 ชม. ทั้งคู่ส่งผลแล้วประกาศผลทันที</div></div>
     <div class="sc-item"><div style="font-weight:700;margin-bottom:6px">🤝 รับคำท้า</div>
       <input id="dc-code" maxlength="12" placeholder="รหัสท้าดวล" />
       <div class="flex-gap mt16"><button class="btn btn-sm btn-green" onclick="scDuelAnswer(true)">รับคำท้า</button><button class="btn btn-sm btn-danger" onclick="scDuelAnswer(false)">ปฏิเสธ</button></div></div>
@@ -3494,12 +3498,13 @@ async function scDuelCreate() {
 }
 function scDuelAnswer(accept) {
   const code = document.getElementById('dc-code').value.trim();
-  if (code) scAction(accept ? 'duel_accept' : 'duel_decline', { code }, accept ? '⚔️ รับคำท้าแล้ว — เริ่มนับ 24 ชม. ไปทำชาเลนจ์ได้เลย' : 'ปฏิเสธคำท้าแล้ว');
+  if (code) scAction(accept ? 'duel_accept' : 'duel_decline', { code }, accept ? '⚔️ รับคำท้าแล้ว — ทำชาเลนจ์ภายใน 24 ชม. ทั้งคู่ส่งผลแล้วรู้ผลทันที' : 'ปฏิเสธคำท้าแล้ว');
 }
 function scTeamChallenge() {
   const code = document.getElementById('tc-code').value.trim();
   if (code) scAction('team_challenge_create', { ...scKind('tc-kind'), code, days: Number(document.getElementById('tc-days').value) }, '🛡️ เริ่มการแข่งแบบทีมแล้ว');
 }
+function scDuelCancel(id) { if (confirm('ยกเลิกคำท้านี้?')) scAction('duel_cancel', { id: Number(id) }, 'ยกเลิกคำท้าแล้ว'); }
 function scEventJoin(id) { scAction('event_join', { id: Number(id) }, '🎉 เข้าร่วมอีเวนต์แล้ว ผลชาเลนจ์ต่อจากนี้จะนับเข้าอีเวนต์'); }
 function scGoChallenge(exercise, mode) {
   showPage('challenge');
@@ -3508,57 +3513,117 @@ function scGoChallenge(exercise, mode) {
   document.getElementById('ch-start-btn').focus();
 }
 
+// เวลาตาม server (นาฬิกาเครื่องผู้ใช้อาจคลาดเคลื่อน)
+let scClockOffset = 0, scChSeq = 0, scChTimer = 0;
+const scNow = () => Date.now() + scClockOffset;
+
 function scLeft(iso) {
-  const ms = new Date(iso) - Date.now();
+  const ms = new Date(iso) - scNow();
   if (ms <= 0) return 'หมดเวลา';
   const h = Math.floor(ms / 3600e3);
-  return h >= 48 ? `อีก ${Math.floor(h / 24)} วัน` : h >= 1 ? `อีก ${h} ชม.` : `อีก ${Math.max(1, Math.round(ms / 60000))} นาที`;
+  return h >= 48 ? `อีก ${Math.floor(h / 24)} วัน` : h >= 1 ? `อีก ${h} ชม.` : `อีก ${Math.max(1, Math.ceil(ms / 60000))} นาที`;
 }
+
+// สถานะตามเวลาจริง: เลยเวลาจบแล้วถือว่าจบทันที แม้ข้อมูลที่โหลดไว้ยังเป็น active
+function scEffStatus(c) {
+  const now = scNow();
+  if ((c.status === 'active' || c.status === 'open') && new Date(c.ends_at) <= now) return c.status === 'open' ? 'expired' : 'ending';
+  if (c.status === 'closed' && c.kind === 'duel' && !c.opponent) return 'expired';
+  if (c.status === 'active' && new Date(c.starts_at) > now) return 'upcoming';
+  return c.status;
+}
+const SC_EFF = { active: ['กำลังแข่ง', 'badge-green'], upcoming: ['ยังไม่เริ่ม', 'badge-blue'], open: ['รอคู่แข่ง', 'badge-orange'],
+  ending: ['หมดเวลา · กำลังสรุปผล', 'badge-orange'], closed: ['จบแล้ว', 'badge-red'], declined: ['ยกเลิก / ถูกปฏิเสธ', 'badge-red'], expired: ['คำท้าหมดอายุ', 'badge-red'] };
+const scRunning = st => st === 'active' || st === 'upcoming' || st === 'open';
+
+// โหลดใหม่เองเมื่อถึงเวลาเริ่ม/จบของรายการที่ใกล้ที่สุด และอัปเดตเวลาที่เหลือทุกนาที
+function scScheduleChallenges(list) {
+  clearTimeout(scChTimer);
+  const now = scNow();
+  const next = list.flatMap(c => [c.starts_at, c.ends_at]).map(t => new Date(t) - now).filter(ms => ms > 0);
+  const pending = list.some(c => scEffStatus(c) === 'ending');   // จบแล้วแต่ server ยังไม่ปิด
+  let wait = Math.min(60000, ...next.map(ms => ms + 300));
+  if (pending) wait = Math.min(wait, 5000);
+  scChTimer = setTimeout(() => {
+    if (document.hidden || !document.getElementById('page-social').classList.contains('active')) return;
+    renderChallengeList(scLastChallenges);   // เปลี่ยนสถานะบนจอทันทีที่ถึงเวลา
+    if (next.some(ms => ms + 300 <= wait) || pending) loadChallenges();   // แล้วดึงผลสุดท้ายจาก server
+  }, wait);
+}
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && document.getElementById('page-social').classList.contains('active')) loadChallenges();
+});
 
 async function loadChallenges() {
   renderCompActions();
   const el = document.getElementById('sc-challenges');
+  const seq = ++scChSeq;
   let d;
   try { d = await scApi('challenges'); }
-  catch (e) { el.innerHTML = `<div class="empty-state">${esc(e.message)}</div>`; return; }
+  catch (e) { if (seq === scChSeq) el.innerHTML = `<div class="empty-state">${esc(e.message)}</div>`; return; }
+  if (seq !== scChSeq) return;   // มีการโหลดที่ใหม่กว่า
+  if (d.server_time) scClockOffset = new Date(d.server_time) - Date.now();
   scLastChallenges = d.challenges;
   scNotifyResults(d.challenges);
-  if (!d.challenges.length) { el.innerHTML = '<div class="empty-state">ยังไม่มีการแข่งขัน — ลองท้าดวลเพื่อนดูสิ</div>'; return; }
-  const myId = scMe && scMe.profile.id;
-  const kindIcon = { event: '🎪 อีเวนต์', duel: '⚔️ ดวล', team: '🛡️ ทีม' };
-  el.innerHTML = d.challenges.map(c => {
-    const unit = scUnit(c.exercise);
-    const live = c.status === 'active' && new Date(c.starts_at) <= new Date();
-    let body = '';
-    if (c.kind === 'event') {
-      body = c.top.length ? `<ol class="sc-list">${c.top.map(r => `<li${r.me ? ' class="sc-me-row"' : ''}>${esc(r.display_name)} — <strong>${esc(r.value)}</strong> ${esc(unit)}</li>`).join('')}</ol>` : '<div class="text-muted">ยังไม่มีผล</div>';
-    } else if (c.kind === 'duel') {
-      const s = id => (c.scores.find(x => x.user_id === id) || {}).value;
-      const side = u => u ? `${esc(u.display_name)}${u.id === myId ? ' (ฉัน)' : ''}: <strong>${s(u.id) != null ? esc(s(u.id)) + ' ' + esc(unit) : '-'}</strong>` : '<span class="text-muted">รอคนรับคำท้า</span>';
-      body = `<div>${side(c.creator)} &nbsp;vs&nbsp; ${side(c.opponent)}</div>`;
-      if (c.invite_code) body += `<div class="text-muted" style="margin-top:6px">รหัสท้าดวล: <strong style="color:var(--text);letter-spacing:1px">${esc(c.invite_code)}</strong>
-        <button class="btn btn-sm btn-secondary" data-t="${esc(c.invite_code)}" onclick="scCopy(this.dataset.t)">คัดลอก</button></div>`;
-      if (c.status === 'closed' && c.scores.length) {
-        const win = c.scores.length === 1 || c.scores[0].value > c.scores[1].value ? c.scores[0] : null;
-        body += `<div style="margin-top:6px;font-weight:700">${win ? '🏆 ผู้ชนะ: ' + esc(win.display_name) : '🤝 เสมอ'}</div>`;
-      }
-    } else {
-      const [a, b] = c.teams;
-      body = c.teams.map(t => `<div>${esc(t.team)}: <strong>${esc(t.score)}</strong> ${esc(unit)} <span class="text-muted">(${esc(t.members)} คนส่งผล)</span></div>`).join('');
-      if (c.status === 'closed' && a && b) body += `<div style="margin-top:6px;font-weight:700">${a.score === b.score ? '🤝 เสมอ' : '🏆 ทีมชนะ: ' + esc(a.score > b.score ? a.team : b.team)}</div>`;
-    }
-    const actions = [];
-    if (c.kind === 'event' && live && scSession() && !c.joined) actions.push(`<button class="btn btn-sm btn-green" data-id="${c.id}" onclick="scEventJoin(this.dataset.id)">เข้าร่วม</button>`);
-    if (live && (c.kind !== 'event' || c.joined)) actions.push(`<button class="btn btn-sm btn-primary" data-ex="${esc(c.exercise)}" data-mode="${esc(c.mode)}" onclick="scGoChallenge(this.dataset.ex, this.dataset.mode)">📷 ไปทำชาเลนจ์</button>`);
-    const badge = c.status === 'active' ? (live ? 'badge-green' : 'badge-blue') : c.status === 'open' ? 'badge-orange' : 'badge-red';
-    return `<div class="sc-item">
-      <div class="flex-between" style="flex-wrap:wrap;gap:6px"><div><strong>${esc(c.title)}</strong> <span class="text-muted">${kindIcon[c.kind]} · ${esc(scKindName(c.exercise, c.mode))}</span></div>
-        <span class="badge ${badge}">${esc(c.status === 'active' && !live ? 'ยังไม่เริ่ม' : SC_STATUS[c.status])}${c.status === 'active' && live ? ' · ' + esc(scLeft(c.ends_at)) : ''}</span></div>
-      <div style="margin-top:8px">${body}</div>
-      ${actions.length ? `<div class="flex-gap mt16">${actions.join('')}</div>` : ''}
-    </div>`;
-  }).join('');
+  renderChallengeList(d.challenges);
   if (scMe && scMe.profile.admin) loadAdmin();
+}
+
+function scChallengeCard(c, myId) {
+  const unit = scUnit(c.exercise);
+  const st = scEffStatus(c);
+  const live = st === 'active';
+  const done = c.status === 'closed';   // ผลสุดท้ายจาก server
+  let body = '';
+  if (c.kind === 'event') {
+    body = c.top.length ? `<ol class="sc-list">${c.top.map(r => `<li${r.me ? ' class="sc-me-row"' : ''}>${esc(r.display_name)} — <strong>${esc(r.value)}</strong> ${esc(unit)}</li>`).join('')}</ol>` : '<div class="text-muted">ยังไม่มีผล</div>';
+  } else if (c.kind === 'duel') {
+    const s = id => (c.scores.find(x => x.user_id === id) || {}).value;
+    const side = u => u ? `${esc(u.display_name)}${u.id === myId ? ' (ฉัน)' : ''}: <strong>${s(u.id) != null ? esc(s(u.id)) + ' ' + esc(unit) : '-'}</strong>` : '<span class="text-muted">ไม่มีคนรับคำท้า</span>';
+    body = st === 'expired' ? '<div class="text-muted">คำท้านี้หมดอายุ ไม่มีคนรับ</div>'
+      : `<div>${side(c.creator)} &nbsp;vs&nbsp; ${c.opponent ? side(c.opponent) : '<span class="text-muted">รอคนรับคำท้า</span>'}</div>`;
+    if (c.invite_code && st === 'open') body += `<div class="text-muted" style="margin-top:6px">รหัสท้าดวล: <strong style="color:var(--text);letter-spacing:1px">${esc(c.invite_code)}</strong>
+      <button class="btn btn-sm btn-secondary" data-t="${esc(c.invite_code)}" onclick="scCopy(this.dataset.t)">คัดลอก</button> <span>(หมดอายุ${esc(scLeft(c.ends_at).replace('อีก', 'ใน'))})</span></div>`;
+    if (done && c.opponent) {
+      const win = c.scores.length === 1 || (c.scores.length > 1 && c.scores[0].value > c.scores[1].value) ? c.scores[0] : null;
+      body += `<div style="margin-top:6px;font-weight:700">${!c.scores.length ? 'ไม่มีใครส่งผล' : win ? '🏆 ผู้ชนะ: ' + esc(win.display_name) : '🤝 เสมอ'}</div>`;
+    }
+  } else {
+    const [a, b] = c.teams;
+    body = c.teams.map(t => `<div>${esc(t.team)}: <strong>${esc(t.score)}</strong> ${esc(unit)} <span class="text-muted">(${esc(t.members)} คนส่งผล)</span></div>`).join('');
+    if (done && a && b) body += `<div style="margin-top:6px;font-weight:700">${a.score === b.score ? '🤝 เสมอ' : '🏆 ทีมชนะ: ' + esc(a.score > b.score ? a.team : b.team)}</div>`;
+  }
+  if (c.kind === 'event' && done) {
+    const first = c.top[0];
+    body += first ? `<div style="margin-top:6px;font-weight:700">🏆 อันดับ 1: ${esc(first.display_name)}</div>` : '';
+  }
+  const actions = [];
+  if (c.kind === 'event' && live && scSession() && !c.joined) actions.push(`<button class="btn btn-sm btn-green" data-id="${c.id}" onclick="scEventJoin(this.dataset.id)">เข้าร่วม</button>`);
+  if (st === 'open' && c.kind === 'duel' && c.creator && c.creator.id === myId) actions.push(`<button class="btn btn-sm btn-danger" data-id="${c.id}" onclick="scDuelCancel(this.dataset.id)">ยกเลิกคำท้า</button>`);
+  if (live && (c.kind !== 'event' || c.joined)) actions.push(`<button class="btn btn-sm btn-primary" data-ex="${esc(c.exercise)}" data-mode="${esc(c.mode)}" onclick="scGoChallenge(this.dataset.ex, this.dataset.mode)">📷 ไปทำชาเลนจ์</button>`);
+  const [label, badge] = SC_EFF[st] || [st, 'badge-red'];
+  const when = st === 'active' ? ' · ' + scLeft(c.ends_at) : st === 'upcoming' ? ' · เริ่ม' + scLeft(c.starts_at).replace('อีก', 'ใน') : '';
+  const kindIcon = { event: '🎪 อีเวนต์', duel: '⚔️ ดวล', team: '🛡️ ทีม' };
+  return `<div class="sc-item" data-ch="${c.id}" data-st="${st}">
+    <div class="flex-between" style="flex-wrap:wrap;gap:6px"><div><strong>${esc(c.title)}</strong> <span class="text-muted">${kindIcon[c.kind]} · ${esc(scKindName(c.exercise, c.mode))}</span></div>
+      <span class="badge ${badge}">${esc(label + when)}</span></div>
+    <div style="margin-top:8px">${body}</div>
+    ${actions.length ? `<div class="flex-gap mt16">${actions.join('')}</div>` : ''}
+  </div>`;
+}
+
+// กำลังแข่งอยู่ด้านบน (ใกล้จบก่อน) ที่จบแล้วพับเก็บไว้ด้านล่าง (จบล่าสุดก่อน)
+function renderChallengeList(list) {
+  const el = document.getElementById('sc-challenges');
+  if (!list.length) { el.innerHTML = '<div class="empty-state">ยังไม่มีการแข่งขัน — ลองท้าดวลเพื่อนดูสิ</div>'; scScheduleChallenges(list); return; }
+  const myId = scMe && scMe.profile.id;
+  const running = list.filter(c => scRunning(scEffStatus(c))).sort((a, b) => new Date(a.ends_at) - new Date(b.ends_at));
+  const ended = list.filter(c => !scRunning(scEffStatus(c))).sort((a, b) => new Date(b.ends_at) - new Date(a.ends_at));
+  const wasOpen = !!el.querySelector('details.sc-ended[open]');
+  el.innerHTML = (running.length ? running.map(c => scChallengeCard(c, myId)).join('') : '<div class="empty-state">ตอนนี้ไม่มีการแข่งที่กำลังดำเนินอยู่</div>')
+    + (ended.length ? `<details class="sc-ended mt16"${wasOpen ? ' open' : ''}><summary style="cursor:pointer;font-weight:600">🏁 การแข่งที่จบแล้ว (${ended.length}) · 14 วันล่าสุด</summary>
+      <div class="mt16">${ended.map(c => scChallengeCard(c, myId)).join('')}</div></details>` : '');
+  scScheduleChallenges(list);
 }
 
 // แจ้งเตือนในแอป: ผลการแข่งที่จบแล้วซึ่งเรามีส่วนร่วมและยังไม่เคยเห็น
@@ -3566,7 +3631,7 @@ function scNotifyResults(list) {
   let seen; try { seen = JSON.parse(localStorage.getItem(SC_SEEN_KEY) || '[]'); } catch (e) { seen = []; }
   const myId = scMe && scMe.profile.id;
   const mine = list.filter(c => c.status === 'closed' && !seen.includes(c.id) && myId &&
-    (c.kind === 'team' || (c.kind === 'duel' && c.opponent && (c.creator.id === myId || c.opponent.id === myId)) || (c.kind === 'event' && c.joined)));
+    (c.kind === 'team' || (c.kind === 'duel' && c.opponent && ((c.creator && c.creator.id === myId) || c.opponent.id === myId)) || (c.kind === 'event' && c.joined)));
   const nav = document.querySelectorAll('nav button')[6];
   if (nav) nav.classList.toggle('has-dot', mine.length > 0);
   if (!mine.length) return;

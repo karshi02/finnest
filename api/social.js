@@ -44,6 +44,8 @@ function periodRange(period, now = new Date()) {
 async function currentUser(req, { optional } = {}) {
   const m = /^Bearer ([\w.-]+)$/.exec(String(req.headers.authorization || ''));
   const u = m ? await auth.user(m[1]) : null;
+  // ส่ง token มาแต่ใช้ไม่ได้ ต้องตอบ 401 เสมอ ให้แอปต่ออายุ token (ถ้าตอบแบบไม่ได้เข้าสู่ระบบ ดวล/ทีมของผู้ใช้จะหายไปเงียบ ๆ)
+  if (!u && m) fail(401, 'เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่');
   if (!u) { if (optional) return null; fail(401, 'กรุณาเข้าสู่ระบบ'); }
   const p = await db.one('profiles', `id=eq.${q(u.id)}&select=*`);
   if (!p) { if (optional) return null; fail(401, 'ไม่พบโปรไฟล์'); }
@@ -269,6 +271,7 @@ async function submit(me, b) {
   const chIds = await activeChallengesFor(me, e.exercise, e.mode);
   if (chIds.length) await db.insert('challenge_entries', chIds.map(id => ({ challenge_id: id, entry_id: row.id })));
   const newBadges = await awardEntryBadges(me.id, e, verdict.status);
+  if (chIds.length) await closeExpired().catch(() => {});   // ดวลที่ทั้งสองฝ่ายส่งผลแล้วจบทันที
   return { ok: true, id: row.id, status: verdict.status, flags: verdict.flags, needsProof: verdict.flags.includes('top10_no_proof'),
     challenges: chIds.length, badges: newBadges.map(c => ({ code: c, name: BADGES[c] })) };
 }
@@ -381,6 +384,11 @@ async function duelAnswer(me, b, accept) {
   if (!upd.length) fail(409, 'มีคนรับคำท้านี้ไปแล้ว');
   return { ok: true, id: c.id };
 }
+async function duelCancel(me, b) {
+  const upd = await db.update('challenges', `id=eq.${int(b.id)}&kind=eq.duel&created_by=eq.${q(me.id)}&status=eq.open`, { status: 'declined' });
+  if (!upd.length) fail(409, 'ยกเลิกไม่ได้ (มีคนรับไปแล้ว หรือหมดอายุแล้ว)');
+  return { ok: true };
+}
 async function teamChallengeCreate(me, b) {
   notBanned(me);
   if (!(LIMITS[b.exercise] && LIMITS[b.exercise][b.mode])) fail(400, 'ท่า/โหมดไม่ถูกต้อง');
@@ -392,7 +400,7 @@ async function teamChallengeCreate(me, b) {
   const days = Math.min(14, Math.max(1, int(b.days) || 7));
   const mine = await db.one('teams', `id=eq.${tm.team_id}&select=name`);
   const [c] = await db.insert('challenges', [{ kind: 'team', title: `${mine.name} vs ${other.name}`.slice(0, 80), exercise: b.exercise, mode: b.mode,
-    created_by: me.id, team_a: tm.team_id, team_b: other.id, status: 'active', ends_at: new Date(Date.now() + days * DAY).toISOString() }]);
+    created_by: me.id, team_a: tm.team_id, team_b: other.id, status: 'active', starts_at: new Date().toISOString(), ends_at: new Date(Date.now() + days * DAY).toISOString() }]);
   return { ok: true, id: c.id };
 }
 async function eventCreate(me, b) {
@@ -418,6 +426,15 @@ async function eventJoin(me, b) {
 async function closeExpired() {
   const now = q(new Date().toISOString());
   const done = await db.update('challenges', `status=in.(open,active)&ends_at=lte.${now}`, { status: 'closed' });
+  const live = await db.select('challenges', 'kind=eq.duel&status=eq.active&opponent=not.is.null&select=id,created_by,opponent&limit=200');
+  if (live.length) {
+    const ce = await db.select('challenge_entries', `challenge_id=in.(${live.map(c => c.id).join(',')})&select=challenge_id,entries(user_id,status)`);
+    const ready = live.filter(c => {
+      const users = new Set(ce.filter(x => x.challenge_id === c.id && x.entries && x.entries.status === 'ok').map(x => x.entries.user_id));
+      return users.has(c.created_by) && users.has(c.opponent);
+    });
+    if (ready.length) done.push(...await db.update('challenges', `id=in.(${ready.map(c => c.id).join(',')})&status=eq.active`, { status: 'closed' }));
+  }
   for (const c of done) {
     if (c.kind === 'duel' && c.opponent) {
       const rows = await db.rpc('leaderboard', { p_exercise: c.exercise, p_mode: c.mode, p_challenge: c.id, p_limit: 2 });
@@ -464,7 +481,7 @@ async function challenges(me) {
     }
     out.push(item);
   }
-  return { challenges: out };
+  return { challenges: out, server_time: new Date().toISOString() };
 }
 
 // ── ผู้ดูแล (P5) ──
@@ -512,7 +529,7 @@ const AUTH_POST = {
   logout: async me => { await auth.logout(me.token).catch(() => {}); return { ok: true }; },
   friend_add: friendAdd, friend_remove: friendRemove, team_create: teamCreate, team_join: teamJoin, team_leave: teamLeave,
   submit, strava_submit: stravaSubmit, proof_url: proofUrl, proof_done: proofDone, proof_view: proofView, report,
-  duel_create: duelCreate, duel_accept: (me, b) => duelAnswer(me, b, true), duel_decline: (me, b) => duelAnswer(me, b, false),
+  duel_create: duelCreate, duel_accept: (me, b) => duelAnswer(me, b, true), duel_decline: (me, b) => duelAnswer(me, b, false), duel_cancel: duelCancel,
   team_challenge_create: teamChallengeCreate, event_create: eventCreate, event_join: eventJoin,
   admin_queue: adminQueue, admin_review: adminReview, admin_resolve_report: adminResolveReport, admin_ban: adminBan,
 };
