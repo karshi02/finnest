@@ -1,0 +1,576 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-17T00:00:00Z",
+  "title": "Design System: FitTrack Pro",
+  "extensions": {
+    "colorMeta": {
+      "bumper-yellow": {
+        "role": "primary",
+        "displayName": "Bumper Yellow",
+        "canonical": "oklch(83.4% 0.158 89)",
+        "tonalRamp": [
+          "#170700",
+          "#361f00",
+          "#583a00",
+          "#7c5700",
+          "#a67800",
+          "#c79f28",
+          "#e8c770",
+          "#ffeca7"
+        ]
+      },
+      "bumper-yellow-hover": {
+        "role": "primary",
+        "displayName": "Bumper Yellow (hover)",
+        "canonical": "#ffd24a",
+        "tonalRamp": [
+          "#170700",
+          "#361f00",
+          "#583a00",
+          "#7c5700",
+          "#a67800",
+          "#c79f28",
+          "#e8c770",
+          "#ffeca7"
+        ]
+      },
+      "plate-ink": {
+        "role": "primary",
+        "displayName": "Plate Ink",
+        "canonical": "oklch(20.8% 0.007 258)",
+        "tonalRamp": [
+          "#0a0b0c",
+          "#232426",
+          "#3e4042",
+          "#5c5e61",
+          "#7e8084",
+          "#a2a5a8",
+          "#c9cbce",
+          "#edeef1"
+        ]
+      },
+      "rubber-floor": {
+        "role": "neutral",
+        "displayName": "Rubber Floor",
+        "canonical": "oklch(19.0% 0.005 248)",
+        "tonalRamp": [
+          "#0a0b0c",
+          "#232425",
+          "#3e4042",
+          "#5c5e60",
+          "#7e8083",
+          "#a2a5a7",
+          "#c9cbcd",
+          "#edeff0"
+        ]
+      },
+      "bench-graphite": {
+        "role": "neutral",
+        "displayName": "Bench Graphite",
+        "canonical": "oklch(22.9% 0.009 256)",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#222427",
+          "#3d4043",
+          "#5b5e62",
+          "#7d8186",
+          "#a1a5a9",
+          "#c8cbcf",
+          "#eceff2"
+        ]
+      },
+      "raised-graphite": {
+        "role": "neutral",
+        "displayName": "Raised Graphite",
+        "canonical": "oklch(27.1% 0.011 254)",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#222427",
+          "#3d4044",
+          "#5a5e63",
+          "#7c8187",
+          "#a1a5aa",
+          "#c7cbd0",
+          "#eceff3"
+        ]
+      },
+      "pressed-graphite": {
+        "role": "neutral",
+        "displayName": "Pressed Graphite",
+        "canonical": "oklch(31.1% 0.013 253)",
+        "tonalRamp": [
+          "#090b0e",
+          "#212428",
+          "#3c4045",
+          "#595e64",
+          "#7b8188",
+          "#a0a5ab",
+          "#c6cbd0",
+          "#ebeff3"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "oklch(32.3% 0.013 253)",
+        "tonalRamp": [
+          "#090b0e",
+          "#212428",
+          "#3c4045",
+          "#595e64",
+          "#7b8188",
+          "#a0a5ab",
+          "#c6cbd0",
+          "#ebeff3"
+        ]
+      },
+      "steel-edge": {
+        "role": "neutral",
+        "displayName": "Steel Edge",
+        "canonical": "oklch(54.5% 0.015 252)",
+        "tonalRamp": [
+          "#090b0e",
+          "#212428",
+          "#3c4045",
+          "#585e65",
+          "#7a8189",
+          "#9fa5ad",
+          "#c6cbd1",
+          "#eaeff4"
+        ]
+      },
+      "chalk": {
+        "role": "neutral",
+        "displayName": "Chalk",
+        "canonical": "oklch(94.0% 0.007 89)",
+        "tonalRamp": [
+          "#0c0b0a",
+          "#252422",
+          "#41403d",
+          "#5f5d5a",
+          "#82807c",
+          "#a6a4a0",
+          "#cccac7",
+          "#efeeeb"
+        ]
+      },
+      "chalk-muted": {
+        "role": "neutral",
+        "displayName": "Chalk Muted",
+        "canonical": "oklch(74.6% 0.010 258)",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#222427",
+          "#3d4044",
+          "#5b5e62",
+          "#7d8086",
+          "#a1a5aa",
+          "#c8cbcf",
+          "#eceff2"
+        ]
+      },
+      "miss-coral": {
+        "role": "secondary",
+        "displayName": "Miss Coral",
+        "canonical": "oklch(73.2% 0.165 28)",
+        "tonalRamp": [
+          "#230000",
+          "#490604",
+          "#721d17",
+          "#9e352c",
+          "#d05044",
+          "#f07f71",
+          "#ffad9f",
+          "#ffd7cb"
+        ]
+      },
+      "pass-green": {
+        "role": "secondary",
+        "displayName": "Pass Green",
+        "canonical": "oklch(71.2% 0.164 151)",
+        "tonalRamp": [
+          "#001300",
+          "#003006",
+          "#00501b",
+          "#007231",
+          "#009a4a",
+          "#57bd76",
+          "#8fe1a4",
+          "#bfffcf"
+        ]
+      },
+      "signal-blue": {
+        "role": "secondary",
+        "displayName": "Signal Blue",
+        "canonical": "oklch(74.9% 0.132 254)",
+        "tonalRamp": [
+          "#000a24",
+          "#022448",
+          "#144071",
+          "#295f9b",
+          "#4182cd",
+          "#71a8ea",
+          "#9fceff",
+          "#cbf2ff"
+        ]
+      },
+      "caution-amber": {
+        "role": "secondary",
+        "displayName": "Caution Amber",
+        "canonical": "oklch(83.4% 0.125 67)",
+        "tonalRamp": [
+          "#1a0500",
+          "#3b1b00",
+          "#5f3400",
+          "#854f00",
+          "#b16f18",
+          "#d29758",
+          "#f2c08c",
+          "#ffe6bb"
+        ]
+      },
+      "plate-25-red": {
+        "role": "tertiary",
+        "displayName": "25 kg Red",
+        "canonical": "oklch(59.0% 0.188 27)",
+        "tonalRamp": [
+          "#250000",
+          "#4d0001",
+          "#781112",
+          "#a52a26",
+          "#da443d",
+          "#f9776c",
+          "#ffa79b",
+          "#ffd3c7"
+        ]
+      },
+      "plate-20-blue": {
+        "role": "tertiary",
+        "displayName": "20 kg Blue",
+        "canonical": "oklch(55.4% 0.165 259)",
+        "tonalRamp": [
+          "#00072a",
+          "#012152",
+          "#123d7d",
+          "#265bac",
+          "#3d7de1",
+          "#6da5fc",
+          "#9cccff",
+          "#c8f1ff"
+        ]
+      },
+      "plate-15-yellow": {
+        "role": "tertiary",
+        "displayName": "15 kg Yellow",
+        "canonical": "oklch(83.4% 0.158 89)",
+        "tonalRamp": [
+          "#170700",
+          "#361f00",
+          "#583a00",
+          "#7c5700",
+          "#a67800",
+          "#c79f28",
+          "#e8c770",
+          "#ffeca7"
+        ]
+      },
+      "plate-10-green": {
+        "role": "tertiary",
+        "displayName": "10 kg Green",
+        "canonical": "oklch(64.3% 0.145 150)",
+        "tonalRamp": [
+          "#001200",
+          "#002f0a",
+          "#004e1f",
+          "#117035",
+          "#2a974f",
+          "#66ba7b",
+          "#99dea7",
+          "#c6ffd1"
+        ]
+      },
+      "plate-5-white": {
+        "role": "tertiary",
+        "displayName": "5 kg White",
+        "canonical": "oklch(92.5% 0.007 89)",
+        "tonalRamp": [
+          "#0c0b0a",
+          "#252422",
+          "#41403d",
+          "#5f5d5a",
+          "#82807b",
+          "#a6a4a0",
+          "#cccac7",
+          "#efeeeb"
+        ]
+      },
+      "plate-change-grey": {
+        "role": "tertiary",
+        "displayName": "Change-plate Grey",
+        "canonical": "oklch(70.3% 0.011 248)",
+        "tonalRamp": [
+          "#090b0d",
+          "#222427",
+          "#3c4044",
+          "#595e63",
+          "#7b8187",
+          "#a0a5aa",
+          "#c7cbcf",
+          "#ebeff3"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Live readouts only: rest timer, stopwatch, heart rate, camera rep count."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page heading (h1); 1.5rem under 760px."
+      },
+      "figure": {
+        "displayName": "Figure",
+        "purpose": "Numeric values in stat lists, summaries, duel scores, plate totals."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Panel and card headings (h2)."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Running text, inputs, row titles (at 600)."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Form labels, meta lines, nav labels; buttons at 600."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Badges, units, deltas; table headers at 500."
+      }
+    },
+    "shadows": [
+      {
+        "name": "float",
+        "value": "0 14px 40px #000a",
+        "purpose": "Modal, toast and rest dock only."
+      },
+      {
+        "name": "focus-halo",
+        "value": "0 0 0 3px #f2c2301f",
+        "purpose": "Inputs and steppers on focus, with a yellow border."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease",
+        "value": "cubic-bezier(.2, .8, .2, 1)",
+        "purpose": "Shared ease-out for every state change."
+      },
+      {
+        "name": "press",
+        "value": "100ms",
+        "purpose": "Button press translate (1px down)."
+      },
+      {
+        "name": "state",
+        "value": "150ms",
+        "purpose": "Colour, border and background changes; modal fade."
+      },
+      {
+        "name": "enter",
+        "value": "180ms",
+        "purpose": "Page-in (fade from .4 with a 4px rise) and toast in/out."
+      },
+      {
+        "name": "progress",
+        "value": "250ms linear",
+        "purpose": "Rest timer progress fill."
+      },
+      {
+        "name": "count-up",
+        "value": "once per summary",
+        "purpose": "Single count-up of figures on the session summary."
+      },
+      {
+        "name": "reduced-motion",
+        "value": ".01ms",
+        "purpose": "prefers-reduced-motion collapses all animation and transition durations."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "stack",
+        "value": "900px"
+      },
+      {
+        "name": "mobile",
+        "value": "760px"
+      },
+      {
+        "name": "container",
+        "value": "1120px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one filled yellow action per view; the XL block variant (56px) logs a set.",
+      "html": "<button class=\"ds-btn-primary\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4.5 12.5l5 5 10-11\"/></svg>บันทึกเซ็ต</button>",
+      "css": ".ds-btn-primary { font-family: var(--font, 'Anuphan', 'Noto Sans Thai', system-ui, sans-serif); display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border: 1px solid transparent; border-radius: var(--r, 10px); background: var(--accent, #f2c230); color: var(--accent-ink, #16181b); font-size: .875rem; font-weight: 600; cursor: pointer; transition: background-color .15s cubic-bezier(.2,.8,.2,1), transform .1s cubic-bezier(.2,.8,.2,1); } .ds-btn-primary:hover { background: #ffd24a; } .ds-btn-primary:active { transform: translateY(1px); } .ds-btn-primary:focus-visible { outline: 2px solid var(--accent, #f2c230); outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Raised graphite with a steel edge; every non-primary action.",
+      "html": "<button class=\"ds-btn-secondary\">ดูประวัติ</button>",
+      "css": ".ds-btn-secondary { font-family: var(--font, 'Anuphan', 'Noto Sans Thai', system-ui, sans-serif); display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border: 1px solid var(--line-strong, #6a7179); border-radius: var(--r, 10px); background: var(--surface-2, #23272c); color: var(--text, #edebe6); font-size: .875rem; font-weight: 600; cursor: pointer; transition: background-color .15s cubic-bezier(.2,.8,.2,1); } .ds-btn-secondary:hover { background: var(--surface-3, #2c3137); } .ds-btn-secondary:active { transform: translateY(1px); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--accent, #f2c230); outline-offset: 2px; }"
+    },
+    {
+      "name": "Ghost and Danger Buttons",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Quiet text actions; danger is a coral outline, never filled.",
+      "html": "<div class=\"ds-row\"><button class=\"ds-btn-ghost\">ยกเลิก</button><button class=\"ds-btn-danger\">ลบ</button></div>",
+      "css": ".ds-row { display: flex; gap: 8px; } .ds-btn-ghost, .ds-btn-danger { font-family: var(--font, 'Anuphan', 'Noto Sans Thai', system-ui, sans-serif); min-height: 44px; padding: 0 18px; border: 1px solid transparent; border-radius: var(--r, 10px); background: none; font-size: .875rem; font-weight: 600; cursor: pointer; transition: background-color .15s, color .15s; } .ds-btn-ghost { color: var(--text-2, #a9adb3); } .ds-btn-ghost:hover { color: var(--text, #edebe6); background: var(--surface-2, #23272c); } .ds-btn-danger { color: var(--danger, #ff7a6b); border-color: #ff7a6b55; } .ds-btn-danger:hover { background: var(--danger-soft, #ff7a6b1c); } .ds-btn-ghost:focus-visible, .ds-btn-danger:focus-visible { outline: 2px solid var(--accent, #f2c230); outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Raised field with a steel edge; yellow border and soft halo on focus.",
+      "html": "<label class=\"ds-label\">อายุ<input class=\"ds-input\" type=\"number\" placeholder=\"เช่น 21\"></label>",
+      "css": ".ds-label { font-family: var(--font, 'Anuphan', 'Noto Sans Thai', system-ui, sans-serif); display: block; font-size: .875rem; font-weight: 500; color: var(--text-2, #a9adb3); } .ds-input { font-family: var(--font, 'Anuphan', 'Noto Sans Thai', system-ui, sans-serif); display: block; margin-top: 6px; width: 100%; min-height: 44px; padding: 9px 12px; background: var(--surface-2, #23272c); border: 1px solid var(--line-strong, #6a7179); border-radius: var(--r, 10px); color: var(--text, #edebe6); font-size: 1rem; caret-color: var(--accent, #f2c230); transition: border-color .15s, box-shadow .15s; } .ds-input::placeholder { color: #8a9098; } .ds-input:hover { border-color: #858c95; } .ds-input:focus { outline: none; border-color: var(--accent, #f2c230); box-shadow: 0 0 0 3px var(--accent-soft, #f2c2301f); }"
+    },
+    {
+      "name": "Chips",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Exercise and filter pills; selected inverts to chalk.",
+      "html": "<div class=\"ds-chips\"><button class=\"ds-chip\">Back Squat <small>แผน</small></button><button class=\"ds-chip is-active\">Bench Press</button></div>",
+      "css": ".ds-chips { display: flex; gap: 8px; flex-wrap: wrap; } .ds-chip { font-family: var(--font, 'Anuphan', 'Noto Sans Thai', system-ui, sans-serif); min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line-strong, #6a7179); background: none; color: var(--text-2, #a9adb3); font-size: .875rem; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; transition: all .15s cubic-bezier(.2,.8,.2,1); } .ds-chip small { opacity: .75; font-size: .8125rem; } .ds-chip:hover { color: var(--text, #edebe6); border-color: #858c95; } .ds-chip.is-active { background: var(--text, #edebe6); border-color: var(--text, #edebe6); color: var(--accent-ink, #16181b); } .ds-chip:focus-visible { outline: 2px solid var(--accent, #f2c230); outline-offset: 2px; }"
+    },
+    {
+      "name": "Mobile Tab Bar",
+      "kind": "nav",
+      "refersTo": "tabbar-mobile",
+      "description": "Five fixed bottom slots; active is a yellow icon plus chalk label.",
+      "html": "<nav class=\"ds-tabbar\"><button class=\"ds-tab\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3.5\" y=\"5\" width=\"17\" height=\"15.5\" rx=\"2.5\"/><path d=\"M3.5 10h17M8 3v4M16 3v4\"/></svg><span>วันนี้</span></button><button class=\"ds-tab is-active\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11\"/></svg><span>บันทึก</span></button><button class=\"ds-tab\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 7.5h3l1.5-2.5h7L17 7.5h3a1 1 0 0 1 1 1V19a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8.5a1 1 0 0 1 1-1z\"/><circle cx=\"12\" cy=\"13.5\" r=\"3.5\"/></svg><span>ชาเลนจ์</span></button><button class=\"ds-tab\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M8.5 21V8.5h7V21M3 21v-7.5h5.5M15.5 21v-5H21v5M2 21h20\"/></svg><span>อันดับ</span></button><button class=\"ds-tab\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"8\" r=\"4\"/><path d=\"M4 21a8 8 0 0 1 16 0\"/></svg><span>ฉัน</span></button></nav>",
+      "css": ".ds-tabbar { font-family: var(--font, 'Anuphan', 'Noto Sans Thai', system-ui, sans-serif); display: grid; grid-template-columns: repeat(5, 1fr); height: 60px; background: var(--bg, #121416); border-top: 1px solid var(--line, #2f343a); } .ds-tab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; background: none; border: 0; color: var(--text-2, #a9adb3); font: inherit; font-size: .75rem; font-weight: 500; cursor: pointer; transition: color .15s; } .ds-tab svg { width: 22px; height: 22px; } .ds-tab:hover, .ds-tab.is-active { color: var(--text, #edebe6); } .ds-tab.is-active svg { color: var(--accent, #f2c230); } .ds-tab:focus-visible { outline: 2px solid var(--accent, #f2c230); outline-offset: -2px; }"
+    },
+    {
+      "name": "Panel with Stat List",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "Flat bench panel; hairline rows with figure, muted unit and neutral signed delta.",
+      "html": "<section class=\"ds-panel\"><div class=\"ds-panel-head\"><h2>7 วันล่าสุด</h2><span>เทียบ 7 วันก่อนหน้า</span></div><ul class=\"ds-week\"><li><span class=\"k\">เวทเทรนนิ่ง</span><span class=\"v\">4<small>ครั้ง</small></span><span class=\"d\">+1</span></li><li><span class=\"k\">ปริมาณยก (Volume)</span><span class=\"v\">5,545<small>kg</small></span><span class=\"d\">+41%</span></li><li><span class=\"k\">คาร์ดิโอ</span><span class=\"v\">76<small>นาที</small></span><span class=\"d dn\">−8%</span></li></ul></section>",
+      "css": ".ds-panel { font-family: var(--font, 'Anuphan', 'Noto Sans Thai', system-ui, sans-serif); background: var(--surface, #1a1d21); border: 1px solid var(--line, #2f343a); border-radius: var(--r-lg, 14px); padding: 24px; color: var(--text, #edebe6); font-variant-numeric: tabular-nums; } .ds-panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; } .ds-panel-head h2 { font-size: 1.125rem; font-weight: 600; margin: 0; } .ds-panel-head span { color: var(--text-2, #a9adb3); font-size: .875rem; } .ds-week { list-style: none; margin: 0; padding: 0; } .ds-week li { display: grid; grid-template-columns: minmax(0,1fr) auto auto; gap: 12px; align-items: baseline; padding: 12px 0; border-bottom: 1px solid var(--line, #2f343a); } .ds-week li:last-child { border-bottom: 0; } .ds-week .k { color: var(--text-2, #a9adb3); font-size: .875rem; } .ds-week .v { font-size: 1.375rem; font-weight: 600; } .ds-week .v small { font-size: .8125rem; font-weight: 500; color: var(--text-2, #a9adb3); margin-left: 4px; } .ds-week .d { font-size: .8125rem; font-weight: 600; min-width: 64px; text-align: right; color: var(--text, #edebe6); } .ds-week .d.dn { color: var(--text-2, #a9adb3); }"
+    },
+    {
+      "name": "Set Stepper",
+      "kind": "custom",
+      "refersTo": "stepper",
+      "description": "Big kg/reps stepper used between sets; the whole field takes focus.",
+      "html": "<div class=\"ds-step\"><button aria-label=\"ลด 2.5 kg\">−</button><input type=\"number\" value=\"62.5\" aria-label=\"น้ำหนัก\"><button aria-label=\"เพิ่ม 2.5 kg\">+</button></div>",
+      "css": ".ds-step { font-family: var(--font, 'Anuphan', 'Noto Sans Thai', system-ui, sans-serif); display: grid; grid-template-columns: 44px minmax(0,1fr) 44px; width: 180px; border: 1px solid var(--line-strong, #6a7179); border-radius: 12px; background: var(--surface-2, #23272c); overflow: hidden; font-variant-numeric: tabular-nums; } .ds-step:focus-within { border-color: var(--accent, #f2c230); box-shadow: 0 0 0 3px var(--accent-soft, #f2c2301f); } .ds-step input { min-width: 0; border: 0; background: none; color: var(--text, #edebe6); text-align: center; font: inherit; font-size: 1.625rem; font-weight: 600; min-height: 64px; outline: none; -moz-appearance: textfield; } .ds-step input::-webkit-inner-spin-button { -webkit-appearance: none; } .ds-step button { border: 0; background: none; color: var(--text, #edebe6); font-size: 1.5rem; cursor: pointer; } .ds-step button:hover { background: var(--surface-3, #2c3137); } .ds-step button:active { background: #ffffff1a; }"
+    },
+    {
+      "name": "Plate Readout",
+      "kind": "custom",
+      "refersTo": "plate-readout",
+      "description": "Signature: plates per side drawn in IWF colours as a real loading aid.",
+      "html": "<div class=\"ds-plates\"><div class=\"ds-bar\"><i class=\"c\"></i><i class=\"p p20\"></i><i class=\"p p1\"></i></div><div class=\"ds-pt\">ใส่ต่อข้าง (kg)<strong>20 + 1.25</strong>บาร์ 20 kg</div></div>",
+      "css": ".ds-plates { font-family: var(--font, 'Anuphan', 'Noto Sans Thai', system-ui, sans-serif); display: flex; align-items: center; gap: 16px; padding: 12px 16px; background: var(--bg, #121416); border-radius: 12px; font-variant-numeric: tabular-nums; } .ds-bar { display: flex; align-items: center; height: 72px; flex: 1; } .ds-bar::before { content: \"\"; width: 28%; max-width: 120px; height: 8px; background: #8d939a; border-radius: 4px 0 0 4px; } .ds-bar::after { content: \"\"; flex: 1; min-width: 12px; max-width: 40px; height: 8px; background: #8d939a; border-radius: 0 4px 4px 0; } .ds-bar .c { width: 8px; height: 22px; background: #b8bdc3; border-radius: 2px; } .ds-bar .p { height: 72px; border-radius: 4px; margin-left: 3px; box-shadow: inset -3px 0 0 #0004; } .ds-bar .p20 { width: 18px; background: var(--plate-20, #2f6fd1); } .ds-bar .p1 { width: 7px; height: 28px; background: var(--plate-sm, #9aa0a6); } .ds-pt { font-size: .875rem; color: var(--text-2, #a9adb3); text-align: right; line-height: 1.35; } .ds-pt strong { display: block; color: var(--text, #edebe6); font-size: 1.375rem; font-weight: 600; }"
+    },
+    {
+      "name": "Rest Dock",
+      "kind": "custom",
+      "refersTo": "rest-dock",
+      "description": "Signature: yellow rest countdown that floats above every page after a set.",
+      "html": "<div class=\"ds-dock\"><button class=\"main\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"13.5\" r=\"7.5\"/><path d=\"M12 13.5V10M10 2.5h4M18.5 6.5l1.5-1.5\"/></svg><span>พัก</span><span class=\"t\">01:59</span><span class=\"track\"><i style=\"width:60%\"></i></span></button><button aria-label=\"หยุดนาฬิกาพัก\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M8.5 5v14M15.5 5v14\"/></svg></button></div>",
+      "css": ".ds-dock { font-family: var(--font, 'Anuphan', 'Noto Sans Thai', system-ui, sans-serif); display: flex; align-items: center; gap: 4px; padding: 4px; border-radius: 14px; background: var(--accent, #f2c230); color: var(--accent-ink, #16181b); box-shadow: 0 14px 40px #000a; font-variant-numeric: tabular-nums; max-width: 360px; } .ds-dock button { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 12px; background: none; border: 0; color: inherit; font: inherit; font-weight: 600; border-radius: 10px; cursor: pointer; } .ds-dock button.main { flex: 1; } .ds-dock button:hover { background: #0000000f; } .ds-dock button:focus-visible { outline: 2px solid var(--accent-ink, #16181b); outline-offset: -2px; } .ds-dock .t { font-size: 1.25rem; font-weight: 700; } .ds-dock .track { flex: 1; height: 4px; border-radius: 2px; background: #16181b33; overflow: hidden; } .ds-dock .track i { display: block; height: 100%; background: var(--accent-ink, #16181b); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Night Gym",
+    "overview": "FitTrack Pro is a working tool used under bad gym lighting, phone in one sweaty hand, between sets. The ground is the rubber floor of a campus weight room at night: graphite surfaces stepping up in small tonal increments, chalk-white text, and exactly one action colour borrowed from the 15 kg bumper plate. Nothing glows, nothing is gradient-filled, nothing competes with the next set.\n\nDensity is moderate and list-led. Screens are built from one panel per job, with rows divided by hairlines inside it, rather than grids of coloured tiles. The set logger is visually the heaviest surface (big steppers, the plate readout, a full-width yellow save), and every other page defers to it. Numbers are always tabular; progress is shown as signed, neutral deltas, never as red/green judgement.\n\nThe one decorative system the app allows is functional: the IWF bumper-plate colour code, drawn as real plates on a bar to tell the lifter what to load. Icons are drawn line icons from a single inline sprite, never emoji.",
+    "keyCharacteristics": [
+      "Dark-only (`color-scheme: dark`), graphite ground with four tonal surface steps.",
+      "One action accent (bumper yellow) with dark plate ink on top of it.",
+      "Anuphan for all Thai and Latin text, tabular figures everywhere.",
+      "Hairline-divided lists inside flat panels; no nested cards.",
+      "1.75px-stroke line icons at 20px (16px small, 22px in the mobile tab bar).",
+      "Short ease-out state motion (100-250ms); everything off under reduced motion."
+    ],
+    "rules": [
+      {
+        "name": "The One Plate Rule",
+        "body": "Bumper yellow is the only colour that means \"do this\". It appears once as a filled button per view at most, plus small signals (active tab icon, focus ring, PR figure). It is never a background wash or decorative fill.",
+        "section": "colors"
+      },
+      {
+        "name": "The Plate Code Rule",
+        "body": "The IWF plate colours describe weight on a bar and nothing else. They never colour buttons, categories or status.",
+        "section": "colors"
+      },
+      {
+        "name": "The Chalk Selection Rule",
+        "body": "Selection is shown by inverting to a chalk fill with plate-ink text (chips, segmented control), not by yellow, so yellow stays reserved for action.",
+        "section": "colors"
+      },
+      {
+        "name": "The Neutral Delta Rule",
+        "body": "Week-over-week deltas are signed and neutral: increases in chalk, decreases in chalk muted. Progress is never painted green or red.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Rule",
+        "body": "`font-variant-numeric: tabular-nums` is set on the body; every weight, rep, time and score aligns in columns without exception.",
+        "section": "typography"
+      },
+      {
+        "name": "The No-Caps Rule",
+        "body": "No uppercase transforms and no letter-spaced labels; Thai has no case, and Latin follows it. The only tracked text is the join code (0.08em).",
+        "section": "typography"
+      },
+      {
+        "name": "The Hairline List Rule",
+        "body": "Collections (plan, 7-day stats, sets, history, rankings, PBs, results) are rows separated by 1px hairlines inside one panel, the last row borderless. Do not wrap each row in its own card.",
+        "section": "layout"
+      },
+      {
+        "name": "The Thumb Floor Rule",
+        "body": "Every control is at least 44px tall; in-workout rows and the primary log button are 56px, stepper fields 64px.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat Floor Rule",
+        "body": "Panels, cards and rows never cast shadows. If something needs to stand out on the page, it changes surface step or border, not elevation.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** keep one filled yellow action per view; use secondary or ghost buttons for everything else.",
+      "**Do** draw icons from the inline sprite at 1.75px stroke, 20px (16px small), with `aria-hidden` and a text label or `aria-label`.",
+      "**Do** present collections as hairline-divided rows inside one bench-graphite panel.",
+      "**Do** show numbers in tabular figures with the unit in caption size and chalk muted beside them.",
+      "**Do** keep every control at 44px or taller, and in-workout controls at 56px or taller.",
+      "**Do** pair every status colour with words or an icon; status is never colour alone.",
+      "**Do** keep motion to 100-250ms with the shared ease-out curve (`cubic-bezier(.2,.8,.2,1)`), and let reduced-motion switch it all off."
+    ],
+    "donts": [
+      "**Don't** use emoji as icons or status markers.",
+      "**Don't** introduce a second accent hue or paint surfaces with gradients.",
+      "**Don't** use the plate colours for anything other than weight on a bar.",
+      "**Don't** colour progress deltas green or red.",
+      "**Don't** nest cards inside panels or build the dashboard as a grid of coloured KPI tiles.",
+      "**Don't** put shadows on panels or cards; only floating layers get the float shadow.",
+      "**Don't** use uppercase or letter-spaced labels above headings."
+    ]
+  }
+}

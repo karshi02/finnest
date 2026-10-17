@@ -3,3 +3,7 @@ fittrack-backup-*.json
 
 .vercel
 .env*
+
+# impeccable: ภาพตรวจและคำถามชั่วคราว
+.impeccable/review/
+.impeccable/questions/

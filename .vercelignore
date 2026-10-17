@@ -6,3 +6,9 @@ README.md
 .gitignore
 .env*
 supabase
+.impeccable
+PRODUCT.md
+DESIGN.md
+.agents
+.claude
+skills-lock.json

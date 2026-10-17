@@ -1,6 +1,6 @@
 // เปลี่ยนเลขทุกครั้งที่ deploy เพื่อล้างแคชเก่า
-const CACHE = 'fittrack-v14';
-const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './vendor/chart.umd.min.js'];
+const CACHE = 'fittrack-v15';
+const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './vendor/chart.umd.min.js', './fonts/anuphan-thai.woff2', './fonts/anuphan-latin.woff2'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
