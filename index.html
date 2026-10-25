@@ -100,18 +100,6 @@
     nav.tabbar button.active { color: var(--text); background: var(--surface-2); }
     nav.tabbar button.active .ic { color: var(--accent); }
     nav.tabbar button.has-dot::after { content: ''; position: absolute; top: 8px; left: 28px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 2px var(--bg); }
-    .watch-btn {
-      flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px;
-      background: var(--surface); color: var(--text-2); border: 1px solid var(--line); border-radius: 999px;
-      font-size: var(--fs-xs); font-weight: 500; cursor: pointer; white-space: nowrap;
-      transition: color .15s var(--ease), border-color .15s var(--ease);
-    }
-    .watch-btn:hover { color: var(--text); border-color: var(--line-strong); }
-    .watch-btn .ic { width: 16px; height: 16px; vertical-align: 0; }
-    .watch-btn.connected { color: var(--text); border-color: #3dbe6b66; background: var(--success-soft); }
-    .watch-btn.connected .ic { color: var(--danger); }
-    .watch-btn.connecting { color: var(--accent); border-color: #f2c23066; }
-    .watch-btn .wbpm { font-weight: 700; font-size: var(--fs-sm); min-width: 2.2em; text-align: right; }
 
     /* ── โครงหน้า ── */
     main { padding: var(--s5) var(--s5) var(--s7); max-width: 1120px; margin: 0 auto; }
@@ -291,7 +279,10 @@
     .comp-mini .vs { display: flex; justify-content: space-between; gap: var(--s3); font-size: var(--fs-sm); }
 
     /* ── บันทึกเวท ── */
-    .log-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: var(--s4); align-items: start; margin-bottom: var(--s4); }
+    .log-grid { margin-bottom: var(--s4); }
+    #wtab-log { max-width: 720px; }
+    .rest-row .presets { margin: 0 0 4px; }
+    .rest-row .chip { min-height: 40px; }
     .log-grid > .panel { margin-bottom: 0; }
     .ex-pick { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s2); }
     .last-hint { min-height: 24px; margin: var(--s3) 0 var(--s2); font-size: var(--fs-sm); color: var(--text-2); }
@@ -533,7 +524,6 @@
       nav.tabbar button:hover { background: none; }
       nav.tabbar button.active { background: none; }
       nav.tabbar button.has-dot::after { top: 8px; left: calc(50% + 6px); }
-      .watch-btn { margin-left: auto; }
       main { padding: var(--s4) var(--s4) calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 88px); }
       h1 { font-size: 1.5rem; }
       .panel, .card { padding: var(--s4); border-radius: 12px; }
@@ -629,7 +619,6 @@
     <button data-nav="social" onclick="showPage('social')"><svg class="ic" aria-hidden="true"><use href="#i-rank"/></svg><span>อันดับ</span></button>
     <button data-nav="me" onclick="showPage('me')"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg><span>ฉัน</span></button>
   </nav>
-  <button class="watch-btn" id="watch-btn" onclick="watchButton()" title="เชื่อมต่อนาฬิกาเพื่อดูหัวใจสด"><svg class="ic" aria-hidden="true"><use href="#i-watch"/></svg><span class="wl" id="watch-label">เชื่อมนาฬิกา</span></button>
 </header>
 
 <main>
@@ -731,25 +720,24 @@
           <textarea id="log-note" placeholder="เช่น รู้สึกหนักไหล่ซ้าย"></textarea>
         </details>
         <button class="btn btn-primary btn-xl btn-block" onclick="addWeightSet()"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>บันทึกเซ็ต</button>
-        <label class="check"><input type="checkbox" id="auto-rest" onchange="setAutoRest(this.checked)" /> เริ่มนาฬิกาพักเองหลังบันทึกเซ็ต</label>
+        <div class="rest-row">
+          <label class="check"><input type="checkbox" id="auto-rest" onchange="setAutoRest(this.checked)" /> พักอัตโนมัติหลังบันทึกเซ็ต</label>
+          <div class="presets" role="group" aria-label="เวลาพัก">
+            <button class="chip" onclick="setTimer(60)">1:00</button>
+            <button class="chip" onclick="setTimer(90)">1:30</button>
+            <button class="chip active" onclick="setTimer(120)">2:00</button>
+            <button class="chip" onclick="setTimer(180)">3:00</button>
+          </div>
+        </div>
       </section>
 
-      <section class="panel timer-panel" aria-labelledby="timer-h">
-        <h2 id="timer-h" class="sr-only">นาฬิกาพัก</h2>
-        <div class="timer-label" id="timer-label">กดเริ่มเมื่อพัก</div>
-        <div class="timer-display" id="timer-display" role="timer" aria-live="off">02:00</div>
-        <div class="progress-wrap"><div class="progress-fill" id="timer-progress" style="width:100%"></div></div>
-        <div class="presets" role="group" aria-label="เวลาพัก">
-          <button class="chip" onclick="setTimer(60)">1:00</button>
-          <button class="chip" onclick="setTimer(90)">1:30</button>
-          <button class="chip active" onclick="setTimer(120)">2:00</button>
-          <button class="chip" onclick="setTimer(180)">3:00</button>
-        </div>
-        <div class="grid2">
-          <button class="btn btn-secondary" onclick="startTimer()" id="btn-start">เริ่ม</button>
-          <button class="btn btn-ghost" onclick="resetTimer()"><svg class="ic" aria-hidden="true"><use href="#i-reset"/></svg>รีเซ็ต</button>
-        </div>
-      </section>
+      <!-- นาฬิกาพักแสดงเป็นแถบลอยด้านล่างแทน: เก็บส่วนนับเวลาไว้ซ่อน ๆ ให้โค้ดเดิมใช้ -->
+      <div class="timer-panel" hidden>
+        <div id="timer-label">กดเริ่มเมื่อพัก</div>
+        <div id="timer-display" role="timer">02:00</div>
+        <div id="timer-progress"></div>
+        <button onclick="startTimer()" id="btn-start" tabindex="-1">เริ่ม</button>
+      </div>
     </div>
 
     <section class="panel" id="session-summary" hidden aria-live="polite"></section>
@@ -1234,7 +1222,6 @@
       <section class="panel" aria-label="เมนู" style="padding-top:8px;padding-bottom:8px">
         <button class="row-btn" onclick="showPage('plan')"><span class="row-icon"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg></span><span class="grow">แผนรายสัปดาห์<span class="sub">ตารางฝึก 7 วัน + โปรแกรมยอดนิยม</span></span><svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></button>
         <button class="row-btn" onclick="showPage('calc')"><span class="row-icon"><svg class="ic" aria-hidden="true"><use href="#i-calc"/></svg></span><span class="grow">เครื่องคำนวณ<span class="sub">TDEE · BMI · มาโคร · 1RM</span></span><svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></button>
-        <button class="row-btn" onclick="watchButton()"><span class="row-icon"><svg class="ic" aria-hidden="true"><use href="#i-heart"/></svg></span><span class="grow">นาฬิกาและหัวใจสด<span class="sub">Bluetooth (Chrome บน Android/คอม)</span></span><svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></button>
         <button class="row-btn" onclick="showPage('cardio')"><span class="row-icon"><svg class="ic" aria-hidden="true"><use href="#i-link"/></svg></span><span class="grow">Strava<span class="sub" id="me-strava">ดึงกิจกรรมจากนาฬิกาอัตโนมัติ</span></span><svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></button>
         <button class="row-btn" onclick="showPage('social'); scTab('account')"><span class="row-icon"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg></span><span class="grow">บัญชีอันดับ · เพื่อน · ทีม<span class="sub" id="me-account">ยังไม่ได้เข้าสู่ระบบ</span></span><svg class="ic" aria-hidden="true"><use href="#i-chev"/></svg></button>
       </section>
@@ -2267,7 +2254,6 @@ function dockToggle() {
 function openRestTimer() {
   if (!timerRunning && timerSecs <= 0) resetTimer();
   showPage('weight'); showWeightTab('log');
-  document.querySelector('.timer-panel').scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 function setStartBtn(running) {
   document.getElementById('btn-start').innerHTML = running ? ic('pause') + 'หยุด' : ic('play') + 'เริ่มพัก';
@@ -2556,6 +2542,7 @@ function setHrStatus(text, connected) {
 function updateWatchButton(mode, bpm) {
   const btn = document.getElementById('watch-btn');
   const label = document.getElementById('watch-label');
+  if (!btn || !label) return;   // ปุ่มบนแถบบนถูกเอาออกแล้ว
   btn.classList.toggle('connected', mode === 'connected');
   btn.classList.toggle('connecting', mode === 'connecting');
   btn.querySelector('use').setAttribute('href', mode === 'connected' ? '#i-heart' : '#i-watch');
